@@ -4,3 +4,7 @@ venv
 
 entity-fishing/
 grisp/
+
+**/*.csv
+**/*.json
+**/*logs*.txt
