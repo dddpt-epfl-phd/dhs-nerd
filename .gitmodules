@@ -1,0 +1,3 @@
+[submodule "scrape-dhs/dhs_scraper"]
+	path = scrape-dhs/dhs_scraper
+	url = git@github.com:dddpt/dhs-scraper.git
