@@ -18,8 +18,8 @@ with open(output_file, "r") as dhs_all_json_file:
 
 # %%
 
-buffer_size = 10
-buffer = [None]*10
+buffer_size = 100
+buffer = [None]*100
 
 # scrape args
 max_nb_articles_per_letter = None
