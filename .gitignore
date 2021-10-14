@@ -2,9 +2,11 @@
 .vscode/
 venv
 
-entity-fishing/
+entity-fishing/entity-fishing/
 grisp/
 
 **/*.csv
 **/*.json
+**/*.jsonl
 **/*logs*.txt
+**/*.zip
