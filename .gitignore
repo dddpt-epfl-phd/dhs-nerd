@@ -9,4 +9,5 @@ grisp/
 **/*.json
 **/*.jsonl
 **/*logs*.txt
+**/*.txt
 **/*.zip

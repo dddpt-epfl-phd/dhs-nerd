@@ -5,7 +5,7 @@ import re
 from dhs_scraper import DhsArticle
 
 
-language="de"
+language="it"
 output_file = f"dhs_all_articles_{language}.jsonl"
 
 
