@@ -11,3 +11,4 @@ grisp/
 **/*logs*.txt
 **/*.txt
 **/*.zip
+**/*.xml
