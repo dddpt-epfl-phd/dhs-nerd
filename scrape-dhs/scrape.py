@@ -1,6 +1,5 @@
 # %%
 
-import re
 
 from dhs_scraper import DhsArticle, stream_to_jsonl
 

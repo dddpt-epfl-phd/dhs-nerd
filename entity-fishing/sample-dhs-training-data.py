@@ -1,22 +1,22 @@
 # %%
-# Script to send a sample of DHS entities to entity-fishing for disambiguation
-# needs access to running entity-fishing service on entity_fishing_url (by default: localhost:8090)
 
 
 import json
-from random import randint, seed
+from os import path
+from random import randint, sample, seed
 
 import requests as r
+from dhs_scraper import DhsArticle
 
 seed(54321)
 
-language="fr"
-dhs_dump_jsonl_file = f"../scrape-dhs/dhs_all_articles_{language}.jsonl"
+sampling_language="de" # determines from which language corpus we'll chose article to load
+dhs_dump_jsonl_file = f"../scrape-dhs/data/dhs_<LANGUAGE>_all_articles_content.jsonl"
 
 total_nb_articles = 36355 # fr
-article_samples_directory = f"entity-fishing/data/corpus/corpus-long/dhs-training-{language}/RawText/"
+article_samples_directory = f"entity-fishing/data/corpus/corpus-long/dhs-training-<LANGUAGE>/RawText/"
 
-
+sampled_languages = ["de", "fr"]
 
 # %% Sample articles
 
@@ -28,20 +28,24 @@ for i in range(nb_articles_sampled):
     if random_index not in articles_indices:
         articles_indices.add(random_index)
 
-with open(dhs_dump_jsonl_file, "r") as dhs_all_json_file:
+with open(dhs_dump_jsonl_file.replace("<LANGUAGE>", sampling_language), "r") as dhs_all_json_file:
     articles = list(json.loads(line) for i,line in enumerate(dhs_all_json_file) if i in articles_indices)
 
+articles_ids = set(a["id"] for a in articles)
 
 # %% Write text to corresponding RawText folder
 
-for a in articles:
-    with open(article_samples_directory+a["title"]+f".{language}.txt", "w") as rawtext_file:
-        print(f"writing for article {a['title']}")
-        rawtext_file.write(a["text"])
+for lng in sampled_languages:
+    print(f"\n\nSampling articles for language {lng}\n=========================================")
+    for a in DhsArticle.load_articles_from_jsonl(dhs_dump_jsonl_file.replace("<LANGUAGE>", lng),articles_ids):
+        with open(path.join(article_samples_directory.replace("<LANGUAGE>", lng),a.title+f".{lng}.txt"), "w") as rawtext_file:
+            print(f"writing for article {a.title}")
+            rawtext_file.write(a.text)
 
 
 
 # %% Sending a query to entity-fishing service on 8090
+# needs access to running entity-fishing service on entity_fishing_url (by default: localhost:8090)
 
 if False:
 
