@@ -12,3 +12,5 @@ grisp/
 **/*.txt
 **/*.zip
 **/*.xml
+**/*.png
+**/*.pdf
