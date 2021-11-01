@@ -6,19 +6,19 @@ from os import path
 from random import randint, seed
 
 import requests as r
-from dhs_scraper import DhsArticle
+
+from dhs_scraper import DhsArticle, TOTAL_NB_DHS_ARTICLES
+from utils import DHS_DUMP_JSONL_FILE, get_dhs_dump_jsonl_file
 
 seed(54321)
 
 sampling_language="de" # determines from which language corpus we'll chose article to load
-DHS_DUMP_JSONL_FILE = f"../scrape-dhs/data/dhs_<LANGUAGE>_all_articles_content.jsonl"
-TOTAL_NB_DHS_ARTICLES = 36355 # in FR dhs as of 01.11.2021
 
 ARTICLES_SAMPLE_DIRECTORY = f"entity-fishing/data/corpus/corpus-long/dhs-training-<LANGUAGE>/RawText/"
 
 sampled_languages = ["de", "fr"]
 
-# %% Sample articles
+# %% Sample articles (stupid way, but keep it to maintain same sample as already annotated in inception)
 
 nb_articles_sampled = 50
 
@@ -28,16 +28,17 @@ for i in range(nb_articles_sampled):
     if random_index not in articles_indices:
         articles_indices.add(random_index)
 
-with open(DHS_DUMP_JSONL_FILE.replace("<LANGUAGE>", sampling_language), "r") as dhs_all_json_file:
-    articles = list(json.loads(line) for i,line in enumerate(dhs_all_json_file) if i in articles_indices)
+# %%
 
-articles_ids = set(a["id"] for a in articles)
+all_ids = list(DhsArticle.get_articles_ids(get_dhs_dump_jsonl_file(sampling_language)))
+
+new_articles_ids = [all_ids[i] for i in articles_indices]
 
 # %% Write text to corresponding RawText folder
 
 for lng in sampled_languages:
     print(f"\n\nSampling articles for language {lng}\n=========================================")
-    for a in DhsArticle.load_articles_from_jsonl(DHS_DUMP_JSONL_FILE.replace("<LANGUAGE>", lng),articles_ids):
+    for a in DhsArticle.load_articles_from_jsonl(get_dhs_dump_jsonl_file(lng),articles_ids):
         with open(path.join(ARTICLES_SAMPLE_DIRECTORY.replace("<LANGUAGE>", lng),a.title+f".{lng}.txt"), "w") as rawtext_file:
             print(f"writing for article {a.title}")
             rawtext_file.write(a.text)
