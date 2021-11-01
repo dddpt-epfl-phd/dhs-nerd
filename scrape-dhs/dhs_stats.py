@@ -13,7 +13,7 @@ articles_jsonl_file = "data/dhs_fr_all_articles_content.jsonl"
 
 # %%
 
-articles = DhsArticle.load_articles_from_jsonl(articles_jsonl_file)
+articles = list(DhsArticle.load_articles_from_jsonl(articles_jsonl_file))
 
 # %%
 
@@ -65,7 +65,7 @@ def tags_stats(articles, title=None, figure = None):
 
     print(f"{title_starter}Number of unique tags: {len(set(tags))}")
     print(f"{title_starter}Median number of articles per tags: {tags_vc.quantile(0.5, interpolation='higher')},"+
-    f"mean: {tags_vc.mean().round(2)}")
+    f"mean: {tags_vc.mean()}")#".round(2)}")
     print(f"{tags_quantiles}")
     plt.figure(figure)
     tags_plot = tags_percentiles.plot()
@@ -180,6 +180,9 @@ for i, articles_in_category in enumerate(articles_by_category):
     articles_by_category_text_stats_plot = texts_stats(articles_in_category, categories[i][0],figure=42)
 articles_by_category_text_stats_plot.legend([t[0]+f" ({len(articles_by_category[i])} articles)" for i,t in enumerate(categories)])
 articles_by_category_text_stats_plot.set(title="Length of Articles (character) by DHS category")
+plt.gcf().set_figwidth(7) # default: 6.4
+plt.gcf().set_figheight(5) # default: 4
+plt.gcf().savefig("articles_lengths_by_category.png", dpi=500)
 
 
 # %%
@@ -231,6 +234,10 @@ percent_articles_in_wd_by_category
 percent_articles_in_wd_by_category_plot = percent_articles_in_wd_by_category.plot.bar()
 percent_articles_in_wd_by_category_plot.legend([f"% in {lng}" for lng in ["Wikidata", "DE Wikipedia", "FR Wikipedia", "EN Wikipedia", "IT Wikipedia"]])
 percent_articles_in_wd_by_category_plot.set(title = "Proportion of DHS articles, by category, covered in different languages of wikipedia", ylabel="%")
+plt.gcf().set_figwidth(6) # default: 6.4
+plt.gcf().set_figheight(4) # default: 4
+plt.xticks(rotation=0)
+plt.gcf().savefig("percent_articles_in_wd_by_category.png")
 
 print(f"""Proportion of DHS articles, by category, covered in different languages of wikipedia:
 {prop_articles_in_wd_by_category}
