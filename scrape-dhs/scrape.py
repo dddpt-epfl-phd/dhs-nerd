@@ -17,7 +17,7 @@ skip_duplicates=True
 # %% Scrape articles content
 if False:
     jsonl_articles_content_file = f"data/dhs_{language}_all_articles_content.jsonl"
-    already_visited_ids = DhsArticle.get_already_visited_ids(jsonl_articles_content_file)
+    already_visited_ids = set(DhsArticle.get_articles_ids(jsonl_articles_content_file))
     stream_to_jsonl(
         jsonl_articles_content_file,
         DhsArticle.scrape_all_articles(
@@ -36,7 +36,7 @@ if False:
 
 # themes
 jsonl_themes_articles_file = f"data/dhs_fr_category_themes_articles.jsonl"
-already_visited_themes_ids = DhsArticle.get_already_visited_ids(jsonl_themes_articles_file)
+already_visited_themes_ids = set(DhsArticle.get_articles_ids(jsonl_themes_articles_file))
 stream_to_jsonl(
     jsonl_themes_articles_file,
     DhsArticle.scrape_articles_from_search_url(
@@ -53,7 +53,7 @@ stream_to_jsonl(
 
 # people
 jsonl_people_articles_file = f"data/dhs_fr_category_people_articles.jsonl"
-already_visited_people_ids = DhsArticle.get_already_visited_ids(jsonl_people_articles_file)
+already_visited_people_ids = set(DhsArticle.get_articles_ids(jsonl_people_articles_file))
 stream_to_jsonl(
     jsonl_people_articles_file,
     DhsArticle.scrape_articles_from_search_url(
@@ -69,7 +69,7 @@ stream_to_jsonl(
 
 # families
 jsonl_families_articles_file = f"data/dhs_fr_category_families_articles.jsonl"
-already_visited_families_ids = DhsArticle.get_already_visited_ids(jsonl_families_articles_file)
+already_visited_families_ids = set(DhsArticle.get_articles_ids(jsonl_families_articles_file))
 stream_to_jsonl(
     jsonl_families_articles_file,
     DhsArticle.scrape_articles_from_search_url(
@@ -85,7 +85,7 @@ stream_to_jsonl(
 
 # spatial
 jsonl_spatial_articles_file = f"data/dhs_fr_category_spatial_articles.jsonl"
-already_visited_spatial_ids = DhsArticle.get_already_visited_ids(jsonl_spatial_articles_file)
+already_visited_spatial_ids = set(DhsArticle.get_articles_ids(jsonl_spatial_articles_file))
 stream_to_jsonl(
     jsonl_spatial_articles_file,
     DhsArticle.scrape_articles_from_search_url(
