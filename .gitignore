@@ -1,6 +1,7 @@
 
 .vscode/
 venv
+**/__pycache__/
 
 entity-fishing/entity-fishing/
 grisp/
