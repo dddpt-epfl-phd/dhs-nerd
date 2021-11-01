@@ -3,7 +3,7 @@
 
 import json
 from os import path
-from random import randint, sample, seed
+from random import randint, seed
 
 import requests as r
 from dhs_scraper import DhsArticle
@@ -11,10 +11,10 @@ from dhs_scraper import DhsArticle
 seed(54321)
 
 sampling_language="de" # determines from which language corpus we'll chose article to load
-dhs_dump_jsonl_file = f"../scrape-dhs/data/dhs_<LANGUAGE>_all_articles_content.jsonl"
+DHS_DUMP_JSONL_FILE = f"../scrape-dhs/data/dhs_<LANGUAGE>_all_articles_content.jsonl"
+TOTAL_NB_DHS_ARTICLES = 36355 # in FR dhs as of 01.11.2021
 
-total_nb_articles = 36355 # fr
-article_samples_directory = f"entity-fishing/data/corpus/corpus-long/dhs-training-<LANGUAGE>/RawText/"
+ARTICLES_SAMPLE_DIRECTORY = f"entity-fishing/data/corpus/corpus-long/dhs-training-<LANGUAGE>/RawText/"
 
 sampled_languages = ["de", "fr"]
 
@@ -24,11 +24,11 @@ nb_articles_sampled = 50
 
 articles_indices = set()
 for i in range(nb_articles_sampled):
-    random_index = randint(0, total_nb_articles)
+    random_index = randint(0, TOTAL_NB_DHS_ARTICLES)
     if random_index not in articles_indices:
         articles_indices.add(random_index)
 
-with open(dhs_dump_jsonl_file.replace("<LANGUAGE>", sampling_language), "r") as dhs_all_json_file:
+with open(DHS_DUMP_JSONL_FILE.replace("<LANGUAGE>", sampling_language), "r") as dhs_all_json_file:
     articles = list(json.loads(line) for i,line in enumerate(dhs_all_json_file) if i in articles_indices)
 
 articles_ids = set(a["id"] for a in articles)
@@ -37,8 +37,8 @@ articles_ids = set(a["id"] for a in articles)
 
 for lng in sampled_languages:
     print(f"\n\nSampling articles for language {lng}\n=========================================")
-    for a in DhsArticle.load_articles_from_jsonl(dhs_dump_jsonl_file.replace("<LANGUAGE>", lng),articles_ids):
-        with open(path.join(article_samples_directory.replace("<LANGUAGE>", lng),a.title+f".{lng}.txt"), "w") as rawtext_file:
+    for a in DhsArticle.load_articles_from_jsonl(DHS_DUMP_JSONL_FILE.replace("<LANGUAGE>", lng),articles_ids):
+        with open(path.join(ARTICLES_SAMPLE_DIRECTORY.replace("<LANGUAGE>", lng),a.title+f".{lng}.txt"), "w") as rawtext_file:
             print(f"writing for article {a.title}")
             rawtext_file.write(a.text)
 
