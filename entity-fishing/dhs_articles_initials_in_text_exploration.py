@@ -7,6 +7,7 @@ from webbrowser import open as op
 
 from dhs_scraper import DhsArticle
 from utils import get_dhs_dump_jsonl_file, CATEGORIES
+from dhs_articles_initials_in_text import get_article_identifying_initial
 
 seed(54367)
 
@@ -60,6 +61,9 @@ initials_nb_distrib
 
 one_initial = [i  for i in initials if len(i[1])==1]
 
+one_initial_orphelins = [(a,i,it) for a,i,it in one_initial if i.index[0] not in it]
+# -> 1 initial that isn't in title initials: artifact, not valid
+
 no_initials = [i  for i in initials if len(i[1])==0]
 # -> mostly short articles about people/families
 
@@ -96,6 +100,14 @@ only_second_most_likely_initial_in_title_initials = [
     for a, i, it in multiple_initials if len(i)>0
 ]
 pd.Series(only_second_most_likely_initial_in_title_initials).value_counts()
+# %%
+
+two_most_likely_initial_not_in_title_initials = [
+    (not i.index[0] in it) and
+    (not i.index[1] in it)
+    for a, i, it in multiple_initials if len(i)>0
+]
+pd.Series(two_most_likely_initial_not_in_title_initials).value_counts()
 
 # %%
 def slice_from_truth_list(l, tl):
@@ -131,4 +143,18 @@ print("categories of articles with only second most likely text initials in titl
 for c, ids in articles_ids_by_category:
     print(f"{c}: {len([a for a,i ,it in only_second if a.id in ids])}")
 
+
+# %%
+
+# checking out the get_article_identifying_initial() method
+
+identifying_initial = [(a,i,it,get_article_identifying_initial(a)) for a,i,it in initials]
+# %%
+sum(ii is not None for a,i,it,ii in identifying_initial) # fr:29906, de: 27332
+sum(ii in i.index for a,i,it,ii in identifying_initial) # fr:29906
+sum(ii in it for a,i,it,ii in identifying_initial) # fr:29906
+len(no_initials) # fr: 6016, de: 8486
+len(one_initial_orphelins) # fr: 397, de:462
+sum(two_most_likely_initial_not_in_title_initials) # fr: 36, de 76
+sum(ii is not None for a,i,it,ii in identifying_initial)+len(no_initials)+len(one_initial_orphelins)+sum(two_most_likely_initial_not_in_title_initials) # fr: 29906+6016+397+36 = 36355
 # %%
