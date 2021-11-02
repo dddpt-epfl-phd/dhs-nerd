@@ -23,8 +23,9 @@ sampled_ids = sample(all_ids, 1000)
 
 # %%
 
+print("loading articles...")
 articles = list(DhsArticle.load_articles_from_jsonl(get_dhs_dump_jsonl_file(lng)))#, sampled_ids))
-
+print("articles loaded!")
 
 # %%
 
@@ -41,7 +42,7 @@ def get_title_initials(title):
 initials = [
     (
         a,
-        pd.Series(initial_regex.findall(a.text)).value_counts(),
+        pd.Series(initial_regex.findall(a.text), dtype="U").value_counts(),
         set(s[0] for s in a.title.split(" ") if s[0].isupper())
     ) for a in articles
 ]
@@ -148,7 +149,9 @@ for c, ids in articles_ids_by_category:
 
 # checking out the get_article_identifying_initial() method
 
-identifying_initial = [(a,i,it,get_article_identifying_initial(a)) for a,i,it in initials]
+print("parsing initials...")
+identifying_initial = [(a,i,it,a.initial) for a,i,it in initials]
+print("initials parsed!")
 # %%
 sum(ii is not None for a,i,it,ii in identifying_initial) # fr:29906, de: 27332
 sum(ii in i.index for a,i,it,ii in identifying_initial) # fr:29906
