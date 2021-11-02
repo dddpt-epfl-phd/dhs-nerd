@@ -8,7 +8,7 @@ from random import randint, seed
 import requests as r
 
 from dhs_scraper import DhsArticle, TOTAL_NB_DHS_ARTICLES
-from utils import DHS_DUMP_JSONL_FILE, get_dhs_dump_jsonl_file
+from utils import DHS_DUMP_JSONL_FILE, localize
 
 seed(54321)
 
@@ -30,7 +30,7 @@ for i in range(nb_articles_sampled):
 
 # %%
 
-all_ids = list(DhsArticle.get_articles_ids(get_dhs_dump_jsonl_file(sampling_language)))
+all_ids = list(DhsArticle.get_articles_ids(localize(DHS_DUMP_JSONL_FILE, sampling_language)))
 
 new_articles_ids = [all_ids[i] for i in articles_indices]
 
@@ -38,7 +38,7 @@ new_articles_ids = [all_ids[i] for i in articles_indices]
 
 for lng in sampled_languages:
     print(f"\n\nSampling articles for language {lng}\n=========================================")
-    for a in DhsArticle.load_articles_from_jsonl(get_dhs_dump_jsonl_file(lng),articles_ids):
+    for a in DhsArticle.load_articles_from_jsonl(localize(DHS_DUMP_JSONL_FILE, lng),articles_ids):
         with open(path.join(ARTICLES_SAMPLE_DIRECTORY.replace("<LANGUAGE>", lng),a.title+f".{lng}.txt"), "w") as rawtext_file:
             print(f"writing for article {a.title}")
             rawtext_file.write(a.text)

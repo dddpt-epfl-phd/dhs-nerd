@@ -11,5 +11,13 @@ CATEGORIES = [
     ("spatial", path.join(JSON_DUMPS_DIR, f"dhs_fr_category_spatial_articles.jsonl"))
 ]
 
-def get_dhs_dump_jsonl_file(language):
-    return DHS_DUMP_JSONL_FILE.replace("<LANGUAGE>", language)
+
+ENTITY_FISHING_CORPUS_FOLDER = f"entity-fishing/data/corpus/corpus-long/dhs-training-<LANGUAGE>/"
+ENTITY_FISHING_ANNOTATION_OUTPUT_FILE = path.join(ENTITY_FISHING_CORPUS_FOLDER,f"dhs-training-<LANGUAGE>.xml")
+ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER = path.join(ENTITY_FISHING_CORPUS_FOLDER, "RawText/")
+
+
+INCEPTION_IMPORT_FOLDER = "inception-import-xml/"
+
+def localize(path, language):
+    return path.replace("<LANGUAGE>", language)

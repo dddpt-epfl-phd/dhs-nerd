@@ -6,8 +6,7 @@ import pandas as pd
 from webbrowser import open as op
 
 from dhs_scraper import DhsArticle
-from utils import get_dhs_dump_jsonl_file, CATEGORIES
-from dhs_articles_initials_in_text import get_article_identifying_initial
+from utils import localize, DHS_DUMP_JSONL_FILE, CATEGORIES
 
 seed(54367)
 
@@ -18,13 +17,13 @@ lng="fr"
 
 # %%
 
-all_ids = list(DhsArticle.get_articles_ids(get_dhs_dump_jsonl_file(lng)))
+all_ids = list(DhsArticle.get_articles_ids(localize(DHS_DUMP_JSONL_FILE, lng)))
 sampled_ids = sample(all_ids, 1000)
 
 # %%
 
 print("loading articles...")
-articles = list(DhsArticle.load_articles_from_jsonl(get_dhs_dump_jsonl_file(lng)))#, sampled_ids))
+articles = list(DhsArticle.load_articles_from_jsonl(localize(DHS_DUMP_JSONL_FILE, lng)))#, sampled_ids))
 print("articles loaded!")
 
 # %%
