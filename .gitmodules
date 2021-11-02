@@ -1,6 +1,6 @@
 [submodule "scrape-dhs/dhs_scraper"]
 	path = scrape-dhs/dhs_scraper
 	url = git@github.com:dddpt/dhs-scraper.git
-[submodule "entity-fishing/inception-fishing"]
-	path = entity-fishing/inception-fishing
+[submodule "entity-fishing/inception_fishing"]
+	path = entity-fishing/inception_fishing
 	url = git@github.com:dddpt/inception-fishing.git
