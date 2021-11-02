@@ -103,13 +103,13 @@ def texts_stats(articles, title=None, figure=None):
     texts_length = [len(a.text) for a in articles]
     texts_length.sort(reverse=True)
 
-    pdtl = pd.Series(texts_length)
-    texts_lengths_quantiles = pd.DataFrame([(q, pdtl.quantile(q, interpolation="higher")) for q in quantiles], columns=["quantile", "number of articles"])
-    pdtl_percentiles = pd.Series([pdtl.quantile(q, interpolation="higher") for q in percentiles])
+    pd_texts_length = pd.Series(texts_length)
+    texts_lengths_quantiles = pd.DataFrame([(q, pd_texts_length.quantile(q, interpolation="higher")) for q in quantiles], columns=["quantile", "number of articles"])
+    pdtl_percentiles = pd.Series([pd_texts_length.quantile(q, interpolation="higher") for q in percentiles])
 
     print(f"{title_starter}Number of articles: {len(articles)}")
-    print(f"{title_starter}Median length of articles (character): {pdtl.quantile(0.5, interpolation='higher')},"+
-    f"mean: {pdtl.mean().round(2)}")
+    print(f"{title_starter}Median length of articles (character): {pd_texts_length.quantile(0.5, interpolation='higher')},"+
+    f"mean: {pd_texts_length.mean().round(2)}")
     print(f"{texts_lengths_quantiles}")
     plt.figure(figure)
     texts_plot = pdtl_percentiles.plot()
@@ -117,7 +117,7 @@ def texts_stats(articles, title=None, figure=None):
         xlabel="Article (by length percentile)",
         ylabel="Article length (characters)",
         title = title_starter+"Length of Articles (character)")
-    return texts_plot
+    return texts_plot, pd_texts_length
 
 texts_stats(articles, "Whole DHS",3)
 ""
@@ -130,7 +130,7 @@ non_people = [a for a in articles if not a.is_person()]
 # %%
 
 texts_stats(people, "People", 1)
-texts_plot = texts_stats(non_people, "Non-people", 1)
+texts_plot, non_people_texts_length = texts_stats(non_people, "Non-people", 1)
 texts_plot.set(title="Length of articles (character): People vs Non-people Articles")
 texts_plot.legend(["people", "non-people"])
 ""
@@ -175,10 +175,13 @@ category_missing_articles = [
 
 # %%
 
-articles_by_category_text_stats_plot=None
-for i, articles_in_category in enumerate(articles_by_category):
-    articles_by_category_text_stats_plot = texts_stats(articles_in_category, categories[i][0],figure=42)
-articles_by_category_text_stats_plot.legend([t[0]+f" ({len(articles_by_category[i])} articles)" for i,t in enumerate(categories)])
+articles_by_category_text_stats = [
+    texts_stats(articles_in_category, categories[i][0],figure=42)
+    for i, articles_in_category in enumerate(articles_by_category)
+]
+articles_by_category_text_stats_plot = articles_by_category_text_stats[0][0]
+#articles_by_category_text_stats_plot.legend([t[0]+f" ({len(articles_by_category[i])} articles, avg: {int(articles_by_category_text_stats[i][1].mean())}, md: {int(articles_by_category_text_stats[i][1].quantile(0.5))})" for i,t in enumerate(categories)])
+articles_by_category_text_stats_plot.legend([t[0]+f" ({len(articles_by_category[i])} articles, median: {int(articles_by_category_text_stats[i][1].quantile(0.5))}c)" for i,t in enumerate(categories)])
 articles_by_category_text_stats_plot.set(title="Length of Articles (character) by DHS category")
 plt.gcf().set_figwidth(7) # default: 6.4
 plt.gcf().set_figheight(5) # default: 4
@@ -251,7 +254,7 @@ Conclusion:
 
 # %% Articles length by presence in WD or not
 
-articles_in_out_wikidata_text_stats_plot = texts_stats(articles_in_out_wikidata[0], figure=5673)
+articles_in_out_wikidata_text_stats_plot, unused = texts_stats(articles_in_out_wikidata[0], figure=5673)
 texts_stats(articles_in_out_wikidata[1], figure=5673)
 articles_in_out_wikidata_text_stats_plot.legend([f"Articles in Wikidata ({len(articles_in_out_wikidata[0])} articles)", f"Articles not in Wikidata ({len(articles_in_out_wikidata[1])} articles)"])
 articles_in_out_wikidata_text_stats_plot.set(title="Length of Articles (character) depending on Presence in Wikidata")
@@ -259,7 +262,7 @@ articles_in_out_wikidata_text_stats_plot.set(title="Length of Articles (characte
 # %% Articles length by presence in DE WK or not
 
 
-articles_in_out_dewk_text_stats_plot = texts_stats(articles_in_wikipedia_by_lang["de"][0], figure=9322)
+articles_in_out_dewk_text_stats_plot, unused = texts_stats(articles_in_wikipedia_by_lang["de"][0], figure=9322)
 texts_stats(articles_in_wikipedia_by_lang["de"][1], figure=9322)
 articles_in_out_dewk_text_stats_plot.legend([f"Articles in DE Wikipedia ({len(articles_in_wikipedia_by_lang['de'][0])} articles)", f"Articles not in DE Wikipedia ({len(articles_in_wikipedia_by_lang['de'][1])} articles)"])
 articles_in_out_dewk_text_stats_plot.set(title="Length of Articles (character) depending on Presence in DE Wikipedia")
