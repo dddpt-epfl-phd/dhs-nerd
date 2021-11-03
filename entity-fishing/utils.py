@@ -18,6 +18,8 @@ ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER = path.join(ENTITY_FISHING_CORPUS_FOLDER, "
 
 
 INCEPTION_IMPORT_FOLDER = "inception-import-xml/"
+INCEPTION_EXPORT_FOLDER = "inception-annotation-2-11"
+INCEPTION_USER_NAME = "dddpt"
 
 def localize(path, language):
     return path.replace("<LANGUAGE>", language)
