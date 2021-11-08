@@ -18,27 +18,35 @@ file-formats: https://inceptiondev.dhlab.epfl.ch/dev/doc/user-guide.html#sect_fo
 
 # How to get wikipedia page id
 
-With page title, asking wikipedia: https://stackoverflow.com/questions/43746798/how-to-get-wikipedia-pageid-from-wikidata-id
-you need page title, and adress it to the wikipedia in desired language:
+Here is the solution (from maxlath answer to https://stackoverflow.com/questions/43746798/how-to-get-wikipedia-pageid-from-wikidata-id):
+1) find wikipedia page title (in any language) using wikidata API: `
+https://www.wikidata.org/w/api.php?format=json&action=wbgetentities&ids=Q78|Q3044&props=aliases|sitelinks&languages=en
+`
+2) find wikipedia pageid from page title: `
 https://en.wikipedia.org/w/api.php?action=query&titles=Fribourg&format=json
+`
+
 inversely, get title from pageid:
-https://en.wikipedia.org/w/api.php?action=query&pageids=6235099&format=json
+https://en.wikipedia.org/w/api.php?action=query&pageids=180312&format=json
 
 
-Or federated query to dbpedia (on wikidata interface):
+Or federated query to dbpedia (on wikidata interface), only works in english, incoherent results (basel entity Q78 yields basel city and basel-stadt canton wikipedia  pages):
 ```
 PREFIX wd: <http://www.wikidata.org/entity/> 
 PREFIX owl: <http://www.w3.org/2002/07/owl#> 
 PREFIX dbo: <http://dbpedia.org/ontology/>  
 
 SELECT ?wikipedia_id where {
-    VALUES (?wikidata_id)  {(wd:Q36378)}
+    VALUES (?wikidata_id)  {(wd:Q78)}
     SERVICE <http://dbpedia.org/sparql> {
        ?dbpedia_id owl:sameAs ?wikidata_id .
        ?dbpedia_id dbo:wikiPageID ?wikipedia_id 
     } 
 }
 ```
+## Wikipedia/wikidata api doc
+
+https://www.mediawiki.org/wiki/API:Main_page
 
 
 # Entity-fishing/grobid-ner tagset
