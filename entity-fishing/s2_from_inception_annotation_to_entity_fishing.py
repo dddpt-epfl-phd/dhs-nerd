@@ -24,7 +24,7 @@ annotated_corpora_lng = Corpus.inception_from_directory(
 
 annotated_corpora_lng = {
     lng: Corpus(
-        "inception-annotation-2-11-fr",
+        "dhs-training-fr",
         [d for d in annotated_corpora_lng.documents if "."+lng+"." in d.name]
     ) for lng in sampled_languages
 }
@@ -48,5 +48,12 @@ for d in corpus.documents:
     d.annotations = [a for a in d.annotations if a.wikidata_entity_url is not None]
     # remove nested annotations
     d.remove_nested_annotations()
+    d.update_mentions()
+
+# %% Writing back to file
+
+corpus.set_annotations_wikipedia_page_titles_and_ids(lng)
+
+corpus.entity_fishing_to_xml_file(path.join(INCEPTION_EXPORT_FOLDER,f"dhs-training-{lng}.xml"))
 
 # %%

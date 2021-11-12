@@ -52,3 +52,10 @@ https://www.mediawiki.org/wiki/API:Main_page
 # Entity-fishing/grobid-ner tagset
 
 27 classes: https://grobid-ner.readthedocs.io/en/latest/class-and-senses/
+
+
+# Evaluation with entity-fishing
+
+To evaluate run: `./gradlew evaluation -Pcorpus=dhs-training-fr`
+
+Note: the actual code for evaluation is in `entity-fishing/src/main/java/com/scienceminer/nerd/evaluation/NEDCorpusEvaluation.java`. You first need to hard-code your corpus name in the `corpora` variable there.
