@@ -34,9 +34,18 @@ annotated_corpora_lng
 DHS_NERD_ANNOTATIONS_TAGS
 DHS_NERD_EXTRA_TAGS
 
-lng = "fr"
+lng = "de"
 
 corpus = annotated_corpora_lng[lng]
+
+# %% list of grobid_tags present:
+
+set(a.grobid_tag for d in corpus.documents for a in d.annotations)
+
+# %%
+
+# most titles hand annotation should be thrown out as they do not interest us.
+set(a for d in corpus.documents for a in d.annotations if a.grobid_tag=="TITLE")
 
 
 # %% Remove unwanted annotations
@@ -44,6 +53,9 @@ corpus = annotated_corpora_lng[lng]
 for d in corpus.documents:
     # Remove non-grobid tag classes
     d.annotations = [a for a in d.annotations if a.grobid_tag not in DHS_NERD_EXTRA_TAGS]
+    # Remove SUBSTANCE,  ARTIFACT and TITLE
+    # TITLE might need refining (keep duke of savoy or bishop of geneva)  
+    d.annotations = [a for a in d.annotations if a.grobid_tag not in ["SUBSTANCE", "ARTIFACT", "TITLE"]]
     # Remove unlinked annotations
     d.annotations = [a for a in d.annotations if a.wikidata_entity_url is not None]
     # remove nested annotations
