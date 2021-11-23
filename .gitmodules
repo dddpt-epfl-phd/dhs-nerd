@@ -4,3 +4,6 @@
 [submodule "entity-fishing/inception_fishing"]
 	path = entity-fishing/inception_fishing
 	url = git@github.com:dddpt/inception-fishing.git
+[submodule "entity-fishing/CLEF_HIPE_2020_scorer"]
+	path = entity-fishing/CLEF_HIPE_2020_scorer
+	url = git@github.com:impresso/CLEF-HIPE-2020-scorer.git
