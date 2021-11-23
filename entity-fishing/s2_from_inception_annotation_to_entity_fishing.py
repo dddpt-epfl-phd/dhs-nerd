@@ -1,4 +1,6 @@
 # %%
+from os import path
+
 from inception_fishing import *
 from utils import INCEPTION_EXPORT_FOLDER, INCEPTION_USER_NAME
 
