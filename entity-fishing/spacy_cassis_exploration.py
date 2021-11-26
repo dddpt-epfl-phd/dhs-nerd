@@ -66,5 +66,10 @@ doc._.hello = False
 """
 # %%
 
-# from s2_from_inception_annotation_to_entity_fishing import corpus
+from s2_from_inception_annotation_to_entity_fishing import corpus
 
+doc = corpus.documents[0]
+
+print(corpus.clef_hipe_scorer_to_conllu_tsv(nlp))
+
+# %%

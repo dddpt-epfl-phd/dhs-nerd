@@ -16,6 +16,7 @@ ENTITY_FISHING_CORPUS_FOLDER = f"entity-fishing/data/corpus/corpus-long/dhs-trai
 ENTITY_FISHING_ANNOTATION_OUTPUT_FILE = path.join(ENTITY_FISHING_CORPUS_FOLDER,f"dhs-training-<LANGUAGE>.xml")
 ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER = path.join(ENTITY_FISHING_CORPUS_FOLDER, "RawText/")
 
+SCORING_DATA_FOLDER = "scoring_data/"
 
 INCEPTION_IMPORT_FOLDER = "inception-import-xml/"
 INCEPTION_EXPORT_FOLDER = "inception-annotation-2-11"
@@ -23,3 +24,10 @@ INCEPTION_USER_NAME = "dddpt"
 
 def localize(path, language):
     return path.replace("<LANGUAGE>", language)
+
+
+spacy_models_by_lng = {
+    "en": "en_core_web_sm",
+    "fr": "fr_core_news_sm",
+    "de": "de_core_news_sm",
+}
