@@ -11,12 +11,6 @@ from s2_from_inception_annotation_to_entity_fishing import annotated_corpora_by_
 from utils import spacy_models_by_lng, INCEPTION_EXPORT_FOLDER, SCORING_DATA_FOLDER, WIKIDATA_DHS_CSV_FILE
 # %%
 
-language = "fr"
-
-pred_corpus:Corpus = predicted_corpora_by_lng[language]
-true_corpus:Corpus = annotated_corpora_by_lng[language]
-
-pred_doc = pred_corpus.documents[0]
 
 
 with open(WIKIDATA_DHS_CSV_FILE) as file:
@@ -29,6 +23,9 @@ dhs_wikipedia_entities_by_lng = {
 
 
 sampled_languages = ["fr", "de"]
+
+dhs_only_corpora_by_lng = dict()
+dhs_wk_only_corpora_by_lng = dict()
 
 # %%
 
@@ -53,14 +50,17 @@ def create_filtered_true_pred_tsv(pred_corpus, true_corpus, nlp, wikidata_entiti
         path.join(SCORING_DATA_FOLDER,true_corpus_filtered.name+"-clef-hipe-scorer-conllu.tsv"),
         nlp, language=language
     )
+    return (pred_corpus_filtered, true_corpus_filtered)
 
 # %%
 
 for language in sampled_languages:
     nlp = spacy.load(spacy_models_by_lng[language])
 
+    pred_corpus:Corpus = predicted_corpora_by_lng[language]
+    true_corpus:Corpus = annotated_corpora_by_lng[language]
 
-    create_filtered_true_pred_tsv(pred_corpus, true_corpus, nlp, dhs_wikidata_entities, "only-dhs-wd")
-    create_filtered_true_pred_tsv(pred_corpus, true_corpus, nlp, dhs_wikipedia_entities_by_lng[language], f"only-dhs-wk{language}")
+    dhs_only_corpora_by_lng[language] = create_filtered_true_pred_tsv(pred_corpus, true_corpus, nlp, dhs_wikidata_entities, "only-dhs-wd")
+    dhs_wk_only_corpora_by_lng[language] = create_filtered_true_pred_tsv(pred_corpus, true_corpus, nlp, dhs_wikipedia_entities_by_lng[language], f"only-dhs-wk{language}")
 
     # %%
