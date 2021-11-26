@@ -11,6 +11,8 @@ CATEGORIES = [
     ("spatial", path.join(JSON_DUMPS_DIR, f"dhs_fr_category_spatial_articles.jsonl"))
 ]
 
+WIKIDATA_DHS_CSV_FILE = "../wikidata_dhs_linking/wikidata_dhs_wikipedia_articles_gndid.csv"
+
 
 ENTITY_FISHING_CORPUS_FOLDER = f"entity-fishing/data/corpus/corpus-long/dhs-training-<LANGUAGE>/"
 ENTITY_FISHING_ANNOTATION_OUTPUT_FILE = path.join(ENTITY_FISHING_CORPUS_FOLDER,f"dhs-training-<LANGUAGE>.xml")
