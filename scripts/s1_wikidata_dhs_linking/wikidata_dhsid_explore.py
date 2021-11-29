@@ -1,14 +1,22 @@
 # %%
 import re
 
+
+
 import matplotlib
 import pandas as pd
 
+import sys
+sys.path.append("../../src")
+sys.path.append("../../scripts")
+
+from file_paths import S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, S1_WIKIDATA_DE_LABELS
+
 # %%
 
-wd = pd.read_csv("wikidata_dhs_wikipedia_articles_gndid_instanceof.csv")
+wd = pd.read_csv(S1_WIKIDATA_DHS_WIKIPEDIA_LINKS)
 wd.rename(columns={'itemLabel':'itemLabel_fr'}, inplace=True)
-wd_de = pd.read_csv("wikidata_de_labels.csv")
+wd_de = pd.read_csv(S1_WIKIDATA_DE_LABELS)
 wd_de.rename(columns={'itemLabel':'itemLabel_de'}, inplace=True)
 
 wd = wd.merge(wd_de, on=["dhsid","item"])

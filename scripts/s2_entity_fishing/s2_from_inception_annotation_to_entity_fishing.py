@@ -1,6 +1,10 @@
 # %%
 from os import path
 
+import sys
+sys.path.append("../../src")
+sys.path.append("../../scripts")
+
 from inception_fishing import *
 from utils import INCEPTION_EXPORT_FOLDER, INCEPTION_USER_NAME, spacy_models_by_lng, SCORING_DATA_FOLDER
 

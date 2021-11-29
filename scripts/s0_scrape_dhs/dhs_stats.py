@@ -6,9 +6,17 @@ import matplotlib.pyplot as plt
 
 from dhs_scraper import DhsArticle, DhsTag
 
+import sys
+sys.path.append("../../src")
+sys.path.append("../../scripts")
+
+from dhs_scraper import DhsArticle, stream_to_jsonl
+from file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_DHS_CATEGORIES, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, s0_png_articles_lengths_by_category_figure, s0_png_percent_articles_in_wd_by_category, localize, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS
+
 # %matplotlib inline
 
-articles_jsonl_file = "data/dhs_fr_all_articles_content.jsonl"
+language="fr"
+articles_jsonl_file = localize(S0_JSONL_ALL_ARTICLES_FILE, language)
 #articles_jsonl_file = "data/dhs_all_articles_TESTfr.jsonl"
 
 # %%
@@ -144,14 +152,8 @@ np_elites_locales = [a for a in non_people if DhsTag("Elites (jusque vers 1800) 
 # %%
 
 # categories: themes, people, families, spatial
-categories = [
-    ("themes", f"data/dhs_fr_category_themes_articles.jsonl"),
-    ("people", f"data/dhs_fr_category_people_articles.jsonl"),
-    ("families", f"data/dhs_fr_category_families_articles.jsonl"),
-    ("spatial", f"data/dhs_fr_category_spatial_articles.jsonl")
-]
 
-empty_articles_by_category = [set(DhsArticle.load_articles_from_jsonl(c[1])) for c in categories]
+empty_articles_by_category = [set(DhsArticle.load_articles_from_jsonl(localize(f, language))) for c,f in S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items()]
 articles_ids_by_category = [set(a.id for a in abc) for abc in empty_articles_by_category]
 articles_by_category = [
     [a for a in articles if a.id in abyc]
@@ -176,16 +178,16 @@ category_missing_articles = [
 # %%
 
 articles_by_category_text_stats = [
-    texts_stats(articles_in_category, categories[i][0],figure=42)
+    texts_stats(articles_in_category, S0_DHS_CATEGORIES[i],figure=42)
     for i, articles_in_category in enumerate(articles_by_category)
 ]
 articles_by_category_text_stats_plot = articles_by_category_text_stats[0][0]
 #articles_by_category_text_stats_plot.legend([t[0]+f" ({len(articles_by_category[i])} articles, avg: {int(articles_by_category_text_stats[i][1].mean())}, md: {int(articles_by_category_text_stats[i][1].quantile(0.5))})" for i,t in enumerate(categories)])
-articles_by_category_text_stats_plot.legend([t[0]+f" ({len(articles_by_category[i])} articles, median: {int(articles_by_category_text_stats[i][1].quantile(0.5))}c)" for i,t in enumerate(categories)])
+articles_by_category_text_stats_plot.legend([t[0]+f" ({len(articles_by_category[i])} articles, median: {int(articles_by_category_text_stats[i][1].quantile(0.5))}c)" for i,t in enumerate(S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items())])
 articles_by_category_text_stats_plot.set(title="Length of Articles (character) by DHS category")
 plt.gcf().set_figwidth(7) # default: 6.4
 plt.gcf().set_figheight(5) # default: 4
-plt.gcf().savefig("articles_lengths_by_category.png", dpi=500)
+plt.gcf().savefig(s0_png_articles_lengths_by_category_figure, dpi=500)
 
 
 # %%
@@ -197,7 +199,7 @@ todo:
 """
 languages = ["fr", "de", "it", "en"]
 
-wikidata_dhs_links = pd.read_csv("../wikidata_dhs_linking/wikidata_dhs_wikipedia_articles_gndid_instanceof.csv")
+wikidata_dhs_links = pd.read_csv(S1_WIKIDATA_DHS_WIKIPEDIA_LINKS)
 articles_in_wikidata_ids = set(wikidata_dhs_links.dhsid)
 articles_in_wikipedia_by_lang_ids = {lang:set(wikidata_dhs_links.dhsid[~wikidata_dhs_links[f"article{lang}"].isnull()]) for lang in languages}
 
@@ -216,7 +218,7 @@ articles_in_wikipedia_by_category_and_lang = [
 
 prop_articles_in_wd_by_category = [
     (
-        categories[i][0],
+        S0_DHS_CATEGORIES[i],
         len(articles_in_out_wikidata_by_category[i][0]),
         len(articles_by_category[i]),
         round(len(articles_in_out_wikidata_by_category[i][0]) / float(len(articles_by_category[i])),2),
@@ -240,7 +242,7 @@ percent_articles_in_wd_by_category_plot.set(title = "Proportion of DHS articles,
 plt.gcf().set_figwidth(6) # default: 6.4
 plt.gcf().set_figheight(4) # default: 4
 plt.xticks(rotation=0)
-plt.gcf().savefig("percent_articles_in_wd_by_category.png")
+plt.gcf().savefig(s0_png_percent_articles_in_wd_by_category)
 
 print(f"""Proportion of DHS articles, by category, covered in different languages of wikipedia:
 {prop_articles_in_wd_by_category}

@@ -14,7 +14,6 @@ seed(54321)
 
 sampling_language="de" # determines from which language corpus we'll chose article to load
 
-ARTICLES_SAMPLE_DIRECTORY = f"entity-fishing/data/corpus/corpus-long/dhs-training-<LANGUAGE>/RawText/"
 
 sampled_languages = ["de", "fr"]
 

@@ -5,8 +5,12 @@ import re
 import pandas as pd
 from webbrowser import open as op
 
+import sys
+sys.path.append("../../src")
+sys.path.append("../../scripts")
+
 from dhs_scraper import DhsArticle
-from utils import localize, DHS_DUMP_JSONL_FILE, CATEGORIES
+from file_paths import localize, S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES
 
 seed(54367)
 
@@ -17,13 +21,13 @@ lng="fr"
 
 # %%
 
-all_ids = list(DhsArticle.get_articles_ids(localize(DHS_DUMP_JSONL_FILE, lng)))
+all_ids = list(DhsArticle.get_articles_ids(localize(S0_JSONL_ALL_ARTICLES_FILE, lng)))
 sampled_ids = sample(all_ids, 1000)
 
 # %%
 
 print("loading articles...")
-articles = list(DhsArticle.load_articles_from_jsonl(localize(DHS_DUMP_JSONL_FILE, lng)))#, sampled_ids))
+articles = list(DhsArticle.load_articles_from_jsonl(localize(S0_JSONL_ALL_ARTICLES_FILE, lng)))#, sampled_ids))
 print("articles loaded!")
 
 # %%
@@ -129,7 +133,7 @@ two_most[21][1] # -> "Rodolphe Louis de Goumoëns" is a challenging example: L. 
 
 # %%
 
-articles_ids_by_category = [(c, set(DhsArticle.get_articles_ids(p))) for c,p in CATEGORIES]
+articles_ids_by_category = [(c, set(DhsArticle.get_articles_ids(localize(p, lng)))) for c,p in S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items()]
 
 print("categories of articles with two most likely text initials in title:")
 for c, ids in articles_ids_by_category:

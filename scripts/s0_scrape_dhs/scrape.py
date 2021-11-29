@@ -1,8 +1,12 @@
 # %%
 
 
-from dhs_scraper import DhsArticle, stream_to_jsonl
+import sys
+sys.path.append("../../src")
+sys.path.append("../../scripts")
 
+from dhs_scraper import DhsArticle, stream_to_jsonl
+from file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, S0_THEMES_CATEGORY, S0_PEOPLE_CATEGORY, S0_FAMILIES_CATEGORY, S0_SPATIAL_CATEGORY, localize
 
 # %% scrape args
 
@@ -16,7 +20,8 @@ skip_duplicates=True
 
 # %% Scrape articles content
 if False:
-    jsonl_articles_content_file = f"data/dhs_{language}_all_articles_content.jsonl"
+
+    jsonl_articles_content_file = localize(S0_JSONL_ALL_ARTICLES_FILE, language)
     already_visited_ids = set(DhsArticle.get_articles_ids(jsonl_articles_content_file))
     stream_to_jsonl(
         jsonl_articles_content_file,
@@ -35,7 +40,7 @@ if False:
 # %% Scrape by categories (available from top of DHS): themes, people, families, space
 
 # themes
-jsonl_themes_articles_file = f"data/dhs_fr_category_themes_articles.jsonl"
+jsonl_themes_articles_file = localize(S0_JSONL_ARTICLES_BY_CATEGORIES_FILES[S0_THEMES_CATEGORY], language)
 already_visited_themes_ids = set(DhsArticle.get_articles_ids(jsonl_themes_articles_file))
 stream_to_jsonl(
     jsonl_themes_articles_file,
@@ -52,7 +57,7 @@ stream_to_jsonl(
 # %%
 
 # people
-jsonl_people_articles_file = f"data/dhs_fr_category_people_articles.jsonl"
+jsonl_people_articles_file = localize(S0_JSONL_ARTICLES_BY_CATEGORIES_FILES[S0_PEOPLE_CATEGORY], language)
 already_visited_people_ids = set(DhsArticle.get_articles_ids(jsonl_people_articles_file))
 stream_to_jsonl(
     jsonl_people_articles_file,
@@ -68,7 +73,7 @@ stream_to_jsonl(
 # %%
 
 # families
-jsonl_families_articles_file = f"data/dhs_fr_category_families_articles.jsonl"
+jsonl_families_articles_file = localize(S0_JSONL_ARTICLES_BY_CATEGORIES_FILES[S0_FAMILIES_CATEGORY], language)
 already_visited_families_ids = set(DhsArticle.get_articles_ids(jsonl_families_articles_file))
 stream_to_jsonl(
     jsonl_families_articles_file,
@@ -84,7 +89,7 @@ stream_to_jsonl(
 # %%
 
 # spatial
-jsonl_spatial_articles_file = f"data/dhs_fr_category_spatial_articles.jsonl"
+jsonl_spatial_articles_file = localize(S0_JSONL_ARTICLES_BY_CATEGORIES_FILES[S0_SPATIAL_CATEGORY], language)
 already_visited_spatial_ids = set(DhsArticle.get_articles_ids(jsonl_spatial_articles_file))
 stream_to_jsonl(
     jsonl_spatial_articles_file,
