@@ -7,8 +7,12 @@ from random import randint, seed
 
 import requests as r
 
+import sys
+sys.path.append("../../src")
+sys.path.append("../../scripts")
+
 from dhs_scraper import DhsArticle, TOTAL_NB_DHS_ARTICLES
-from utils import DHS_DUMP_JSONL_FILE, localize
+from file_paths import S0_JSONL_ALL_ARTICLES_FILE, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, localize
 
 seed(54321)
 
@@ -29,23 +33,24 @@ for i in range(nb_articles_sampled):
 
 # %%
 
-all_ids = list(DhsArticle.get_articles_ids(localize(DHS_DUMP_JSONL_FILE, sampling_language)))
+all_ids = list(DhsArticle.get_articles_ids(localize(S0_JSONL_ALL_ARTICLES_FILE, sampling_language)))
 
 new_articles_ids = [all_ids[i] for i in articles_indices]
 
 # %% Write text to corresponding RawText folder
 
 sampled_articles_by_language = {
-    lng: [a for a in DhsArticle.load_articles_from_jsonl(localize(DHS_DUMP_JSONL_FILE, lng),new_articles_ids)] 
+    lng: [a for a in DhsArticle.load_articles_from_jsonl(localize(S0_JSONL_ALL_ARTICLES_FILE, lng),new_articles_ids)] 
     for lng in sampled_languages   
 }
 
+# %%
 if __name__ =="__main__":
     print("ENTERING MAIN")
     for lng in sampled_languages:
         print(f"\n\nSampling articles for language {lng}\n=========================================")
         for a in sampled_articles_by_language[lng]:
-            with open(path.join(ARTICLES_SAMPLE_DIRECTORY.replace("<LANGUAGE>", lng),a.title+f".{lng}.txt"), "w") as rawtext_file:
+            with open(path.join(localize(S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, lng),a.title+f".{lng}.txt"), "w") as rawtext_file:
                 print(f"writing for article {a.title}")
                 rawtext_file.write(a.text)
 

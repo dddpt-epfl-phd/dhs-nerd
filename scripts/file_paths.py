@@ -1,4 +1,5 @@
 # all file paths relative to two folders up from the git repo root (../../path/from/git/repo/root)
+from logging import RootLogger
 from os import path
 from typing import Tuple
 
@@ -45,38 +46,19 @@ S1_DATA_FOLDER = path.join(DATA_FOLDER, "wikidata_dhs_linking")
 S1_WIKIDATA_DHS_WIKIPEDIA_LINKS = path.join(S1_DATA_FOLDER, "wikidata_dhs_wikipedia_articles_gndid_instanceof.csv")
 S1_WIKIDATA_DE_LABELS = path.join(S1_DATA_FOLDER, "wikidata_de_labels.csv")
 
+# s2_entity_fishing
+#####################
+S2_INCEPTION_DATA_FOLDER = path.join(DATA_FOLDER, "inception")
+S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER = path.join(DATA_FOLDER, "entity-fishing-evaluation")
+
+S2_ENTITY_FISHING_CORPUS_FOLDER = path.join(ROOT_FOLDER, f"entity-fishing/entity-fishing/data/corpus/corpus-long/dhs-training-<LANGUAGE>/")
+S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE = path.join(S2_ENTITY_FISHING_CORPUS_FOLDER,f"dhs-training-<LANGUAGE>.xml")
+S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER = path.join(S2_ENTITY_FISHING_CORPUS_FOLDER, "RawText/")
 
 
-# s2_entity_fishing/spacy_cassis_exploration
-'inception-annotation-2-11/Daniel de Chambrier.fr.txt/dddpt.xmi'
-
-# s2_entity_fishing/s0...py
-ARTICLES_SAMPLE_DIRECTORY = f"entity-fishing/data/corpus/corpus-long/dhs-training-<LANGUAGE>/RawText/"
-
-# s2_entity_fishing/utils.py
-JSON_DUMPS_DIR = "../scrape-dhs/data/"
-
-DHS_DUMP_JSONL_FILE = path.join(JSON_DUMPS_DIR, f"dhs_<LANGUAGE>_all_articles_content.jsonl")
-
-CATEGORIES = [
-    ("themes", path.join(JSON_DUMPS_DIR, f"dhs_<LANGUAGE>_category_themes_articles.jsonl")),
-    ("people", path.join(JSON_DUMPS_DIR, f"dhs_<LANGUAGE>_category_people_articles.jsonl")),
-    ("families", path.join(JSON_DUMPS_DIR, f"dhs_<LANGUAGE>_category_families_articles.jsonl")),
-    ("spatial", path.join(JSON_DUMPS_DIR, f"dhs_<LANGUAGE>_category_spatial_articles.jsonl"))
-]
-
-WIKIDATA_DHS_CSV_FILE = "../wikidata_dhs_linking/wikidata_dhs_wikipedia_articles_gndid.csv"
-
-
-ENTITY_FISHING_CORPUS_FOLDER = f"entity-fishing/data/corpus/corpus-long/dhs-training-<LANGUAGE>/"
-ENTITY_FISHING_ANNOTATION_OUTPUT_FILE = path.join(ENTITY_FISHING_CORPUS_FOLDER,f"dhs-training-<LANGUAGE>.xml")
-ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER = path.join(ENTITY_FISHING_CORPUS_FOLDER, "RawText/")
-
-SCORING_DATA_FOLDER = "scoring_data/"
-
-INCEPTION_IMPORT_FOLDER = "inception-import-xml/"
-INCEPTION_EXPORT_FOLDER = "inception-annotation-2-11"
-INCEPTION_USER_NAME = "dddpt"
+S2_INCEPTION_IMPORT_FOLDER = path.join(S2_INCEPTION_DATA_FOLDER, "inception-import-xml/")
+S2_INCEPTION_ANNOTATIONS_2_11_FOLDER = path.join(S2_INCEPTION_DATA_FOLDER, 'inception-annotation-2-11')
+S2_INCEPTION_USER_NAME = "dddpt"
 
 def localize(path, language):
     return path.replace("<LANGUAGE>", language)

@@ -1,14 +1,21 @@
 # %%
-from cassis import *
+from os import path
 
+from cassis import *
+ 
+import sys
+sys.path.append("../../src")
+sys.path.append("../../scripts")
+
+from file_paths import S2_INCEPTION_ANNOTATIONS_2_11_FOLDER
 # %%
 
-with open('inception-annotation-2-11/Daniel de Chambrier.fr.txt/TypeSystem.xml', 'rb') as f:
+with open(path.join(S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, 'Daniel de Chambrier.fr.txt/TypeSystem.xml'), 'rb') as f:
     typesystem = load_typesystem(f)
 
 # %%
 
-with open('inception-annotation-2-11/Daniel de Chambrier.fr.txt/dddpt.xmi', 'rb') as f:
+with open(path.join(S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, 'Daniel de Chambrier.fr.txt/dddpt.xmi'), 'rb') as f:
    cas = load_cas_from_xmi(f, typesystem=typesystem)
 # %%
 

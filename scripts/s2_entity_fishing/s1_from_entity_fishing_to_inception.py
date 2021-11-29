@@ -1,10 +1,16 @@
+# %%
 from os import path
 
 from lxml import etree
 import spacy
 
+import sys
+sys.path.append("../../src")
+sys.path.append("../../scripts")
+
 from inception_fishing import *
-from utils import *
+from utils import spacy_models_by_lng
+from file_paths import S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER, S2_INCEPTION_IMPORT_FOLDER, localize
 
 # %%
 
@@ -14,14 +20,15 @@ sampled_languages = ["fr", "de"]
 
 predicted_corpora_by_lng = dict()
 
+# %%
 for language in sampled_languages:
 
 
 
-    # %% importing from EF
-    with open(localize(ENTITY_FISHING_ANNOTATION_OUTPUT_FILE, language)) as entity_fishing_xml_file:
+# %% importing from EF
+    with open(localize(S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE, language)) as entity_fishing_xml_file:
         entity_fishing_xml_root = etree.parse(entity_fishing_xml_file).getroot()
-        corpus = Corpus.entity_fishing_from_tag_and_corpus(entity_fishing_xml_root, localize(ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, language))
+        corpus = Corpus.entity_fishing_from_tag_and_corpus(entity_fishing_xml_root, localize(S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, language))
 
     predicted_corpora_by_lng[language] = corpus
 
@@ -37,7 +44,7 @@ for language in sampled_languages:
     if __name__=="__main__":
         for d in corpus.documents:
             print(f"doing Document  {d.name}")
-            d.inception_to_xml_file(INCEPTION_IMPORT_FOLDER, force_single_sentence=True, tagset_tag_str=inception_tagset_tag_str, tag_name="custom:Entityfishinglayer", identifier_attribute_name="wikidataidentifier")
+            d.inception_to_xml_file(S2_INCEPTION_IMPORT_FOLDER, force_single_sentence=True, tagset_tag_str=inception_tagset_tag_str, tag_name="custom:Entityfishinglayer", identifier_attribute_name="wikidataidentifier")
     # %%
 
 
@@ -49,6 +56,8 @@ for language in sampled_languages:
 
     if __name__=="__main__":
         corpus.clef_hipe_scorer_to_conllu_tsv(
-            path.join(SCORING_DATA_FOLDER,f"dhs-{language}-pred-clef-hipe-scorer-conllu.tsv"),
+            path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER,f"dhs-{language}-pred-clef-hipe-scorer-conllu.tsv"),
             nlp, language=language
         )
+
+# %%

@@ -5,15 +5,20 @@ from csv import DictReader
 
 import spacy
 
+import sys
+sys.path.append("../../src")
+sys.path.append("../../scripts")
+
 from inception_fishing import Corpus, Document, Annotation
 from s1_from_entity_fishing_to_inception import predicted_corpora_by_lng
 from s2_from_inception_annotation_to_entity_fishing import annotated_corpora_by_lng
-from utils import spacy_models_by_lng, INCEPTION_EXPORT_FOLDER, SCORING_DATA_FOLDER, WIKIDATA_DHS_CSV_FILE
+from utils import spacy_models_by_lng
+from file_paths import S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER
 # %%
 
 
 
-with open(WIKIDATA_DHS_CSV_FILE) as file:
+with open(S1_WIKIDATA_DHS_WIKIPEDIA_LINKS) as file:
     wikidata_entities = [ r for r in DictReader(file)]
 dhs_wikidata_entities = set(e["item"] for e in wikidata_entities)
 dhs_wikipedia_entities_by_lng = {
@@ -38,7 +43,7 @@ def create_filtered_true_pred_tsv(pred_corpus, true_corpus, nlp, wikidata_entiti
         d.filter_annotations(lambda a: a.wikidata_entity_url in wikidata_entities_ids_to_keep)
 
     pred_corpus_filtered.clef_hipe_scorer_to_conllu_tsv(
-        path.join(SCORING_DATA_FOLDER,pred_corpus_filtered.name+f"-clef-hipe-scorer-conllu.tsv"),
+        path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER,pred_corpus_filtered.name+f"-clef-hipe-scorer-conllu.tsv"),
         nlp, language=language
     )
 
@@ -47,7 +52,7 @@ def create_filtered_true_pred_tsv(pred_corpus, true_corpus, nlp, wikidata_entiti
     for d in true_corpus_filtered.documents:
         d.filter_annotations(lambda a: a.wikidata_entity_url in wikidata_entities_ids_to_keep)
     true_corpus_filtered.clef_hipe_scorer_to_conllu_tsv(
-        path.join(SCORING_DATA_FOLDER,true_corpus_filtered.name+"-clef-hipe-scorer-conllu.tsv"),
+        path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER,true_corpus_filtered.name+"-clef-hipe-scorer-conllu.tsv"),
         nlp, language=language
     )
     return (pred_corpus_filtered, true_corpus_filtered)

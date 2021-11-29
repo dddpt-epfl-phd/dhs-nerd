@@ -6,7 +6,8 @@ sys.path.append("../../src")
 sys.path.append("../../scripts")
 
 from inception_fishing import *
-from utils import INCEPTION_EXPORT_FOLDER, INCEPTION_USER_NAME, spacy_models_by_lng, SCORING_DATA_FOLDER
+from utils import spacy_models_by_lng
+from file_paths import  S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, S2_INCEPTION_USER_NAME, S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER
 
 # %% load original DhsArticles
 
@@ -25,8 +26,8 @@ sampled_languages = ["fr", "de"]
 
 annotated_corpora_by_lng = Corpus.inception_from_directory(
     "inception-annotation-2-11",
-    INCEPTION_EXPORT_FOLDER,
-    INCEPTION_USER_NAME
+    S2_INCEPTION_ANNOTATIONS_2_11_FOLDER,
+    S2_INCEPTION_USER_NAME
 )
 
 annotated_corpora_by_lng = {
@@ -86,9 +87,9 @@ for language in sampled_languages:
     if __name__=="__main__":
 
         corpus.clef_hipe_scorer_to_conllu_tsv(
-            path.join(SCORING_DATA_FOLDER,corpus.name+"-clef-hipe-scorer-conllu.tsv"),
+            path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER,corpus.name+"-clef-hipe-scorer-conllu.tsv"),
             nlp, language=language
         )
 
 
-        corpus.entity_fishing_to_xml_file(path.join(INCEPTION_EXPORT_FOLDER,corpus.name+"-entity-fishing-scorer.xml"))
+        corpus.entity_fishing_to_xml_file(path.join(S2_INCEPTION_ANNOTATIONS_2_11_FOLDER,corpus.name+"-entity-fishing-scorer.xml"))
