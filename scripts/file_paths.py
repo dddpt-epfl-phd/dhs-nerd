@@ -1,7 +1,9 @@
-# all file paths relative to two folders up from the git repo root (../../path/from/git/repo/root)
-from logging import RootLogger
 from os import path
-from typing import Tuple
+
+"""
+This file centralizes paths to data files/folders for the whole project.
+Paths are always relative to two folders down from root (-> scripts are run in their respective ./scripts/<step>/ folder)
+"""
 
 # scripts are always assumed to be two directories down from root
 ROOT_FOLDER = "../.."
