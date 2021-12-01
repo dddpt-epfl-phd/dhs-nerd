@@ -10,7 +10,7 @@ from file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ARTICLES_BY_CATEGORI
 
 # %% scrape args
 
-language="fr"
+language="de"
 
 buffer_size = 100
 max_nb_articles_per_letter = None
