@@ -7,8 +7,18 @@
  * - display at token-level: predicted-true, predicted-false, unpredicted-true + labels
  * - 
  * new proposition:
- * - replace Annotation with conllu-style Token
- * - visualizeAnnotations()->visualizeDocument() takes list of Tokens with a visualizationHtmlClasses property
+ * - parse conllu files in list of js token obj
+ * - functions:
+ *      + visualizeDocument() shows list of tokens with html-classes
+ *      + comparePredTrue() combine pred&true lists of tokens in single token list
+ *      + visualizePredTrueComparison() combines both functions for the best
+ * - token: unclassed JS obj with fields
+ *      - text: text of token
+ *      - EndOfLine: for <br/>
+ *      - endOfParagraph (optional) for <p>...</p>
+ * - visualizeDocument() arguments:
+ *      + tokens, with visualizationHtmlClasses property
+ *      + relevantFields, list of fields to display for each token
  */
 
 function parseConlluTsv(conlluTsvStr){
@@ -20,8 +30,8 @@ class Annotation{
      * 
      * @param {*} start 
      * @param {*} end not inclusive
-     * @param {*} fields 
      * @param {*} mention 
+     * @param {*} fields 
      */
     constructor(start, end, fields, mention=""){
         this.start = start
