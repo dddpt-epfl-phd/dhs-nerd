@@ -16,3 +16,5 @@ grisp/
 **/*.xml
 **/*.png
 **/*.pdf
+
+**/.ipynb_checkpoints
