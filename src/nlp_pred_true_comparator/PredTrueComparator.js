@@ -28,25 +28,25 @@
 
 
 
-VIZ_HTML_CLASSES_PROPERTY = "visualizationHtmlClasses"
-END_OF_LINE_PROPERTY = "EndOfLine"
-END_OF_PARAGRAPH_PROPERTY = "EndOfParagraph"
+var VIZ_HTML_CLASSES_PROPERTY = "visualizationHtmlClasses"
+var END_OF_LINE_PROPERTY = "EndOfLine"
+var END_OF_PARAGRAPH_PROPERTY = "EndOfParagraph"
 
 // css classes for tokens
-CSS_AS_STRING = '\n.nlp-token-snapshot-div{\n    height: 2.5em;\n    margin-bottom: 1em;\n    background-color: #cfe2ff;\n    border: 1px solid #b6d4fe;\n    color: #084298;\n    padding: 0.5em;\n    border-radius: 5px;\n}\n\n.nlp-labelled-token {\n    border-radius: 3px;\n    padding: 1px 3px 2px;\n    font-weight: bold;\n    /*color: #ffffff;*/\n}\n.nlp-active-token{\n    box-shadow: 0px 3px 4px 2px #aaaaaa;\n}\n\n/*.true-negative {\n    background-color: beige;\n}*/\n\n\n.true-positive {\n    color: #0f5132;\n    background-color: #d1e7dd;\n}\n\n\n.false-negative {\n    color: #842029;\n    background-color: #f0a8ae;\n}\n\n\n.false-positive {\n    color: #990099;\n    background-color: #ffccff;\n\n}\n\n\n.wrongly-predicted-positive {\n    color: #664d03;\n    background-color: #ffe799;\n}\n\n'
-NLP_LABELLED_TOKEN_CLASS = "nlp-labelled-token"
-NLP_ACTIVE_TOKEN_CLASS = "nlp-active-token"
+var CSS_AS_STRING = '\n.nlp-token-snapshot-div{\n    height: 2.5em;\n    margin-bottom: 1em;\n    background-color: #cfe2ff;\n    border: 1px solid #b6d4fe;\n    color: #084298;\n    padding: 0.5em;\n    border-radius: 5px;\n}\n\n.nlp-labelled-token {\n    border-radius: 3px;\n    padding: 1px 3px 2px;\n    font-weight: bold;\n    /*color: #ffffff;*/\n}\n.nlp-active-token{\n    box-shadow: 0px 3px 4px 2px #aaaaaa;\n}\n\n/*.true-negative {\n    background-color: beige;\n}*/\n\n\n.true-positive {\n    color: #0f5132;\n    background-color: #d1e7dd;\n}\n\n\n.false-negative {\n    color: #842029;\n    background-color: #f0a8ae;\n}\n\n\n.false-positive {\n    color: #990099;\n    background-color: #ffccff;\n\n}\n\n\n.wrongly-predicted-positive {\n    color: #664d03;\n    background-color: #ffe799;\n}\n\n'
+var NLP_LABELLED_TOKEN_CLASS = "nlp-labelled-token"
+var NLP_ACTIVE_TOKEN_CLASS = "nlp-active-token"
 
 // css classes for token prediction status
-TRUE_NEGATIVE_LABEL = "true-negative"
-TRUE_POSITIVE_LABEL = "true-positive"
-FALSE_NEGATIVE_LABEL = "false-negative"
-FALSE_POSITIVE_LABEL = "false-positive"
-WRONGLY_PREDICTED_POSITIVE_LABEL = "wrongly-predicted-positive"
+var TRUE_NEGATIVE_LABEL = "true-negative"
+var TRUE_POSITIVE_LABEL = "true-positive"
+var FALSE_NEGATIVE_LABEL = "false-negative"
+var FALSE_POSITIVE_LABEL = "false-positive"
+var WRONGLY_PREDICTED_POSITIVE_LABEL = "wrongly-predicted-positive"
 
 function checkTokensAreIdentical(tokens1, tokens2){
     if(tokens1.length != tokens2.length){ return false }
-    for(i=0; i<tokens1.length; i++){
+    for(let i=0; i<tokens1.length; i++){
         if(tokens1[i].text != tokens2[i].text){ return false }
     }
     return true
@@ -115,17 +115,17 @@ function combinePredTrue(predTokens, trueTokens, predField, relevantFields=[]){
 }
 
 function span(content, cssClasses=[], attributes={}){
-    attributesString = Object.keys(attributes).map(attr=> `${attr}="${attributes[attr]}"`).join(" ")
-    text = `<span class="${cssClasses.join(" ")}" ${attributesString}>${content}</span>`
+    const attributesString = Object.keys(attributes).map(attr=> `${attr}="${attributes[attr]}"`).join(" ")
+    const text = `<span class="${cssClasses.join(" ")}" ${attributesString}>${content}</span>`
     return text
 }
 
 function tokenToText(token, relevantFields=[], onMouseOver=""){
-    cssClasses = VIZ_HTML_CLASSES_PROPERTY in token? token[VIZ_HTML_CLASSES_PROPERTY] : []
+    const cssClasses = VIZ_HTML_CLASSES_PROPERTY in token? token[VIZ_HTML_CLASSES_PROPERTY] : []
     if(!cssClasses.includes(TRUE_NEGATIVE_LABEL)){
         cssClasses.push(NLP_LABELLED_TOKEN_CLASS)
     }
-    attributes = {
+    const attributes = {
         "onmouseover": onMouseOver
     }
     relevantFields.forEach(f => {
@@ -150,53 +150,53 @@ function visualizeDocument(tokens, relevantFields=[], onTokenMouseOver = ""){
     return "<div><p>" + tokensStr + "</p></div>"
 }
 
-activeTokenHtmlTag = {}
+var activeTokenHtmlTag = {}
 function updateTokenPredTrueComparisonSnapshot(snapshotDivId, tokenHtmlTag, predField){
-    const snapShotDiv = document.getElementById(snapshotDivId)
-    document.tokenHtmlTag = tokenHtmlTag
-    document.snapShotDiv = snapShotDiv
-    if( snapShotDiv!== null ){
-        const trueValue = tokenHtmlTag.dataset[predField]
-        const predValue = tokenHtmlTag.dataset["pred"+predField]
-        console.log("updateTokenPredTrueComparisonSnapshot() predField: ", predField, ", tokenHtmlTag.dataset: ", tokenHtmlTag.dataset)
+    if( !htmlTagHasClass(tokenHtmlTag, TRUE_NEGATIVE_LABEL) ){
+        const snapShotDiv = document.getElementById(snapshotDivId)
+        document.tokenHtmlTag = tokenHtmlTag
+        document.snapShotDiv = snapShotDiv
+        if( snapShotDiv!== null ){
+            const trueValue = tokenHtmlTag.dataset[predField]
+            const predValue = tokenHtmlTag.dataset["pred"+predField]
+            console.log("updateTokenPredTrueComparisonSnapshot() predField: ", predField, ", tokenHtmlTag.dataset: ", tokenHtmlTag.dataset)
 
-        //filling prediction part:
-        let predTrueComparisonTag = ""
+            //filling prediction part:
+            let predTrueComparisonTag = ""
 
-        if( htmlTagHasClass(tokenHtmlTag, TRUE_NEGATIVE_LABEL) ){
-            predTrueComparisonTag = span(
-                tokenHtmlTag.innerHTML,
-                [TRUE_NEGATIVE_LABEL]
-            ) + ` was <strong>correctly</strong> predicted as nothing.`
-        } else if( htmlTagHasClass(tokenHtmlTag, TRUE_POSITIVE_LABEL) ){
-            predTrueComparisonTag = span(
-                tokenHtmlTag.innerHTML,
-                [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
-            ) + ` was <strong>correctly</strong> predicted to ` +
-            span(predValue, [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS])
-        } else if( htmlTagHasClass(tokenHtmlTag, FALSE_NEGATIVE_LABEL) ){
-            predTrueComparisonTag = span(
-                tokenHtmlTag.innerHTML,
-                [FALSE_NEGATIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
-            ) + ` was <strong>missed</strong>, should have been ` +
-            span(trueValue, [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS])
-        } else if( htmlTagHasClass(tokenHtmlTag, FALSE_POSITIVE_LABEL) ){
-            predTrueComparisonTag = span(
-                tokenHtmlTag.innerHTML,
-                [FALSE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
-            ) + ` was <strong>superfluously predicted</strong> to ` +
-            span(predValue, [FALSE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS]) +
-            `, there is nothing to see here.`
-        } else if( htmlTagHasClass(tokenHtmlTag, WRONGLY_PREDICTED_POSITIVE_LABEL) ){
-            predTrueComparisonTag = span(
-                tokenHtmlTag.innerHTML,
-                [WRONGLY_PREDICTED_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
-            ) + ` was <strong>wrongly</strong> predicted to ` +
-            span(predValue, [WRONGLY_PREDICTED_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS]) +
-            `, should have been ` +
-            span(trueValue, [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS])
-        }
-        if( !htmlTagHasClass(tokenHtmlTag, TRUE_NEGATIVE_LABEL) ){
+            if( htmlTagHasClass(tokenHtmlTag, TRUE_NEGATIVE_LABEL) ){
+                predTrueComparisonTag = span(
+                    tokenHtmlTag.innerHTML,
+                    [TRUE_NEGATIVE_LABEL]
+                ) + ` was <strong>correctly</strong> predicted as nothing.`
+            } else if( htmlTagHasClass(tokenHtmlTag, TRUE_POSITIVE_LABEL) ){
+                predTrueComparisonTag = span(
+                    tokenHtmlTag.innerHTML,
+                    [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
+                ) + ` was <strong>correctly</strong> predicted to ` +
+                span(predValue, [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS])
+            } else if( htmlTagHasClass(tokenHtmlTag, FALSE_NEGATIVE_LABEL) ){
+                predTrueComparisonTag = span(
+                    tokenHtmlTag.innerHTML,
+                    [FALSE_NEGATIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
+                ) + ` was <strong>missed</strong>, should have been ` +
+                span(trueValue, [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS])
+            } else if( htmlTagHasClass(tokenHtmlTag, FALSE_POSITIVE_LABEL) ){
+                predTrueComparisonTag = span(
+                    tokenHtmlTag.innerHTML,
+                    [FALSE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
+                ) + ` was <strong>superfluously predicted</strong> to ` +
+                span(predValue, [FALSE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS]) +
+                `, there is nothing to see here.`
+            } else if( htmlTagHasClass(tokenHtmlTag, WRONGLY_PREDICTED_POSITIVE_LABEL) ){
+                predTrueComparisonTag = span(
+                    tokenHtmlTag.innerHTML,
+                    [WRONGLY_PREDICTED_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
+                ) + ` was <strong>wrongly</strong> predicted to ` +
+                span(predValue, [WRONGLY_PREDICTED_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS]) +
+                `, should have been ` +
+                span(trueValue, [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS])
+            }
             snapShotDiv.innerHTML = predTrueComparisonTag
             if(activeTokenHtmlTag[snapshotDivId]){
                 activeTokenHtmlTag[snapshotDivId].classList.remove(NLP_ACTIVE_TOKEN_CLASS)
@@ -227,8 +227,9 @@ function visualizePredTrueComparison(predTokens, trueTokens, predField, relevant
     
     const otmo = `updateTokenPredTrueComparisonSnapshot('${snapShotDivId}', this, '${newpredField}')`
     
+    document.updateTokenPredTrueComparisonSnapshot = updateTokenPredTrueComparisonSnapshot
     relevantFields.push("pred"+newpredField)
-    const contentDiv = visualizeDocument(tokens, relevantFields, onTokenMouseOver = otmo)
+    const contentDiv = visualizeDocument(tokens, relevantFields, otmo)
     console.log("visualizePredTrueComparison(), snapShotDiv: ", snapShotDiv, ", contentDiv: ", contentDiv)
     const styleTag = `<style>${CSS_AS_STRING}</style>`
     return `<div>\n`+styleTag+"\n"+snapShotDiv+"\n"+contentDiv+"</div>"
