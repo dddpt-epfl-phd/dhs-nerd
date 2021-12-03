@@ -7,7 +7,7 @@ sys.path.append("../../scripts")
 
 from inception_fishing import *
 from utils import spacy_models_by_lng
-from file_paths import  S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, S2_INCEPTION_USER_NAME, S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER
+from file_paths import  S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, S2_INCEPTION_USER_NAME, S2_CLEF_HIPE_TRUE_FILE, localize
 
 # %% load original DhsArticles
 
@@ -87,7 +87,7 @@ for language in sampled_languages:
     if __name__=="__main__":
 
         corpus.clef_hipe_scorer_to_conllu_tsv(
-            path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER,corpus.name+"-clef-hipe-scorer-conllu.tsv"),
+            localize(S2_CLEF_HIPE_TRUE_FILE, language),
             nlp, language=language
         )
 

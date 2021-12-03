@@ -62,5 +62,12 @@ S2_INCEPTION_IMPORT_FOLDER = path.join(S2_INCEPTION_DATA_FOLDER, "inception-impo
 S2_INCEPTION_ANNOTATIONS_2_11_FOLDER = path.join(S2_INCEPTION_DATA_FOLDER, 'inception-annotation-2-11')
 S2_INCEPTION_USER_NAME = "dddpt"
 
+
+
+S2_CLEF_HIPE_FILE_SUFFIX = "-clef-hipe-scorer-conllu.tsv"
+S2_CLEF_HIPE_PRED_FILE = path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER,f"dhs-<LANGUAGE>-pred"+S2_CLEF_HIPE_FILE_SUFFIX)
+S2_CLEF_HIPE_TRUE_FILE = path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER,f"dhs-<LANGUAGE>-true"+S2_CLEF_HIPE_FILE_SUFFIX)
+
+
 def localize(path, language):
     return path.replace("<LANGUAGE>", language)

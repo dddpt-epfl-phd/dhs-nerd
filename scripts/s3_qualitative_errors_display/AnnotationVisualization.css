@@ -1,0 +1,50 @@
+
+.nlp-token-snapshot-div{
+    height: 2.5em;
+    margin-bottom: 1em;
+    background-color: #cfe2ff;
+    border: 1px solid #b6d4fe;
+    color: #084298;
+    padding: 0.5em;
+    border-radius: 5px;
+}
+
+.nlp-labelled-token {
+    border-radius: 3px;
+    padding: 1px 3px 2px;
+    font-weight: bold;
+    /*color: #ffffff;*/
+}
+.nlp-active-token{
+    box-shadow: 0px 3px 4px 2px #aaaaaa;
+}
+
+/*.true-negative {
+    background-color: beige;
+}*/
+
+
+.true-positive {
+    color: #0f5132;
+    background-color: #d1e7dd;
+}
+
+
+.false-negative {
+    color: #842029;
+    background-color: #f0a8ae;
+}
+
+
+.false-positive {
+    color: #990099;
+    background-color: #ffccff;
+
+}
+
+
+.wrongly-predicted-positive {
+    color: #664d03;
+    background-color: #ffe799;
+}
+
