@@ -219,12 +219,24 @@ function getPredTrueComparisonTag(predValue, trueValue, nlpStatus, tokenText){
     return predTrueComparisonTag
 }
 
+function getPredTrueRelevantFieldsTableHtml(predTrueToken, relevantFields){
+    console.log("getPredTrueRelevantFieldsTableHtml() predTrueToken: ",predTrueToken,", relevantFields: ", relevantFields)
+    if( relevantFields.length==0 ){
+        return ""
+    }
+    return "<table>"+relevantFields.map(rf => "<tr>"+
+            "<td><strong>"+rf+":</strong></td>"+
+            "<td class='relevant-field-true'>"+predTrueToken.true[rf]+"</td>"+
+            "<td class='relevant-field-pred'>(pred: "+predTrueToken.pred[rf]+")</td>"+"</tr>"
+    ).join("\n")+"</table>"
+}
+
 var activeTokenHtmlTag = {}
-function updateTokenPredTrueComparisonSnapshot(snapshotDivId, tokenHtmlTag){
+function updateTokenPredTrueComparisonSnapshot(snapshotDivId, tokenHtmlTag, relevantFields=[]){
+    console.log("updateTokenPredTrueComparisonSnapshot() relevantFields: ", relevantFields, ", tokenHtmlTag.dataset: ", tokenHtmlTag.dataset, ", tokenHtmlTag.dataset[GLOBAL_TOKENS_INDEX_PROP]: ", tokenHtmlTag.dataset[GLOBAL_TOKENS_INDEX_PROP], ", token: ", globalTokens[tokenHtmlTag.dataset[GLOBAL_TOKENS_INDEX_PROP]])
     if( !tokenHtmlTag.classList.contains(TRUE_NEGATIVE_LABEL) ){
         const snapShotDiv = document.getElementById(snapshotDivId)
         if( snapShotDiv!== null ){
-            console.log("updateTokenPredTrueComparisonSnapshot() tokenHtmlTag.dataset: ", tokenHtmlTag.dataset, ", tokenHtmlTag.dataset[GLOBAL_TOKENS_INDEX_PROP]: ", tokenHtmlTag.dataset[GLOBAL_TOKENS_INDEX_PROP], ", token: ", globalTokens[tokenHtmlTag.dataset[GLOBAL_TOKENS_INDEX_PROP]])
             const token = globalTokens[tokenHtmlTag.dataset[GLOBAL_TOKENS_INDEX_PROP]]
             //console.log("updateTokenPredTrueComparisonSnapshot() tokenHtmlTag.dataset: ", tokenHtmlTag.dataset)
 
@@ -241,7 +253,14 @@ function updateTokenPredTrueComparisonSnapshot(snapshotDivId, tokenHtmlTag){
             }
             tokenHtmlTag.classList.add(NLP_ACTIVE_TOKEN_CLASS)
             if(!tokenHtmlTag.classList.contains(NLP_POPOVER_WRAPPER_CLASS)){
-                tokenHtmlTag.innerHTML = token.text + getPopoverContentTag(predTrueComparisonTag)
+
+                const predTrueRelevantFieldsTableHtml = getPredTrueRelevantFieldsTableHtml(token, relevantFields)
+                console.log("predTrueRelevantFieldsTableHtml: ", predTrueRelevantFieldsTableHtml)
+                tokenHtmlTag.innerHTML = token.text +
+                    getPopoverContentTag(
+                        `<div class="${SNAPSHOT_DIV_CLASS}">${predTrueComparisonTag}</div>`+
+                        predTrueRelevantFieldsTableHtml
+                    )
                 tokenHtmlTag.classList.add(NLP_POPOVER_WRAPPER_CLASS)
             }
             activeTokenHtmlTag[snapshotDivId] = tokenHtmlTag
@@ -251,7 +270,7 @@ function updateTokenPredTrueComparisonSnapshot(snapshotDivId, tokenHtmlTag){
 }
 
 function getPopoverContentTag(content){
-    return `<div class="${NLP_POPOVER_CONTENT_CLASS}"><div class="${SNAPSHOT_DIV_CLASS}">${content}</div></div>` 
+    return `<div class="${NLP_POPOVER_CONTENT_CLASS}">${content}</div>` 
 }
 
 function visualizePredTrueComparison(predTokens, trueTokens, predField, relevantFields=[]){
@@ -260,10 +279,11 @@ function visualizePredTrueComparison(predTokens, trueTokens, predField, relevant
     const snapShotDivId = "nlp-token-snapshot-div-"+ Math.floor(Math.random()*100000)
     const snapShotDiv =`<div id="${snapShotDivId}" class="${SNAPSHOT_DIV_CLASS}"></div>`
     const tokens = combinePredTrue(predTokens, trueTokens, predField)
-    console.log("visualizePredTrueComparison() combined tcorrectlyokens: ", tokens)
+    //console.log("visualizePredTrueComparison() combined tcorrectlyokens: ", tokens)
     
-    const otmo = `updateTokenPredTrueComparisonSnapshot('${snapShotDivId}', this)`
-    
+    const otmo = `updateTokenPredTrueComparisonSnapshot('${snapShotDivId}', this, ${JSON.stringify(relevantFields)})`.replaceAll('"', "'")
+    console.log("visualizePredTrueComparison() updateTokenPredTrueComparisonSnapshot str: ", otmo)
+
     document.updateTokenPredTrueComparisonSnapshot = updateTokenPredTrueComparisonSnapshot
     const contentDiv = visualizeDocument(tokens, relevantFields, otmo)
     console.log("visualizePredTrueComparison(), snapShotDiv: ", snapShotDiv, ", contentDiv: ", contentDiv)

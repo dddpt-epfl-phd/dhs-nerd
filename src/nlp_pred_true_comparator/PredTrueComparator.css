@@ -50,13 +50,16 @@
     background-color: #ffe799;
 }
 
+.relevant-field-pred{
+    color: #555555;
+}
+
 /* POPOVER */
 
 .popover-wrapper{
     position: relative;
     /*margin-top: 2.5rem;*/
     display: inline-block;
-    overflow: visible;
 }
 
 .popover-content {

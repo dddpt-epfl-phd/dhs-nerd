@@ -29,7 +29,7 @@ def compare_pred_true(pred_conllu, true_conllu, text_property, compare_property)
     predstr = str(pred_conllu).replace("\n", "")
     truestr = str(true_conllu).replace("\n", "")
     jsCode = css_string_var_declaration+pred_true_comparator_js_content+f'''
-    element.append(visualizePredTrueComparison({predstr}, {truestr}, "{compare_property}", []))'''
+    element.append(visualizePredTrueComparison({predstr}, {truestr}, "{compare_property}", ["NE-COARSE-LIT"]))'''
     display(Javascript(
         jsCode
     ))
