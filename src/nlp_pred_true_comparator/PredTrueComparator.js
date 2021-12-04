@@ -32,6 +32,9 @@ var VIZ_HTML_CLASSES_PROPERTY = "visualizationHtmlClasses"
 var END_OF_LINE_PROPERTY = "EndOfLine"
 var END_OF_PARAGRAPH_PROPERTY = "EndOfParagraph"
 
+var PRED_FIELD = "nlpComparePredTrueField"
+var SNAPSHOT_DIV_CLASS = "nlp-token-snapshot-div"
+
 // css classes for tokens
 var NLP_LABELLED_TOKEN_CLASS = "nlp-labelled-token"
 var NLP_ACTIVE_TOKEN_CLASS = "nlp-active-token"
@@ -42,6 +45,9 @@ var TRUE_POSITIVE_LABEL = "true-positive"
 var FALSE_NEGATIVE_LABEL = "false-negative"
 var FALSE_POSITIVE_LABEL = "false-positive"
 var WRONGLY_PREDICTED_POSITIVE_LABEL = "wrongly-predicted-positive"
+var NLP_STATUS_LABELS = [
+    TRUE_NEGATIVE_LABEL, TRUE_POSITIVE_LABEL, FALSE_NEGATIVE_LABEL, FALSE_POSITIVE_LABEL, WRONGLY_PREDICTED_POSITIVE_LABEL
+]
 
 function checkTokensAreIdentical(tokens1, tokens2){
     if(tokens1.length != tokens2.length){ return false }
@@ -51,12 +57,9 @@ function checkTokensAreIdentical(tokens1, tokens2){
     return true
 }
 
-function htmlTagHasClass(htmlTag, className) {
-    return (' ' + htmlTag.className + ' ').indexOf(' ' + className+ ' ') > -1;
-}
-
 function cleanTokenPredField(token, predField, newpredField){
     token[newpredField] = token[predField]
+    console.log("token: ", token, ", token[predField]:", token[predField], ", token[newpredField]: ", token[newpredField] )
     if(token[newpredField]=="" || token[newpredField]=="-"){
         token[newpredField] = undefined
     }
@@ -70,12 +73,12 @@ function cleanTokenPredField(token, predField, newpredField){
  * - wrongly-predicted-positive: wrong prediction on an entity-token
  * - false-negative: predicted nothing on an entity-token
  */
-function combinePredTrue(predTokens, trueTokens, predField, relevantFields=[]){
+function combinePredTrue(predTokens, trueTokens, relevantFields=[]){
     if( !checkTokensAreIdentical(predTokens, trueTokens) ){
         throw Error(`combinePredTrue() unidentical predTokens and trueTokens\npredTokens: ${predTokens}\ntrueTokens: ${trueTokens}`)
     }
-    if( !relevantFields.includes(predField)){
-        relevantFields.push(predField)
+    if( !relevantFields.includes(PRED_FIELD)){
+        relevantFields.push(PRED_FIELD)
     }
     
     trueTokens.forEach((trueToken,i)=>{
@@ -83,22 +86,22 @@ function combinePredTrue(predTokens, trueTokens, predField, relevantFields=[]){
         let predToken = predTokens[i]
 
         let predictionStatus = ""
-        if( trueToken[predField]!==undefined ){
-            if( predToken[predField]===undefined ){
+        if( trueToken[PRED_FIELD]!==undefined ){
+            if( predToken[PRED_FIELD]===undefined ){
                 predictionStatus = FALSE_NEGATIVE_LABEL
-            } else if( trueToken[predField] == predToken[predField] ){
+            } else if( trueToken[PRED_FIELD] == predToken[PRED_FIELD] ){
                 predictionStatus = TRUE_POSITIVE_LABEL
             } else{
                 predictionStatus = WRONGLY_PREDICTED_POSITIVE_LABEL
             }
         } else{
-            if( predToken[predField]!==undefined ){
+            if( predToken[PRED_FIELD]!==undefined ){
                 predictionStatus = FALSE_POSITIVE_LABEL
             } else{
                 predictionStatus = TRUE_NEGATIVE_LABEL
             }
         }
-        //console.log("combinePredTrue, token.text: ", trueToken.text, " true: ",trueToken[predField] , " pred:", predToken[predField], " true==pred: ", trueToken[predField] == predToken[predField], " predictionStatus:", predictionStatus)
+        //console.log("combinePredTrue, token.text: ", trueToken.text, " true: ",trueToken[PRED_FIELD] , " pred:", predToken[PRED_FIELD], " true==pred: ", trueToken[PRED_FIELD] == predToken[PRED_FIELD], " predictionStatus:", predictionStatus)
         //adding predToken relevant fields to trueToken
         relevantFields.forEach(rf => {
             trueToken["pred"+rf] = predToken[rf]
@@ -119,22 +122,27 @@ function span(content, cssClasses=[], attributes={}){
     return text
 }
 
-function tokenToText(token, relevantFields=[], onMouseOver=""){
+function tokenToHTML(token, relevantFields=[], onMouseOver=""){
     const cssClasses = VIZ_HTML_CLASSES_PROPERTY in token? token[VIZ_HTML_CLASSES_PROPERTY] : []
-    if(!cssClasses.includes(TRUE_NEGATIVE_LABEL)){
-        cssClasses.push(NLP_LABELLED_TOKEN_CLASS)
-    }
     const attributes = {
         "onmouseover": onMouseOver
     }
     relevantFields.forEach(f => {
         attributes[`data-${f}`] = token[f]
     })
+    
+
+    if(!cssClasses.includes(TRUE_NEGATIVE_LABEL)){
+        cssClasses.push(NLP_LABELLED_TOKEN_CLASS)
+
+        //attributes[`data-token`] = JSON.stringify(token).replaceAll('"', "'")
+    }
+    //const popoverStr = getPredTrueComparisonTag(predValue, trueValue, nlpStatus, tokenText)
     // dataString = relevantFields.map(f => `data-${f}="${token[f]}"`).join(" ")
     // ending = token[END_OF_PARAGRAPH_PROPERTY]? "</p>\n<p>" : (token[END_OF_LINE_PROPERTY]? "<br/>" : " ")
     // text = `<span class="${cssClasses}" ${dataString} onmouseover="${onMouseOver}">${token.text}</span>`+ending
     const tokenStr = span(token.text, cssClasses, attributes)
-    //console.log("tokenToText() token:", token, ", tokenStr: ", tokenStr)
+    console.log("tokenToHTML() token:", token, ", tokenStr: ", tokenStr)
     return tokenStr
 }
 
@@ -144,59 +152,69 @@ function tokenToText(token, relevantFields=[], onMouseOver=""){
  * @param {*} relevantFields 
  */
 function visualizeDocument(tokens, relevantFields=[], onTokenMouseOver = ""){
-    const tokensStr = tokens.map(t=> tokenToText(t, relevantFields, onTokenMouseOver)).join("\n")
+    const tokensStr = tokens.map(t=> tokenToHTML(t, relevantFields, onTokenMouseOver)).join("\n")
     console.log("visualizeDocument(), tokensStr: ", tokensStr)
     return "<div><p>" + tokensStr + "</p></div>"
 }
 
+function getNlpStatus(tokenHtmlTag){
+    return NLP_STATUS_LABELS.find(label => tokenHtmlTag.classList.contains(label))
+}
+
+function getPredTrueComparisonTag(predValue, trueValue, nlpStatus, tokenText){
+    let predTrueComparisonTag = ""
+
+    if( nlpStatus == TRUE_NEGATIVE_LABEL ){
+        predTrueComparisonTag = span(
+            tokenText,
+            [TRUE_NEGATIVE_LABEL]
+        ) + ` was <strong>correctly</strong> predicted as nothing.`
+    } else if( nlpStatus == TRUE_POSITIVE_LABEL ){
+        predTrueComparisonTag = span(
+            tokenText,
+            [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
+        ) + ` was <strong>correctly</strong> predicted to ` +
+        span(predValue, [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS])
+    } else if( nlpStatus == FALSE_NEGATIVE_LABEL ){
+        predTrueComparisonTag = span(
+            tokenText,
+            [FALSE_NEGATIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
+        ) + ` was <strong>missed</strong>, should have been ` +
+        span(trueValue, [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS])
+    } else if( nlpStatus == FALSE_POSITIVE_LABEL ){
+        predTrueComparisonTag = span(
+            tokenText,
+            [FALSE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
+        ) + ` was <strong>superfluously predicted</strong> to ` +
+        span(predValue, [FALSE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS]) +
+        `, there is nothing to see here.`
+    } else if( nlpStatus == WRONGLY_PREDICTED_POSITIVE_LABEL ){
+        predTrueComparisonTag = span(
+            tokenText,
+            [WRONGLY_PREDICTED_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
+        ) + ` was <strong>wrongly</strong> predicted to ` +
+        span(predValue, [WRONGLY_PREDICTED_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS]) +
+        `, should have been ` +
+        span(trueValue, [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS])
+    }
+    return predTrueComparisonTag
+}
+
 var activeTokenHtmlTag = {}
-function updateTokenPredTrueComparisonSnapshot(snapshotDivId, tokenHtmlTag, predField){
-    if( !htmlTagHasClass(tokenHtmlTag, TRUE_NEGATIVE_LABEL) ){
+function updateTokenPredTrueComparisonSnapshot(snapshotDivId, tokenHtmlTag){
+    if( !tokenHtmlTag.classList.contains(TRUE_NEGATIVE_LABEL) ){
         const snapShotDiv = document.getElementById(snapshotDivId)
-        document.tokenHtmlTag = tokenHtmlTag
-        document.snapShotDiv = snapShotDiv
         if( snapShotDiv!== null ){
-            const trueValue = tokenHtmlTag.dataset[predField]
-            const predValue = tokenHtmlTag.dataset["pred"+predField]
-            console.log("updateTokenPredTrueComparisonSnapshot() predField: ", predField, ", tokenHtmlTag.dataset: ", tokenHtmlTag.dataset)
+            console.log("updateTokenPredTrueComparisonSnapshot() PRED_FIELD: ", PRED_FIELD, ", tokenHtmlTag.dataset: ", tokenHtmlTag.dataset)
+            tokenHtmlTag.dataset["dudu"]=343
 
+            //console.log("updateTokenPredTrueComparisonSnapshot() parsed tokenHtmlTag.dataset[token]", JSON.parse(tokenHtmlTag.dataset["token"].replaceAll("'", '"')))
             //filling prediction part:
-            let predTrueComparisonTag = ""
-
-            if( htmlTagHasClass(tokenHtmlTag, TRUE_NEGATIVE_LABEL) ){
-                predTrueComparisonTag = span(
-                    tokenHtmlTag.innerHTML,
-                    [TRUE_NEGATIVE_LABEL]
-                ) + ` was <strong>correctly</strong> predicted as nothing.`
-            } else if( htmlTagHasClass(tokenHtmlTag, TRUE_POSITIVE_LABEL) ){
-                predTrueComparisonTag = span(
-                    tokenHtmlTag.innerHTML,
-                    [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
-                ) + ` was <strong>correctly</strong> predicted to ` +
-                span(predValue, [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS])
-            } else if( htmlTagHasClass(tokenHtmlTag, FALSE_NEGATIVE_LABEL) ){
-                predTrueComparisonTag = span(
-                    tokenHtmlTag.innerHTML,
-                    [FALSE_NEGATIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
-                ) + ` was <strong>missed</strong>, should have been ` +
-                span(trueValue, [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS])
-            } else if( htmlTagHasClass(tokenHtmlTag, FALSE_POSITIVE_LABEL) ){
-                predTrueComparisonTag = span(
-                    tokenHtmlTag.innerHTML,
-                    [FALSE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
-                ) + ` was <strong>superfluously predicted</strong> to ` +
-                span(predValue, [FALSE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS]) +
-                `, there is nothing to see here.`
-            } else if( htmlTagHasClass(tokenHtmlTag, WRONGLY_PREDICTED_POSITIVE_LABEL) ){
-                predTrueComparisonTag = span(
-                    tokenHtmlTag.innerHTML,
-                    [WRONGLY_PREDICTED_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS, NLP_ACTIVE_TOKEN_CLASS]
-                ) + ` was <strong>wrongly</strong> predicted to ` +
-                span(predValue, [WRONGLY_PREDICTED_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS]) +
-                `, should have been ` +
-                span(trueValue, [TRUE_POSITIVE_LABEL, NLP_LABELLED_TOKEN_CLASS])
-            }
-            snapShotDiv.innerHTML = predTrueComparisonTag
+            
+            //snapShotDiv.innerHTML = getPredTrueComparisonTag(tokenHtmlTag, PRED_FIELD)
+            const predValue = tokenHtmlTag.dataset["pred"+PRED_FIELD]
+            const trueValue = tokenHtmlTag.dataset[PRED_FIELD]
+            snapShotDiv.innerHTML = getPredTrueComparisonTag(predValue, trueValue, getNlpStatus(tokenHtmlTag), tokenHtmlTag.innerHTML)
             if(activeTokenHtmlTag[snapshotDivId]){
                 activeTokenHtmlTag[snapshotDivId].classList.remove(NLP_ACTIVE_TOKEN_CLASS)
             }
@@ -206,28 +224,32 @@ function updateTokenPredTrueComparisonSnapshot(snapshotDivId, tokenHtmlTag, pred
     }
 
 }
+
+function getPopoverContentTag(tokenHtmlTag){
+    '<div class="popover-content"></div>'
+}
+
 function visualizePredTrueComparison(predTokens, trueTokens, predField, relevantFields=[]){
-    const newpredField = predField.replaceAll(/\W/ig, "x").toLowerCase()
-    if( !relevantFields.includes(predField)){
-        relevantFields.push(predField)
+    if( !relevantFields.includes(PRED_FIELD)){
+        relevantFields.push(PRED_FIELD)
     }
 
     predTokens.forEach(predToken =>{
-        cleanTokenPredField(predToken, predField, newpredField)
+        cleanTokenPredField(predToken, predField, PRED_FIELD)
     })
     trueTokens.forEach(trueToken =>{
-        cleanTokenPredField(trueToken, predField, newpredField)
+        cleanTokenPredField(trueToken, predField, PRED_FIELD)
     })
     
     const snapShotDivId = "nlp-token-snapshot-div-"+ Math.floor(Math.random()*100000)
-    const snapShotDiv =`<div id="${snapShotDivId}" class="nlp-token-snapshot-div"></div>`
-    const tokens = combinePredTrue(predTokens, trueTokens, newpredField, relevantFields)
+    const snapShotDiv =`<div id="${snapShotDivId}" class="${SNAPSHOT_DIV_CLASS}"></div>`
+    const tokens = combinePredTrue(predTokens, trueTokens, relevantFields)
     console.log("visualizePredTrueComparison() combined tcorrectlyokens: ", tokens)
     
-    const otmo = `updateTokenPredTrueComparisonSnapshot('${snapShotDivId}', this, '${newpredField}')`
+    const otmo = `updateTokenPredTrueComparisonSnapshot('${snapShotDivId}', this)`
     
     document.updateTokenPredTrueComparisonSnapshot = updateTokenPredTrueComparisonSnapshot
-    relevantFields.push("pred"+newpredField)
+    relevantFields.push("pred"+PRED_FIELD)
     const contentDiv = visualizeDocument(tokens, relevantFields, otmo)
     console.log("visualizePredTrueComparison(), snapShotDiv: ", snapShotDiv, ", contentDiv: ", contentDiv)
     const styleTag = `<style>${CSS_AS_STRING}</style>`
