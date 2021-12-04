@@ -34,7 +34,7 @@ var END_OF_PARAGRAPH_PROPERTY = "EndOfParagraph"
 
 var TRUE_VALUE_PROP = "truevalue"
 var PRED_VALUE_PROP = "predvalue"
-var PRED_FIELD = "nlpComparePredTrueField"
+var SEPARATORS_PROP = "nlptokenseparator"
 var SNAPSHOT_DIV_CLASS = "nlp-token-snapshot-div"
 
 // css classes for tokens
@@ -77,7 +77,7 @@ function cleanTokenPredField(token, predField){
  * - wrongly-predicted-positive: wrong prediction on an entity-token
  * - false-negative: predicted nothing on an entity-token
  */
-function combinePredTrue(predTokens, trueTokens, predField){
+function combinePredTrue(predTokens, trueTokens, predField, separatorsField){
     if( !checkTokensAreIdentical(predTokens, trueTokens) ){
         throw Error(`combinePredTrue() unidentical predTokens and trueTokens\npredTokens: ${predTokens}\ntrueTokens: ${trueTokens}`)
     }
@@ -90,8 +90,9 @@ function combinePredTrue(predTokens, trueTokens, predField){
             "true": trueToken,
             "predvalue": cleanTokenPredField(predToken, predField),
             "truevalue": cleanTokenPredField(trueToken, predField),
-            "predictionStatus": undefined
+            "predictionStatus": undefined,
         }
+        newToken[SEPARATORS_PROP] = trueToken[separatorsField]
 
         // getting the prediction status
         if( newToken.truevalue!==undefined ){
@@ -127,7 +128,7 @@ function span(content, cssClasses=[], attributes={}){
     return text
 }
 
-function tokenToHTML(token, relevantFields=[], onMouseOver=""){
+function tokenToHTML(token, relevantFields=[], onMouseOver="", separatorsField = SEPARATORS_PROP){
     const cssClasses = VIZ_HTML_CLASSES_PROPERTY in token? token[VIZ_HTML_CLASSES_PROPERTY] : []
     const attributes = {
         "onmouseover": onMouseOver
@@ -142,12 +143,24 @@ function tokenToHTML(token, relevantFields=[], onMouseOver=""){
 
         //attributes[`data-token`] = JSON.stringify(token).replaceAll('"', "'")
     }
+    let separator = " "
+    if(token[separatorsField]){
+        if(token[separatorsField].includes("NoSpaceAfter")){
+            separator = ""
+        }
+        if(token[separatorsField].includes("EndOfLine")){
+            separator = "<br/>"
+        }
+        if(token[separatorsField].includes("EndOfParagraph")){
+            separator = "</p><p>"
+        }
+    }
     //const popoverStr = getPredTrueComparisonTag(predValue, trueValue, nlpStatus, tokenText)
     // dataString = relevantFields.map(f => `data-${f}="${token[f]}"`).join(" ")
     // ending = token[END_OF_PARAGRAPH_PROPERTY]? "</p>\n<p>" : (token[END_OF_LINE_PROPERTY]? "<br/>" : " ")
     // text = `<span class="${cssClasses}" ${dataString} onmouseover="${onMouseOver}">${token.text}</span>`+ending
     const tokenStr = span(token.text, cssClasses, attributes)
-    return tokenStr
+    return tokenStr+separator
 }
 
 
@@ -166,10 +179,10 @@ function addGlobalTokens(tokens){
  * @param {*} tokens 
  * @param {*} relevantFields 
  */
-function visualizeDocument(tokens, relevantFields=[], onTokenMouseOver = ""){
+function visualizeDocument(tokens, relevantFields=[], onTokenMouseOver = "", separatorsProp = SEPARATORS_PROP){
     addGlobalTokens(tokens)
     relevantFields.push(GLOBAL_TOKENS_INDEX_PROP)
-    const tokensStr = tokens.map(t=> tokenToHTML(t, relevantFields, onTokenMouseOver)).join("\n")
+    const tokensStr = tokens.map(t=> tokenToHTML(t, relevantFields, onTokenMouseOver, separatorsProp)).join("")
     return "<div class='nlp-content-div'><p>" + tokensStr + "</p></div>"
 }
 
@@ -233,10 +246,10 @@ function updateTokenPredTrueComparisonSnapshot(snapshotDivId, tokenHtmlTag, rele
         const snapShotDiv = document.getElementById(snapshotDivId)
         if( snapShotDiv!== null ){
             const token = globalTokens[tokenHtmlTag.dataset[GLOBAL_TOKENS_INDEX_PROP]]
+            console.log("updateTokenPredTrueComparisonSnapshot() token: ", token)
 
             //filling prediction part:
             
-            //snapShotDiv.innerHTML = getPredTrueComparisonTag(tokenHtmlTag, PRED_FIELD)
             const predValue = token.predvalue
             const trueValue = token.truevalue
             const predTrueComparisonTag = getPredTrueComparisonTag(predValue, trueValue, getNlpStatus(tokenHtmlTag), token.text)
@@ -265,12 +278,12 @@ function getPopoverContentTag(content){
     return `<div class="${NLP_POPOVER_CONTENT_CLASS}">${content}</div>` 
 }
 
-function visualizePredTrueComparison(predTokens, trueTokens, predField, relevantFields=[]){
+function visualizePredTrueComparison(predTokens, trueTokens, predField, separatorsField, relevantFields=[]){
 
     
     const snapShotDivId = "nlp-token-snapshot-div-"+ Math.floor(Math.random()*100000)
     const snapShotDiv =`<div id="${snapShotDivId}" class="${SNAPSHOT_DIV_CLASS}"></div>`
-    const tokens = combinePredTrue(predTokens, trueTokens, predField)
+    const tokens = combinePredTrue(predTokens, trueTokens, predField, separatorsField)
     
     const otmo = `updateTokenPredTrueComparisonSnapshot('${snapShotDivId}', this, ${JSON.stringify(relevantFields)})`.replaceAll('"', "'")
 

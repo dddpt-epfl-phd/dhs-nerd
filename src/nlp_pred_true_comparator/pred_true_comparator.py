@@ -21,15 +21,16 @@ def clef_hipe_load_conllu_tsv_to_dict(filepath):
 
 
 
-def compare_pred_true(pred_conllu, true_conllu, text_property, compare_property):
+def compare_pred_true(pred_conllu, true_conllu, text_property, compare_property, separatorsProperty, properties_to_display):
     for p in pred_conllu:
         p["text"] = p[text_property]
     for t in true_conllu:
         t["text"] = t[text_property]
     predstr = str(pred_conllu).replace("\n", "")
     truestr = str(true_conllu).replace("\n", "")
+    properties_to_display_str = str(properties_to_display).replace("\n", "")
     jsCode = css_string_var_declaration+pred_true_comparator_js_content+f'''
-    element.append(visualizePredTrueComparison({predstr}, {truestr}, "{compare_property}", ["NE-COARSE-LIT"]))'''
+    element.append(visualizePredTrueComparison({predstr}, {truestr}, "{compare_property}", "{separatorsProperty}", {properties_to_display_str}))'''
     display(Javascript(
         jsCode
     ))
