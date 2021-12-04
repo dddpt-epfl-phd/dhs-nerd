@@ -40,6 +40,9 @@ var SNAPSHOT_DIV_CLASS = "nlp-token-snapshot-div"
 // css classes for tokens
 var NLP_LABELLED_TOKEN_CLASS = "nlp-labelled-token"
 var NLP_ACTIVE_TOKEN_CLASS = "nlp-active-token"
+var NLP_POPOVER_WRAPPER_CLASS = "popover-wrapper"
+var NLP_POPOVER_CONTENT_CLASS = "popover-content"
+
 
 // css classes for token prediction status
 var TRUE_NEGATIVE_LABEL = "true-negative"
@@ -170,7 +173,7 @@ function visualizeDocument(tokens, relevantFields=[], onTokenMouseOver = ""){
     relevantFields.push(GLOBAL_TOKENS_INDEX_PROP)
     const tokensStr = tokens.map(t=> tokenToHTML(t, relevantFields, onTokenMouseOver)).join("\n")
     //console.log("visualizeDocument(), tokensStr: ", tokensStr)
-    return "<div><p>" + tokensStr + "</p></div>"
+    return "<div class='nlp-content-div'><p>" + tokensStr + "</p></div>"
 }
 
 function getNlpStatus(tokenHtmlTag){
@@ -231,19 +234,24 @@ function updateTokenPredTrueComparisonSnapshot(snapshotDivId, tokenHtmlTag){
             //snapShotDiv.innerHTML = getPredTrueComparisonTag(tokenHtmlTag, PRED_FIELD)
             const predValue = token.predvalue
             const trueValue = token.truevalue
-            snapShotDiv.innerHTML = getPredTrueComparisonTag(predValue, trueValue, getNlpStatus(tokenHtmlTag), token.text)
+            const predTrueComparisonTag = getPredTrueComparisonTag(predValue, trueValue, getNlpStatus(tokenHtmlTag), token.text)
+            snapShotDiv.innerHTML = predTrueComparisonTag
             if(activeTokenHtmlTag[snapshotDivId]){
                 activeTokenHtmlTag[snapshotDivId].classList.remove(NLP_ACTIVE_TOKEN_CLASS)
             }
             tokenHtmlTag.classList.add(NLP_ACTIVE_TOKEN_CLASS)
+            if(!tokenHtmlTag.classList.contains(NLP_POPOVER_WRAPPER_CLASS)){
+                tokenHtmlTag.innerHTML = token.text + getPopoverContentTag(predTrueComparisonTag)
+                tokenHtmlTag.classList.add(NLP_POPOVER_WRAPPER_CLASS)
+            }
             activeTokenHtmlTag[snapshotDivId] = tokenHtmlTag
         }
     }
 
 }
 
-function getPopoverContentTag(tokenHtmlTag){
-    '<div class="popover-content"></div>'
+function getPopoverContentTag(content){
+    return `<div class="${NLP_POPOVER_CONTENT_CLASS}"><div class="${SNAPSHOT_DIV_CLASS}">${content}</div></div>` 
 }
 
 function visualizePredTrueComparison(predTokens, trueTokens, predField, relevantFields=[]){
