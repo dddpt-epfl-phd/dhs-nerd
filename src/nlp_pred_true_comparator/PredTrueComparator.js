@@ -32,6 +32,8 @@ var VIZ_HTML_CLASSES_PROPERTY = "visualizationHtmlClasses"
 var END_OF_LINE_PROPERTY = "EndOfLine"
 var END_OF_PARAGRAPH_PROPERTY = "EndOfParagraph"
 
+var TRUE_VALUE_PROP = "truevalue"
+var PRED_VALUE_PROP = "predvalue"
 var PRED_FIELD = "nlpComparePredTrueField"
 var SNAPSHOT_DIV_CLASS = "nlp-token-snapshot-div"
 
@@ -57,12 +59,11 @@ function checkTokensAreIdentical(tokens1, tokens2){
     return true
 }
 
-function cleanTokenPredField(token, predField, newpredField){
-    token[newpredField] = token[predField]
-    console.log("token: ", token, ", token[predField]:", token[predField], ", token[newpredField]: ", token[newpredField] )
-    if(token[newpredField]=="" || token[newpredField]=="-"){
-        token[newpredField] = undefined
+function cleanTokenPredField(token, predField){
+    if(token[predField]=="" || token[predField]=="-"){
+        return undefined
     }
+    return token[predField]
 }
 
 /** Combines True and prediction token in a single list.
@@ -73,47 +74,48 @@ function cleanTokenPredField(token, predField, newpredField){
  * - wrongly-predicted-positive: wrong prediction on an entity-token
  * - false-negative: predicted nothing on an entity-token
  */
-function combinePredTrue(predTokens, trueTokens, relevantFields=[]){
+function combinePredTrue(predTokens, trueTokens, predField){
     if( !checkTokensAreIdentical(predTokens, trueTokens) ){
         throw Error(`combinePredTrue() unidentical predTokens and trueTokens\npredTokens: ${predTokens}\ntrueTokens: ${trueTokens}`)
     }
-    if( !relevantFields.includes(PRED_FIELD)){
-        relevantFields.push(PRED_FIELD)
-    }
     
-    trueTokens.forEach((trueToken,i)=>{
-        // getting the prediction status
+    const newTokens = trueTokens.map((trueToken,i)=>{
         let predToken = predTokens[i]
+        const newToken = {
+            "text": trueToken.text,
+            "pred": predToken,
+            "true": trueToken,
+            "predvalue": cleanTokenPredField(predToken, predField),
+            "truevalue": cleanTokenPredField(trueToken, predField),
+            "predictionStatus": undefined
+        }
 
-        let predictionStatus = ""
-        if( trueToken[PRED_FIELD]!==undefined ){
-            if( predToken[PRED_FIELD]===undefined ){
-                predictionStatus = FALSE_NEGATIVE_LABEL
-            } else if( trueToken[PRED_FIELD] == predToken[PRED_FIELD] ){
-                predictionStatus = TRUE_POSITIVE_LABEL
+        // getting the prediction status
+        if( newToken.truevalue!==undefined ){
+            if( newToken.predvalue===undefined ){
+                newToken.predictionStatus = FALSE_NEGATIVE_LABEL
+            } else if( newToken.truevalue == newToken.predvalue ){
+                newToken.predictionStatus = TRUE_POSITIVE_LABEL
             } else{
-                predictionStatus = WRONGLY_PREDICTED_POSITIVE_LABEL
+                newToken.predictionStatus = WRONGLY_PREDICTED_POSITIVE_LABEL
             }
         } else{
-            if( predToken[PRED_FIELD]!==undefined ){
-                predictionStatus = FALSE_POSITIVE_LABEL
+            if( newToken.predvalue!==undefined ){
+                newToken.predictionStatus = FALSE_POSITIVE_LABEL
             } else{
-                predictionStatus = TRUE_NEGATIVE_LABEL
+                newToken.predictionStatus = TRUE_NEGATIVE_LABEL
             }
         }
-        //console.log("combinePredTrue, token.text: ", trueToken.text, " true: ",trueToken[PRED_FIELD] , " pred:", predToken[PRED_FIELD], " true==pred: ", trueToken[PRED_FIELD] == predToken[PRED_FIELD], " predictionStatus:", predictionStatus)
-        //adding predToken relevant fields to trueToken
-        relevantFields.forEach(rf => {
-            trueToken["pred"+rf] = predToken[rf]
-        })
         // adding prediction status to trueToken.visualizationHtmlClasses
         if( VIZ_HTML_CLASSES_PROPERTY in trueToken){
-            trueToken[VIZ_HTML_CLASSES_PROPERTY].push(predictionStatus)
+            newToken[VIZ_HTML_CLASSES_PROPERTY] = trueToken[VIZ_HTML_CLASSES_PROPERTY].map(x=>x)
+            newToken[VIZ_HTML_CLASSES_PROPERTY].push(newToken.predictionStatus)
         } else{
-            trueToken[VIZ_HTML_CLASSES_PROPERTY] = [predictionStatus]
+            newToken[VIZ_HTML_CLASSES_PROPERTY] = [newToken.predictionStatus]
         }
+        return newToken
     })
-    return trueTokens
+    return newTokens
 }
 
 function span(content, cssClasses=[], attributes={}){
@@ -130,7 +132,7 @@ function tokenToHTML(token, relevantFields=[], onMouseOver=""){
     relevantFields.forEach(f => {
         attributes[`data-${f}`] = token[f]
     })
-    
+
 
     if(!cssClasses.includes(TRUE_NEGATIVE_LABEL)){
         cssClasses.push(NLP_LABELLED_TOKEN_CLASS)
@@ -142,8 +144,20 @@ function tokenToHTML(token, relevantFields=[], onMouseOver=""){
     // ending = token[END_OF_PARAGRAPH_PROPERTY]? "</p>\n<p>" : (token[END_OF_LINE_PROPERTY]? "<br/>" : " ")
     // text = `<span class="${cssClasses}" ${dataString} onmouseover="${onMouseOver}">${token.text}</span>`+ending
     const tokenStr = span(token.text, cssClasses, attributes)
-    console.log("tokenToHTML() token:", token, ", tokenStr: ", tokenStr)
+    //console.log("tokenToHTML() token:", token, ", tokenStr: ", tokenStr)
     return tokenStr
+}
+
+
+var globalTokens = []
+var GLOBAL_TOKENS_INDEX_PROP = "globaltokensindex"
+function addGlobalTokens(tokens){
+    let newGlobalTokensStart = globalTokens.length
+    globalTokens = globalTokens.concat(tokens)
+    console.log("addGlobalTokens() new globalTokens: ", globalTokens)
+    for(let i = newGlobalTokensStart; i<globalTokens.length; i++){
+        globalTokens[i][GLOBAL_TOKENS_INDEX_PROP] = i
+    }
 }
 
 /**
@@ -152,8 +166,10 @@ function tokenToHTML(token, relevantFields=[], onMouseOver=""){
  * @param {*} relevantFields 
  */
 function visualizeDocument(tokens, relevantFields=[], onTokenMouseOver = ""){
+    addGlobalTokens(tokens)
+    relevantFields.push(GLOBAL_TOKENS_INDEX_PROP)
     const tokensStr = tokens.map(t=> tokenToHTML(t, relevantFields, onTokenMouseOver)).join("\n")
-    console.log("visualizeDocument(), tokensStr: ", tokensStr)
+    //console.log("visualizeDocument(), tokensStr: ", tokensStr)
     return "<div><p>" + tokensStr + "</p></div>"
 }
 
@@ -205,16 +221,17 @@ function updateTokenPredTrueComparisonSnapshot(snapshotDivId, tokenHtmlTag){
     if( !tokenHtmlTag.classList.contains(TRUE_NEGATIVE_LABEL) ){
         const snapShotDiv = document.getElementById(snapshotDivId)
         if( snapShotDiv!== null ){
-            console.log("updateTokenPredTrueComparisonSnapshot() PRED_FIELD: ", PRED_FIELD, ", tokenHtmlTag.dataset: ", tokenHtmlTag.dataset)
-            tokenHtmlTag.dataset["dudu"]=343
+            console.log("updateTokenPredTrueComparisonSnapshot() tokenHtmlTag.dataset: ", tokenHtmlTag.dataset, ", tokenHtmlTag.dataset[GLOBAL_TOKENS_INDEX_PROP]: ", tokenHtmlTag.dataset[GLOBAL_TOKENS_INDEX_PROP], ", token: ", globalTokens[tokenHtmlTag.dataset[GLOBAL_TOKENS_INDEX_PROP]])
+            const token = globalTokens[tokenHtmlTag.dataset[GLOBAL_TOKENS_INDEX_PROP]]
+            //console.log("updateTokenPredTrueComparisonSnapshot() tokenHtmlTag.dataset: ", tokenHtmlTag.dataset)
 
             //console.log("updateTokenPredTrueComparisonSnapshot() parsed tokenHtmlTag.dataset[token]", JSON.parse(tokenHtmlTag.dataset["token"].replaceAll("'", '"')))
             //filling prediction part:
             
             //snapShotDiv.innerHTML = getPredTrueComparisonTag(tokenHtmlTag, PRED_FIELD)
-            const predValue = tokenHtmlTag.dataset["pred"+PRED_FIELD]
-            const trueValue = tokenHtmlTag.dataset[PRED_FIELD]
-            snapShotDiv.innerHTML = getPredTrueComparisonTag(predValue, trueValue, getNlpStatus(tokenHtmlTag), tokenHtmlTag.innerHTML)
+            const predValue = token.predvalue
+            const trueValue = token.truevalue
+            snapShotDiv.innerHTML = getPredTrueComparisonTag(predValue, trueValue, getNlpStatus(tokenHtmlTag), token.text)
             if(activeTokenHtmlTag[snapshotDivId]){
                 activeTokenHtmlTag[snapshotDivId].classList.remove(NLP_ACTIVE_TOKEN_CLASS)
             }
@@ -230,26 +247,16 @@ function getPopoverContentTag(tokenHtmlTag){
 }
 
 function visualizePredTrueComparison(predTokens, trueTokens, predField, relevantFields=[]){
-    if( !relevantFields.includes(PRED_FIELD)){
-        relevantFields.push(PRED_FIELD)
-    }
 
-    predTokens.forEach(predToken =>{
-        cleanTokenPredField(predToken, predField, PRED_FIELD)
-    })
-    trueTokens.forEach(trueToken =>{
-        cleanTokenPredField(trueToken, predField, PRED_FIELD)
-    })
     
     const snapShotDivId = "nlp-token-snapshot-div-"+ Math.floor(Math.random()*100000)
     const snapShotDiv =`<div id="${snapShotDivId}" class="${SNAPSHOT_DIV_CLASS}"></div>`
-    const tokens = combinePredTrue(predTokens, trueTokens, relevantFields)
+    const tokens = combinePredTrue(predTokens, trueTokens, predField)
     console.log("visualizePredTrueComparison() combined tcorrectlyokens: ", tokens)
     
     const otmo = `updateTokenPredTrueComparisonSnapshot('${snapShotDivId}', this)`
     
     document.updateTokenPredTrueComparisonSnapshot = updateTokenPredTrueComparisonSnapshot
-    relevantFields.push("pred"+PRED_FIELD)
     const contentDiv = visualizeDocument(tokens, relevantFields, otmo)
     console.log("visualizePredTrueComparison(), snapShotDiv: ", snapShotDiv, ", contentDiv: ", contentDiv)
     const styleTag = `<style>${CSS_AS_STRING}</style>`
