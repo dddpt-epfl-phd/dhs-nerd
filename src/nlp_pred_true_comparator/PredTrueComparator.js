@@ -278,7 +278,7 @@ function getPopoverContentTag(content){
     return `<div class="${NLP_POPOVER_CONTENT_CLASS}">${content}</div>` 
 }
 
-function visualizePredTrueComparison(predTokens, trueTokens, predField, separatorsField, relevantFields=[]){
+function visualizePredTrueComparison(predTokens, trueTokens, predField, separatorsField="MISC", relevantFields=[]){
 
     
     const snapShotDivId = "nlp-token-snapshot-div-"+ Math.floor(Math.random()*100000)
