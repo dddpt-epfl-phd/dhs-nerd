@@ -33,7 +33,6 @@ var END_OF_LINE_PROPERTY = "EndOfLine"
 var END_OF_PARAGRAPH_PROPERTY = "EndOfParagraph"
 
 // css classes for tokens
-var CSS_AS_STRING = '\n.nlp-token-snapshot-div{\n    height: 2.5em;\n    margin-bottom: 1em;\n    background-color: #cfe2ff;\n    border: 1px solid #b6d4fe;\n    color: #084298;\n    padding: 0.5em;\n    border-radius: 5px;\n}\n\n.nlp-labelled-token {\n    border-radius: 3px;\n    padding: 1px 3px 2px;\n    font-weight: bold;\n    /*color: #ffffff;*/\n}\n.nlp-active-token{\n    box-shadow: 0px 3px 4px 2px #aaaaaa;\n}\n\n/*.true-negative {\n    background-color: beige;\n}*/\n\n\n.true-positive {\n    color: #0f5132;\n    background-color: #d1e7dd;\n}\n\n\n.false-negative {\n    color: #842029;\n    background-color: #f0a8ae;\n}\n\n\n.false-positive {\n    color: #990099;\n    background-color: #ffccff;\n\n}\n\n\n.wrongly-predicted-positive {\n    color: #664d03;\n    background-color: #ffe799;\n}\n\n'
 var NLP_LABELLED_TOKEN_CLASS = "nlp-labelled-token"
 var NLP_ACTIVE_TOKEN_CLASS = "nlp-active-token"
 

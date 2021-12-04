@@ -9,6 +9,9 @@ pred_true_comparator_dir_path = os.path.dirname(os.path.abspath(__file__))
 
 with open(os.path.join(pred_true_comparator_dir_path, "PredTrueComparator.js")) as jsfile:
     pred_true_comparator_js_content = jsfile.read()
+with open(os.path.join(pred_true_comparator_dir_path, "PredTrueComparator.css")) as jsfile:
+    pred_true_comparator_css_content = jsfile.read().replace("\n", "")
+css_string_var_declaration = f"var CSS_AS_STRING = '{pred_true_comparator_css_content}'\n\n" 
 
 def clef_hipe_load_conllu_tsv_to_dict(filepath):
     with open(filepath) as csvfile:
@@ -25,7 +28,7 @@ def compare_pred_true(pred_conllu, true_conllu, text_property, compare_property)
         t["text"] = t[text_property]
     predstr = str(pred_conllu).replace("\n", "")
     truestr = str(true_conllu).replace("\n", "")
-    jsCode = pred_true_comparator_js_content+f'''
+    jsCode = css_string_var_declaration+pred_true_comparator_js_content+f'''
     element.append(visualizePredTrueComparison({predstr}, {truestr}, "{compare_property}", []))'''
     display(Javascript(
         jsCode
