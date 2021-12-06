@@ -7,3 +7,6 @@
 [submodule "src/CLEF-HIPE-2020-scorer"]
 	path = src/CLEF-HIPE-2020-scorer
 	url = git@github.com:impresso/CLEF-HIPE-2020-scorer.git
+[submodule "src/nlp_pred_true_comparator"]
+	path = src/nlp_pred_true_comparator
+	url = git@github.com:dddpt/nlp_pred_true_comparator.git
