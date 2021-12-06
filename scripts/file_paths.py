@@ -23,6 +23,7 @@ S0_DATA_FOLDER = path.join(DATA_FOLDER, "scrape_dhs")
 
 # s0_scrape_dhs/s0_scrape.py
 S0_JSONL_ALL_ARTICLES_FILE = path.join(S0_DATA_FOLDER, "dhs_<LANGUAGE>_all_articles_content.jsonl")
+S0_JSONL_ALL_ARTICLES_NO_PAGE_FILE = path.join(S0_DATA_FOLDER, "no-page-content","dhs_<LANGUAGE>_all_articles_content.jsonl")
 
 S0_THEMES_CATEGORY = "themes"
 S0_PEOPLE_CATEGORY = "people"
@@ -52,6 +53,8 @@ S1_WIKIDATA_DE_LABELS = path.join(S1_DATA_FOLDER, "wikidata_de_labels.csv")
 #####################
 S2_INCEPTION_DATA_FOLDER = path.join(DATA_FOLDER, "inception")
 S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER = path.join(DATA_FOLDER, "entity-fishing-evaluation")
+
+S2_INCEPTION_SAMPLED_ARTICLES_IDS = path.join(S2_INCEPTION_DATA_FOLDER, "sampled_articles_ids.json")
 
 S2_ENTITY_FISHING_CORPUS_FOLDER = path.join(ROOT_FOLDER, f"entity-fishing/entity-fishing/data/corpus/corpus-long/dhs-training-<LANGUAGE>/")
 S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE = path.join(S2_ENTITY_FISHING_CORPUS_FOLDER,f"dhs-training-<LANGUAGE>.xml")

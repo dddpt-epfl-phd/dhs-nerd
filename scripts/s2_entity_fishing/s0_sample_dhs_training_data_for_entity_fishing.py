@@ -12,7 +12,7 @@ sys.path.append("../../src")
 sys.path.append("../../scripts")
 
 from dhs_scraper import DhsArticle, TOTAL_NB_DHS_ARTICLES
-from file_paths import S0_JSONL_ALL_ARTICLES_FILE, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, localize
+from file_paths import S0_JSONL_ALL_ARTICLES_NO_PAGE_FILE, S0_JSONL_ALL_ARTICLES_FILE, S2_INCEPTION_SAMPLED_ARTICLES_IDS, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, localize
 
 seed(54321)
 
@@ -33,7 +33,7 @@ for i in range(nb_articles_sampled):
 
 # %%
 
-all_ids = list(DhsArticle.get_articles_ids(localize(S0_JSONL_ALL_ARTICLES_FILE, sampling_language)))
+all_ids = list(DhsArticle.get_articles_ids(localize(S0_JSONL_ALL_ARTICLES_NO_PAGE_FILE, sampling_language)))
 
 new_articles_ids = [all_ids[i] for i in articles_indices]
 
@@ -43,6 +43,13 @@ sampled_articles_by_language = {
     lng: [a for a in DhsArticle.load_articles_from_jsonl(localize(S0_JSONL_ALL_ARTICLES_FILE, lng),new_articles_ids)] 
     for lng in sampled_languages   
 }
+
+sampled_articles_ids_json = [
+    (a.id, a.title) 
+    for a in sampled_articles_by_language["fr"]
+]
+with open(S2_INCEPTION_SAMPLED_ARTICLES_IDS, "w") as sampled_json:
+    json.dump(sampled_articles_ids_json, sampled_json)
 
 # %%
 if __name__ =="__main__":
