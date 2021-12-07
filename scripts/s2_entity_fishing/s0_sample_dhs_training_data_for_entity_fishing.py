@@ -11,8 +11,8 @@ import sys
 sys.path.append("../../src")
 sys.path.append("../../scripts")
 
-from dhs_scraper import DhsArticle, TOTAL_NB_DHS_ARTICLES
-from file_paths import S0_JSONL_ALL_ARTICLES_NO_PAGE_FILE, S0_JSONL_ALL_ARTICLES_FILE, S2_INCEPTION_SAMPLED_ARTICLES_IDS, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, localize
+from dhs_scraper import DhsArticle, TOTAL_NB_DHS_ARTICLES, stream_to_jsonl
+from file_paths import S0_JSONL_ALL_ARTICLES_NO_PAGE_FILE, S0_JSONL_ALL_ARTICLES_FILE, S2_INCEPTION_SAMPLED_ARTICLES_IDS, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, S2_INCEPTION_SAMPLED_ARTICLES, localize
 
 seed(54321)
 
@@ -21,47 +21,60 @@ sampling_language="de" # determines from which language corpus we'll chose artic
 
 sampled_languages = ["de", "fr"]
 
-# %% Sample articles (stupid way, but keep it to maintain same sample as already annotated in inception)
-
-nb_articles_sampled = 50
-
-articles_indices = set()
-for i in range(nb_articles_sampled):
-    random_index = randint(0, TOTAL_NB_DHS_ARTICLES)
-    if random_index not in articles_indices:
-        articles_indices.add(random_index)
-
-# %%
-
-all_ids = list(DhsArticle.get_articles_ids(localize(S0_JSONL_ALL_ARTICLES_NO_PAGE_FILE, sampling_language)))
-
-new_articles_ids = [all_ids[i] for i in articles_indices]
-
-# %% Write text to corresponding RawText folder
-
-sampled_articles_by_language = {
-    lng: [a for a in DhsArticle.load_articles_from_jsonl(localize(S0_JSONL_ALL_ARTICLES_FILE, lng),new_articles_ids)] 
-    for lng in sampled_languages   
-}
-
-sampled_articles_ids_json = [
-    (a.id, a.title) 
-    for a in sampled_articles_by_language["fr"]
-]
-
 if __name__ =="__main__":
+    print("ENTERING MAIN")
+
+    # %% Sample articles
+    nb_articles_sampled = 50
+
+    articles_indices = set()
+    for i in range(nb_articles_sampled):
+        random_index = randint(0, TOTAL_NB_DHS_ARTICLES)
+        if random_index not in articles_indices:
+            articles_indices.add(random_index)
+
+    # %%
+
+    all_ids = list(DhsArticle.get_articles_ids(localize(S0_JSONL_ALL_ARTICLES_NO_PAGE_FILE, sampling_language)))
+
+    new_articles_ids = [all_ids[i] for i in articles_indices]
+
+    # %% Write text to corresponding RawText folder
+
+    sampled_articles_by_language = {
+        lng: [a for a in DhsArticle.load_articles_from_jsonl(localize(S0_JSONL_ALL_ARTICLES_FILE, lng),new_articles_ids)] 
+        for lng in sampled_languages   
+    }
+
+    sampled_articles_ids_json = [
+        (a.id, a.title) 
+        for a in sampled_articles_by_language["fr"]
+    ]
+
+    for lng, articles in sampled_articles_by_language.items():
+        stream_to_jsonl(localize(S2_INCEPTION_SAMPLED_ARTICLES, lng), articles)
+
     with open(S2_INCEPTION_SAMPLED_ARTICLES_IDS, "w") as sampled_json:
         json.dump(sampled_articles_ids_json, sampled_json)
 
-# %%
-if __name__ =="__main__":
-    print("ENTERING MAIN")
+
     for lng in sampled_languages:
         print(f"\n\nSampling articles for language {lng}\n=========================================")
         for a in sampled_articles_by_language[lng]:
             with open(path.join(localize(S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, lng),a.title+f".{lng}.txt"), "w") as rawtext_file:
                 print(f"writing for article {a.title}")
                 rawtext_file.write(a.text)
+
+
+# if not the main script, simply load the sampled articles from jsonls
+else:
+    # %%
+    sampled_articles_by_language = {
+        lng: list(DhsArticle.load_articles_from_jsonl(localize(S2_INCEPTION_SAMPLED_ARTICLES, lng)))
+        for lng in sampled_languages
+    }
+
+# %%
 
 # %% Sending a query to entity-fishing service on 8090
 # needs access to running entity-fishing service on entity_fishing_url (by default: localhost:8090)

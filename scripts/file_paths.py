@@ -55,6 +55,7 @@ S2_INCEPTION_DATA_FOLDER = path.join(DATA_FOLDER, "inception")
 S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER = path.join(DATA_FOLDER, "entity-fishing-evaluation")
 
 S2_INCEPTION_SAMPLED_ARTICLES_IDS = path.join(S2_INCEPTION_DATA_FOLDER, "sampled_articles_ids.json")
+S2_INCEPTION_SAMPLED_ARTICLES = path.join(S2_INCEPTION_DATA_FOLDER, "sampled_articles_<LANGUAGE>.jsonl")
 
 S2_ENTITY_FISHING_CORPUS_FOLDER = path.join(ROOT_FOLDER, f"entity-fishing/entity-fishing/data/corpus/corpus-long/dhs-training-<LANGUAGE>/")
 S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE = path.join(S2_ENTITY_FISHING_CORPUS_FOLDER,f"dhs-training-<LANGUAGE>.xml")
