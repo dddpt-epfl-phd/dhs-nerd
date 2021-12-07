@@ -48,8 +48,10 @@ sampled_articles_ids_json = [
     (a.id, a.title) 
     for a in sampled_articles_by_language["fr"]
 ]
-with open(S2_INCEPTION_SAMPLED_ARTICLES_IDS, "w") as sampled_json:
-    json.dump(sampled_articles_ids_json, sampled_json)
+
+if __name__ =="__main__":
+    with open(S2_INCEPTION_SAMPLED_ARTICLES_IDS, "w") as sampled_json:
+        json.dump(sampled_articles_ids_json, sampled_json)
 
 # %%
 if __name__ =="__main__":
