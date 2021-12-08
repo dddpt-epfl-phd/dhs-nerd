@@ -10,7 +10,7 @@ sys.path.append("../../scripts")
 
 from inception_fishing import *
 from utils import spacy_models_by_lng
-from file_paths import S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, S2_INCEPTION_IMPORT_FOLDER, S2_CLEF_HIPE_PRED_FILE, localize
+from data_file_paths import S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, S2_INCEPTION_IMPORT_FOLDER, S2_CLEF_HIPE_PRED_FILE, localize
 
 # %%
 

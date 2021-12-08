@@ -7,7 +7,7 @@ sys.path.append("../../scripts")
 
 from inception_fishing import *
 from utils import spacy_models_by_lng
-from file_paths import  S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, S2_INCEPTION_USER_NAME, S2_CLEF_HIPE_TRUE_FILE, localize
+from data_file_paths import  S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, S2_INCEPTION_USER_NAME, S2_CLEF_HIPE_TRUE_FILE, localize
 
 # %% load original DhsArticles
 

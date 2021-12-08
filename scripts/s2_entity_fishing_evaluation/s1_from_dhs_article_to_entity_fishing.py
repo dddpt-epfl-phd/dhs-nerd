@@ -14,7 +14,7 @@ sys.path.append("../../scripts")
 
 from dhs_scraper import DhsArticle
 from inception_fishing import *
-from file_paths import S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, S2_INCEPTION_IMPORT_FOLDER, S2_CLEF_HIPE_PRED_FILE, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, localize
+from data_file_paths import S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, S2_INCEPTION_IMPORT_FOLDER, S2_CLEF_HIPE_PRED_FILE, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, localize
 
 from s2_entity_fishing_evaluation.s0_sample_dhs_articles_for_evaluation import sampled_articles_by_language, sampled_languages
 

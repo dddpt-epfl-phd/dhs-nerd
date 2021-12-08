@@ -13,7 +13,7 @@ from inception_fishing import Corpus, Document, Annotation
 from s2_entity_fishing_evaluation.s2_from_entity_fishing_to_inception import predicted_corpora_by_lng
 from s2_entity_fishing_evaluation.s3_from_inception_annotation_to_entity_fishing import annotated_corpora_by_lng
 from utils import spacy_models_by_lng
-from file_paths import S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER
+from data_file_paths import S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER
 # %%
 
 

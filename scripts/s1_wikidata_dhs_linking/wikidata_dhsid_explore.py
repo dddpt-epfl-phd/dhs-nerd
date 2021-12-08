@@ -10,7 +10,7 @@ import sys
 sys.path.append("../../src")
 sys.path.append("../../scripts")
 
-from file_paths import S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, S1_WIKIDATA_DE_LABELS
+from data_file_paths import S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, S1_WIKIDATA_DE_LABELS
 
 # %%
 

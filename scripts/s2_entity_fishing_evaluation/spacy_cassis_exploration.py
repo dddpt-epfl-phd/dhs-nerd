@@ -7,7 +7,7 @@ import sys
 sys.path.append("../../src")
 sys.path.append("../../scripts")
 
-from file_paths import S2_INCEPTION_ANNOTATIONS_2_11_FOLDER
+from data_file_paths import S2_INCEPTION_ANNOTATIONS_2_11_FOLDER
 # %%
 
 with open(path.join(S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, 'Daniel de Chambrier.fr.txt/TypeSystem.xml'), 'rb') as f:

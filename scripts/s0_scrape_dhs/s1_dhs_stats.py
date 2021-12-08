@@ -11,7 +11,7 @@ sys.path.append("../../src")
 sys.path.append("../../scripts")
 
 from dhs_scraper import DhsArticle, stream_to_jsonl
-from file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_DHS_CATEGORIES, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, s0_png_articles_lengths_by_category_figure, s0_png_percent_articles_in_wd_by_category, localize, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS
+from data_file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_DHS_CATEGORIES, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, s0_png_articles_lengths_by_category_figure, s0_png_percent_articles_in_wd_by_category, localize, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS
 
 # %matplotlib inline
 

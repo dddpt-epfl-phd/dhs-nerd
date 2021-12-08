@@ -10,7 +10,7 @@ sys.path.append("../../src")
 sys.path.append("../../scripts")
 
 from dhs_scraper import DhsArticle
-from file_paths import localize, S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES
+from data_file_paths import localize, S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES
 
 seed(54367)
 
