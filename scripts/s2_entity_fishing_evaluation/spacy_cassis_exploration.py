@@ -73,7 +73,7 @@ doc._.hello = False
 """
 # %%
 
-from s2_entity_fishing_evaluation.s3_from_inception_annotation_to_entity_fishing import corpus
+from s2_entity_fishing_evaluation.s3_prepare_evaluation import corpus
 
 doc = corpus.documents[0]
 

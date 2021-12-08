@@ -7,11 +7,20 @@ sys.path.append("../../scripts")
 
 from inception_fishing import *
 from utils import spacy_models_by_lng
-from data_file_paths import  S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, S2_INCEPTION_USER_NAME, S2_CLEF_HIPE_TRUE_FILE, localize
+from data_file_paths import  S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, S2_INCEPTION_USER_NAME, S2_CLEF_HIPE_PRED_FILE, S2_CLEF_HIPE_TRUE_FILE, S2_ENTITY_FISHING_2_11_PREDICTION_OUTPUT_FILE, S2_ENTITY_FISHING_2_11_RAWTEXT_FOLDER, localize
 
 # %% load original DhsArticles
 
 #from s0_sample_dhs_training_data_for_entity_fishing import sampled_articles_by_language
+
+evaluation_2_11 = {
+    "inception_annotation_folder": S2_INCEPTION_ANNOTATIONS_2_11_FOLDER,
+    "inception_user_name": S2_INCEPTION_USER_NAME,
+    "entity_fishing_prediction_file": S2_ENTITY_FISHING_2_11_PREDICTION_OUTPUT_FILE,
+    "entity_fishing_rawtext_folder": S2_ENTITY_FISHING_2_11_RAWTEXT_FOLDER,
+    "clef_hipe_true_file": S2_CLEF_HIPE_TRUE_FILE,
+    "clef_hipe_pred_file": S2_CLEF_HIPE_PRED_FILE,
+}
 
 """
 TODO:
