@@ -51,13 +51,5 @@ for language in sampled_languages:
 
     nlp = spacy.load(spacy_models_by_lng[language])
 
-    # %%
-
-
-    if __name__=="__main__":
-        corpus.clef_hipe_scorer_to_conllu_tsv(
-            localize(S2_CLEF_HIPE_PRED_FILE, language),
-            nlp, language=language
-        )
 
 # %%
