@@ -16,7 +16,7 @@ from dhs_scraper import DhsArticle
 from inception_fishing import *
 from file_paths import S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, S2_INCEPTION_IMPORT_FOLDER, S2_CLEF_HIPE_PRED_FILE, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, localize
 
-from s0_sample_dhs_training_data_for_entity_fishing import sampled_articles_by_language, sampled_languages
+from s2_entity_fishing_evaluation.s0_sample_dhs_articles_for_evaluation import sampled_articles_by_language, sampled_languages
 
 # %%
 
@@ -26,7 +26,7 @@ sampled_articles = sampled_articles_by_language[language]
 
 
 
-# %% dhs_wikidata_wikipedia_links_dict
+# %% load correspondance links between DHS, wikidata and wikipedia
 
 with open(S1_WIKIDATA_DHS_WIKIPEDIA_LINKS) as csvfile:
     dhs_wikidata_wikipedia_links_list = [r for r in DictReader(csvfile, delimiter=",")]
@@ -37,22 +37,29 @@ if dhs_wikidata_wikipedia_links_list is not None:
         for l in dhs_wikidata_wikipedia_links_list
     }
 
-# %%
 #dhs_article = sampled_articles[0]
 #document = Document.from_dhs_article(dhs_article, dhs_wikidata_wikipedia_links_dict)
-# %%
+
+
+# %% create Documents from sampled DHS articles
 
 sampled_documents_and_articles_by_lng = {
     lng: [
         (
-            Document.from_dhs_article(dhs_article, dhs_wikidata_wikipedia_links_dict, wikipedia_page_name_language=lng),
+            Document.from_dhs_article(
+                dhs_article,
+                dhs_wikidata_wikipedia_links_dict,
+                wikipedia_page_name_language=lng,
+                p_text_blocks_separator=" ",
+                non_p_text_blocks_separator=". "
+            ),
             dhs_article
         )
         for dhs_article in articles
     ]
     for lng, articles in sampled_articles_by_language.items()
 }
-# %%
+# %% replace dhs_articles initials in respective document, and write document to EF folder
 
 def replace_dhs_article_initial_in_document(document:Document, dhs_article:DhsArticle):
     if dhs_article.initial is not None:
@@ -60,12 +67,9 @@ def replace_dhs_article_initial_in_document(document:Document, dhs_article:DhsAr
     else:
         return []
 
-
-# %%
-
 sampled_articles_initials_replacements_by_language = {lng:dict() for lng in sampled_languages}
 for lng, documents_and_articles in sampled_documents_and_articles_by_lng.items():
-    print(f"\n\nSampling articles for language {lng}\n=========================================")
+    print(f"\n\nWriting articles for entity-fishing annotation in language {lng}\n=========================================")
     for d,a in documents_and_articles:
         initials_replacements = replace_dhs_article_initial_in_document(d, a)
         sampled_articles_initials_replacements_by_language[lng][a.id] = initials_replacements

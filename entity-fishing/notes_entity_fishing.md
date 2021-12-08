@@ -8,13 +8,12 @@ Create one file per document in `entity-fishing/data/corpus/corpus-long/<corpus-
 From `entity-fishing` directory:
 ```./gradlew annotatedDataGeneration -Pcorpus=dhs-training-de```
 
-Import data to inception: use `UIMA CAS XMI (XML 1.1)` format:
-
 
 # Import pre-annotated data in inception
 
 file-formats: https://inceptiondev.dhlab.epfl.ch/dev/doc/user-guide.html#sect_formats
 
+To import data in inception, use `UIMA CAS XMI (XML 1.1)` format.
 
 # How to get wikipedia page id
 

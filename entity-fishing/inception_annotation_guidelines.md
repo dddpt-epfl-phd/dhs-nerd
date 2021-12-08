@@ -28,6 +28,9 @@ Grobid-NER has 27 classes:
 - TITLE 
 - UNKNOWN 
 - WEBSITE 
+Extra classes:
+- FAMILY
+- OCCUPATION
 
 Classes we absolutely need:
 - BUSINESS
@@ -41,6 +44,7 @@ Classes that are relevant but nut primordial:
 - INSTALLATION, such as "château de chillon"
 - LEGAL, important international treaties/declaration, such as "Traité de Lausanne"
 - TITLE, seulement ceux qui sont précisé comme "prince-évêque de Bâle" (et pas juste "prince-évêque" ou conseiller national)
+- FAMILY, when not already nested in a person entity
 
 Nice to have classes:
 - CONCEPT, such as "feminism", "mythes fondateurs", as there are some concept in DHS, but maybe better not

@@ -58,13 +58,6 @@ if __name__ =="__main__":
         json.dump(sampled_articles_ids_json, sampled_json)
 
 
-    for lng in sampled_languages:
-        print(f"\n\nSampling articles for language {lng}\n=========================================")
-        for a in sampled_articles_by_language[lng]:
-            with open(path.join(localize(S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, lng),a.title+f".{lng}.txt"), "w") as rawtext_file:
-                print(f"writing for article {a.title}")
-                rawtext_file.write(a.text)
-
 
 # if not the main script, simply load the sampled articles from jsonls
 else:
