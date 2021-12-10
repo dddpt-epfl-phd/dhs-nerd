@@ -31,7 +31,8 @@ spacy_nlp_by_lng = dict()
 def load_true_corpora_by_lng(
     inception_annotation_folder = S2_INCEPTION_ANNOTATIONS_2_11_FOLDER,
     inception_user_name = S2_INCEPTION_USER_NAME,
-    sampled_languages = ["fr", "de"]
+    sampled_languages = ["fr", "de"],
+    **kwargs
 ):
 
 
@@ -52,40 +53,18 @@ def load_true_corpora_by_lng(
 
     return annotated_corpora_by_lng
 
-# %% write_annotated_corpora_for_evaluation
-def write_annotated_corpora_for_evaluation(
-    annotated_corpora_by_lng,
-    clef_hipe_true_file = S2_CLEF_HIPE_TRUE_FILE,
-    entity_fishing_true_xml = S2_ENTITY_FISHING_2_11_OWN_EVALUATION_TRUE_FILE
-    ):
-    for language, corpus in annotated_corpora_by_lng.items():
-        corpus.set_annotations_wikipedia_page_titles_and_ids(language)
-
-        if language not in spacy_nlp_by_lng:
-            spacy_nlp_by_lng[language] = spacy.load(spacy_models_by_lng[language])
-
-        # write conllu for clef-hipe-scorer
-        corpus.clef_hipe_scorer_to_conllu_tsv(
-            localize(clef_hipe_true_file, language),
-            spacy_nlp_by_lng[language], language=language
-        )
-
-        # write entity-fishing xml for EF evaluation
-        corpus.entity_fishing_to_xml_file(entity_fishing_true_xml)
 
 # %% load_and_write_pred_true_files_for_evaluation
 
-def load_and_write_pred_true_files_for_evaluation(
+def load_pred_true_files_for_evaluation(
     in_inception_annotation_folder,
     in_inception_user_name,
     in_inception_corpora_treatment,
     in_entity_fishing_prediction_file,
     in_entity_fishing_rawtext_folder,
     in_entity_fishing_corpora_treatment,
-    out_entity_fishing_true_xml,
-    out_clef_hipe_true_file,
-    out_clef_hipe_pred_file,
-    sampled_languages = ["fr", "de"]
+    sampled_languages = ["fr", "de"],
+    **kwargs
 ):
     # loading inception annotated corpora
     print("LOADING ANNOTATED CORPORA...")
@@ -103,6 +82,68 @@ def load_and_write_pred_true_files_for_evaluation(
         predicted_corpora_by_lng[language] = corpus
     predicted_corpora_by_lng = in_entity_fishing_corpora_treatment(predicted_corpora_by_lng)
 
+    return (annotated_corpora_by_lng, predicted_corpora_by_lng)
+
+# %% write_annotated_corpora_for_evaluation
+def write_annotated_corpora_for_evaluation(
+    annotated_corpora_by_lng,
+    clef_hipe_true_file = S2_CLEF_HIPE_TRUE_FILE,
+    entity_fishing_true_xml = S2_ENTITY_FISHING_2_11_OWN_EVALUATION_TRUE_FILE,
+    **kwargs
+    ):
+    for language, corpus in annotated_corpora_by_lng.items():
+        corpus.set_annotations_wikipedia_page_titles_and_ids(language)
+
+        if language not in spacy_nlp_by_lng:
+            spacy_nlp_by_lng[language] = spacy.load(spacy_models_by_lng[language])
+
+        # write conllu for clef-hipe-scorer
+        corpus.clef_hipe_scorer_to_conllu_tsv(
+            localize(clef_hipe_true_file, language),
+            spacy_nlp_by_lng[language], language=language
+        )
+
+        # write entity-fishing xml for EF evaluation
+        corpus.entity_fishing_to_xml_file(entity_fishing_true_xml)
+
+# %% write_annotated_corpora_for_evaluation
+def write_predicted_corpora_for_evaluation(predicted_corpora_by_lng, out_clef_hipe_pred_file, **kwargs):
+
+    # writing predicted corpora
+    print("WRITING EF PREDICTED CORPORA...")
+    for language, corpus in predicted_corpora_by_lng.items():
+        if language not in spacy_nlp_by_lng:
+            spacy_nlp_by_lng[language] = spacy.load(spacy_models_by_lng[language])
+        corpus.clef_hipe_scorer_to_conllu_tsv(
+            localize(out_clef_hipe_pred_file, language),
+            spacy_nlp_by_lng[language], language=language
+        )
+
+# %% load_and_write_pred_true_files_for_evaluation
+
+def load_and_write_pred_true_files_for_evaluation(
+    in_inception_annotation_folder,
+    in_inception_user_name,
+    in_inception_corpora_treatment,
+    in_entity_fishing_prediction_file,
+    in_entity_fishing_rawtext_folder,
+    in_entity_fishing_corpora_treatment,
+    out_entity_fishing_true_xml,
+    out_clef_hipe_true_file,
+    out_clef_hipe_pred_file,
+    sampled_languages = ["fr", "de"]
+):
+
+    predicted_corpora_by_lng, annotated_corpora_by_lng = load_pred_true_files_for_evaluation(
+        in_inception_annotation_folder,
+        in_inception_user_name,
+        in_inception_corpora_treatment,
+        in_entity_fishing_prediction_file,
+        in_entity_fishing_rawtext_folder,
+        in_entity_fishing_corpora_treatment,
+        sampled_languages
+    )
+
     # writing annotated corpora
     print("WRITING ANNOTATED CORPORA...")
     write_annotated_corpora_for_evaluation(
@@ -110,16 +151,9 @@ def load_and_write_pred_true_files_for_evaluation(
         out_clef_hipe_true_file, 
         out_entity_fishing_true_xml
     )
-
+    
     # writing predicted corpora
-    print("WRITING EF PREDICTED CORPORA...")
-    if language not in spacy_nlp_by_lng:
-        spacy_nlp_by_lng[language] = spacy.load(spacy_models_by_lng[language])
-    for language, corpus in predicted_corpora_by_lng.items():
-        corpus.clef_hipe_scorer_to_conllu_tsv(
-            localize(S2_CLEF_HIPE_PRED_FILE, language),
-            spacy_nlp_by_lng[language], language=language
-        )
+    write_predicted_corpora_for_evaluation(predicted_corpora_by_lng, out_clef_hipe_pred_file)
 
 # %% evaluation_2_11_annotation_treatment
 
@@ -173,5 +207,8 @@ evaluation_2_11 = {
 
 #annotated_corpora_by_lng = load_true_corpora_by_lng("inception-annotation-2-11")
 
-load_and_write_pred_true_files_for_evaluation(**evaluation_2_11)
 # %%
+
+
+if __name__=="__main__":
+    load_and_write_pred_true_files_for_evaluation(**evaluation_2_11)

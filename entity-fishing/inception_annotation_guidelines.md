@@ -36,6 +36,7 @@ Classes we absolutely need:
 - BUSINESS
 - EVENT
 - INSTITUTION
+- MEDIA
 - LOCATION
 - ORGANISATION
 - PERSON

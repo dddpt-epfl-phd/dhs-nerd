@@ -52,6 +52,8 @@ if __name__ =="__main__":
     ]
 
     for lng, articles in sampled_articles_by_language.items():
+        with open(localize(S2_INCEPTION_SAMPLED_ARTICLES, lng), "w") as f:
+            f.write("")
         stream_to_jsonl(localize(S2_INCEPTION_SAMPLED_ARTICLES, lng), articles)
 
     with open(S2_INCEPTION_SAMPLED_ARTICLES_IDS, "w") as sampled_json:
