@@ -38,7 +38,7 @@ if dhs_wikidata_wikipedia_links_list is not None:
     }
 
 #dhs_article = sampled_articles[0]
-#document = Document.from_dhs_article(dhs_article, dhs_wikidata_wikipedia_links_dict)
+#document = dhs_article.document_from_dhs_article(dhs_article, dhs_wikidata_wikipedia_links_dict)
 
 
 # %% create Documents from sampled DHS articles
@@ -46,16 +46,16 @@ if dhs_wikidata_wikipedia_links_list is not None:
 sampled_documents_and_articles_by_lng = {
     lng: [
         (
-            Document.from_dhs_article(
-                dhs_article,
+            dhs_article.document_from_dhs_article(
+                article,
                 dhs_wikidata_wikipedia_links_dict,
                 wikipedia_page_name_language=lng,
                 p_text_blocks_separator=" ",
                 non_p_text_blocks_separator=". "
             ),
-            dhs_article
+            article
         )
-        for dhs_article in articles
+        for article in articles
     ]
     for lng, articles in sampled_articles_by_language.items()
 }

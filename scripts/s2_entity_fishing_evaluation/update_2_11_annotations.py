@@ -5,7 +5,7 @@ import sys
 sys.path.append("../../src")
 sys.path.append("../../scripts")
 
-from inception_fishing import Document, inception
+from inception_fishing import Document, inception, dhs_article
 from data_file_paths import S2_INCEPTION_REIMPORT_2_11_FOLDER
 from s3_prepare_evaluation import load_true_corpora_by_lng, evaluation_2_11
 from s0_sample_dhs_articles_for_evaluation import sampled_articles_by_language
@@ -72,7 +72,7 @@ def update_2_11_annotated_document(document_2_11:Document, article):
 def get_dhsarticle_document_texts(document, article):
     #new_document_text = article.title +". "+ document.text.replace("\n\n", " ") +" " 
     new_document_text = update_2_11_annotated_document(document, article).text
-    document_text = Document.from_dhs_article(
+    document_text = dhs_article.document_from_dhs_article(
         article,
         p_text_blocks_separator=" ",
         non_p_text_blocks_separator=". "
