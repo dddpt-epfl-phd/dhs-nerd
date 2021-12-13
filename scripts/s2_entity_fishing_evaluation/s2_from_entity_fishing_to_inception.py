@@ -49,7 +49,6 @@ for language in sampled_languages:
 
 
 
-    nlp = spacy.load(spacy_models_by_lng[language])
 
 
 # %%

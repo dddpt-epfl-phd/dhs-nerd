@@ -29,9 +29,10 @@ spacy_nlp_by_lng = dict()
 
 # %% Load annotated corpus
 def load_true_corpora_by_lng(
-    inception_annotation_folder = S2_INCEPTION_ANNOTATIONS_2_11_FOLDER,
-    inception_user_name = S2_INCEPTION_USER_NAME,
+    in_inception_annotation_folder = S2_INCEPTION_ANNOTATIONS_2_11_FOLDER,
+    in_inception_user_name = S2_INCEPTION_USER_NAME,
     sampled_languages = ["fr", "de"],
+    in_inception_corpora_treatment = None,
     **kwargs
 ):
 
@@ -40,8 +41,8 @@ def load_true_corpora_by_lng(
 
     annotated_corpora_by_lng = Corpus.inception_from_directory(
         "temp_corpus",
-        inception_annotation_folder,
-        inception_user_name
+        in_inception_annotation_folder,
+        in_inception_user_name
     )
 
     annotated_corpora_by_lng = {
@@ -51,10 +52,14 @@ def load_true_corpora_by_lng(
         ) for lng in sampled_languages
     }
 
+    if in_inception_corpora_treatment is not None:
+        print(f"load_true_corpora_by_lng() doing in_inception_corpora_treatment: {in_inception_corpora_treatment}")
+        annotated_corpora_by_lng = in_inception_corpora_treatment(annotated_corpora_by_lng)
+
     return annotated_corpora_by_lng
 
 
-# %% load_and_write_pred_true_files_for_evaluation
+# %% load_pred_true_files_for_evaluation
 
 def load_pred_true_files_for_evaluation(
     in_inception_annotation_folder,
@@ -69,7 +74,6 @@ def load_pred_true_files_for_evaluation(
     # loading inception annotated corpora
     print("LOADING ANNOTATED CORPORA...")
     annotated_corpora_by_lng = load_true_corpora_by_lng(in_inception_annotation_folder, in_inception_user_name)
-    annotated_corpora_by_lng = in_inception_corpora_treatment(annotated_corpora_by_lng)
 
     # loading entity-fishing predicted corpora
     print("LOADING ef PREDICTED CORPORA...")
@@ -80,9 +84,11 @@ def load_pred_true_files_for_evaluation(
             corpus = Corpus.entity_fishing_from_tag_and_corpus(entity_fishing_xml_root, localize(in_entity_fishing_rawtext_folder, language))
 
         predicted_corpora_by_lng[language] = corpus
-    predicted_corpora_by_lng = in_entity_fishing_corpora_treatment(predicted_corpora_by_lng)
+    if in_entity_fishing_corpora_treatment is not None:
+        print(f"load_pred_true_files_for_evaluation() doing in_entity_fishing_corpora_treatment: {in_entity_fishing_corpora_treatment}")
+        predicted_corpora_by_lng = in_entity_fishing_corpora_treatment(predicted_corpora_by_lng)
 
-    return (annotated_corpora_by_lng, predicted_corpora_by_lng)
+    return (predicted_corpora_by_lng, annotated_corpora_by_lng)
 
 # %% write_annotated_corpora_for_evaluation
 def write_annotated_corpora_for_evaluation(
