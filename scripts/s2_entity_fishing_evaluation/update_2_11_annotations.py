@@ -5,7 +5,7 @@ import sys
 sys.path.append("../../src")
 sys.path.append("../../scripts")
 
-from inception_fishing import Document
+from inception_fishing import Document, inception
 from data_file_paths import S2_INCEPTION_REIMPORT_2_11_FOLDER
 from s3_prepare_evaluation import load_true_corpora_by_lng, evaluation_2_11
 from s0_sample_dhs_articles_for_evaluation import sampled_articles_by_language
@@ -138,4 +138,4 @@ if __name__=="__main__":
                 a = annotated_articles_by_language[lng][i]
                 new_d = update_2_11_annotated_document(d, a)
                 print(f"doing Document  {d.name}")
-                new_d.inception_to_xml_file(S2_INCEPTION_REIMPORT_2_11_FOLDER, force_single_sentence=True, tagset_tag_str=inception_tagset_tag_str, tag_name="custom:Entityfishinglayer", identifier_attribute_name="wikidataidentifier")
+                inception.document_to_xml_file(new_d, S2_INCEPTION_REIMPORT_2_11_FOLDER, force_single_sentence=True, tagset_tag_str=inception_tagset_tag_str, tag_name="custom:Entityfishinglayer", identifier_attribute_name="wikidataidentifier")

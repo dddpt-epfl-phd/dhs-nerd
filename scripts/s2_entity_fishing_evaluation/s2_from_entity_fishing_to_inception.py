@@ -44,7 +44,7 @@ for language in sampled_languages:
     if __name__=="__main__":
         for d in corpus.documents:
             print(f"doing Document  {d.name}")
-            d.inception_to_xml_file(S2_INCEPTION_IMPORT_FOLDER, force_single_sentence=True, tagset_tag_str=inception_tagset_tag_str, tag_name="custom:Entityfishinglayer", identifier_attribute_name="wikidataidentifier")
+            inception.document_to_xml_file(d, S2_INCEPTION_IMPORT_FOLDER, force_single_sentence=True, tagset_tag_str=inception_tagset_tag_str, tag_name="custom:Entityfishinglayer", identifier_attribute_name="wikidataidentifier")
     # %%
 
 

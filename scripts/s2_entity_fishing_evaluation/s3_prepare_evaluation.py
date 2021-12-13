@@ -39,7 +39,7 @@ def load_true_corpora_by_lng(
 
     # Load annotated corpus
 
-    annotated_corpora_by_lng = Corpus.inception_from_directory(
+    annotated_corpora_by_lng = inception.corpus_from_directory(
         "temp_corpus",
         in_inception_annotation_folder,
         in_inception_user_name
