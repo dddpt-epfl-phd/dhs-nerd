@@ -8,6 +8,7 @@ sys.path.append("../../src")
 sys.path.append("../../scripts")
 
 from data_file_paths import S2_INCEPTION_ANNOTATIONS_2_11_FOLDER
+from inception_fishing import clef_hipe_scorer
 # %%
 
 with open(path.join(S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, 'Daniel de Chambrier.fr.txt/TypeSystem.xml'), 'rb') as f:
@@ -77,6 +78,6 @@ from s2_entity_fishing_evaluation.s3_prepare_evaluation import corpus
 
 doc = corpus.documents[0]
 
-print(corpus.clef_hipe_scorer_to_conllu_tsv(nlp))
+print(clef_hipe_scorer.corpus_to_conllu_tsv(corpus, nlp))
 
 # %%

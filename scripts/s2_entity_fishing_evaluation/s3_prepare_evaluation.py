@@ -104,7 +104,8 @@ def write_annotated_corpora_for_evaluation(
             spacy_nlp_by_lng[language] = spacy.load(spacy_models_by_lng[language])
 
         # write conllu for clef-hipe-scorer
-        corpus.clef_hipe_scorer_to_conllu_tsv(
+        clef_hipe_scorer.corpus_to_conllu_tsv(
+            corpus,
             localize(clef_hipe_true_file, language),
             spacy_nlp_by_lng[language], language=language
         )
@@ -120,7 +121,8 @@ def write_predicted_corpora_for_evaluation(predicted_corpora_by_lng, out_clef_hi
     for language, corpus in predicted_corpora_by_lng.items():
         if language not in spacy_nlp_by_lng:
             spacy_nlp_by_lng[language] = spacy.load(spacy_models_by_lng[language])
-        corpus.clef_hipe_scorer_to_conllu_tsv(
+        clef_hipe_scorer.corpus_to_conllu_tsv(
+            corpus,
             localize(out_clef_hipe_pred_file, language),
             spacy_nlp_by_lng[language], language=language
         )
@@ -215,6 +217,8 @@ evaluation_2_11 = {
 
 # %%
 
-
+predicted_corpora_by_lng, annotated_corpora_by_lng = load_pred_true_files_for_evaluation(**evaluation_2_11)
 if __name__=="__main__":
-    load_and_write_pred_true_files_for_evaluation(**evaluation_2_11)
+    write_annotated_corpora_for_evaluation(annotated_corpora_by_lng, **evaluation_2_11)
+    write_predicted_corpora_for_evaluation(predicted_corpora_by_lng, **evaluation_2_11)
+    #load_and_write_pred_true_files_for_evaluation(**evaluation_2_11)

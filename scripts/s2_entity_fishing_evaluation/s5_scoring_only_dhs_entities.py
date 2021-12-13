@@ -9,7 +9,7 @@ import sys
 sys.path.append("../../src")
 sys.path.append("../../scripts")
 
-from inception_fishing import Corpus, Document, Annotation
+from inception_fishing import Corpus, clef_hipe_scorer
 from s2_entity_fishing_evaluation.s2_from_entity_fishing_to_inception import predicted_corpora_by_lng
 from s2_entity_fishing_evaluation.s3_prepare_evaluation import annotated_corpora_by_lng
 from utils import spacy_models_by_lng
@@ -42,7 +42,8 @@ def create_filtered_true_pred_tsv(pred_corpus, true_corpus, nlp, wikidata_entiti
     for d in pred_corpus_filtered.documents:
         d.filter_annotations(lambda a: a.wikidata_entity_url in wikidata_entities_ids_to_keep)
 
-    pred_corpus_filtered.clef_hipe_scorer_to_conllu_tsv(
+    clef_hipe_scorer.corpus_to_conllu_tsv(
+        pred_corpus_filtered,
         path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER,pred_corpus_filtered.name+f"-clef-hipe-scorer-conllu.tsv"),
         nlp, language=language
     )
@@ -51,7 +52,8 @@ def create_filtered_true_pred_tsv(pred_corpus, true_corpus, nlp, wikidata_entiti
     true_corpus_filtered.name = f"dhs-{language}-{corpus_name_suffix}-true"
     for d in true_corpus_filtered.documents:
         d.filter_annotations(lambda a: a.wikidata_entity_url in wikidata_entities_ids_to_keep)
-    true_corpus_filtered.clef_hipe_scorer_to_conllu_tsv(
+    clef_hipe_scorer.corpus_to_conllu_tsv(
+        true_corpus_filtered,
         path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER,true_corpus_filtered.name+"-clef-hipe-scorer-conllu.tsv"),
         nlp, language=language
     )
