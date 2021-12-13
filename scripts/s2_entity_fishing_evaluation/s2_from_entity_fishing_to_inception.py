@@ -28,7 +28,7 @@ for language in sampled_languages:
 # %% importing from EF
     with open(localize(S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE, language)) as entity_fishing_xml_file:
         entity_fishing_xml_root = etree.parse(entity_fishing_xml_file).getroot()
-        corpus = Corpus.entity_fishing_from_tag_and_corpus(entity_fishing_xml_root, localize(S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, language))
+        corpus = entity_fishing.corpus_from_tag_and_corpus(entity_fishing_xml_root, localize(S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, language))
 
     predicted_corpora_by_lng[language] = corpus
 

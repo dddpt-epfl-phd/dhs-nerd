@@ -81,7 +81,7 @@ def load_pred_true_files_for_evaluation(
     for language in sampled_languages:
         with open(localize(in_entity_fishing_prediction_file, language)) as entity_fishing_xml_file:
             entity_fishing_xml_root = etree.parse(entity_fishing_xml_file).getroot()
-            corpus = Corpus.entity_fishing_from_tag_and_corpus(entity_fishing_xml_root, localize(in_entity_fishing_rawtext_folder, language))
+            corpus = entity_fishing.corpus_from_tag_and_corpus(entity_fishing_xml_root, localize(in_entity_fishing_rawtext_folder, language))
 
         predicted_corpora_by_lng[language] = corpus
     if in_entity_fishing_corpora_treatment is not None:
@@ -110,7 +110,7 @@ def write_annotated_corpora_for_evaluation(
         )
 
         # write entity-fishing xml for EF evaluation
-        corpus.entity_fishing_to_xml_file(entity_fishing_true_xml)
+        entity_fishing.corpus_to_xml_file(corpus, entity_fishing_true_xml)
 
 # %% write_annotated_corpora_for_evaluation
 def write_predicted_corpora_for_evaluation(predicted_corpora_by_lng, out_clef_hipe_pred_file, **kwargs):
