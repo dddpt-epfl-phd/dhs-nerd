@@ -2,7 +2,11 @@
 import spacy
 import pandas as pd
 
-from inception_fishing import Corpus, Document, Annotation
+import sys
+sys.path.append("../../src")
+sys.path.append("../../scripts")
+
+from inception_fishing import Corpus, spacy as if_spacy
 
 from s2_entity_fishing_evaluation.s2_from_entity_fishing_to_inception import predicted_corpora_by_lng
 from s2_entity_fishing_evaluation.s3_prepare_evaluation import annotated_corpora_by_lng
@@ -28,8 +32,8 @@ if False:
 
         true_doc = [d for d in true_corpus.documents if d.name==pred_doc.name][0]
 
-        pred_doc_spacy = pred_doc.spacy_to_doc(nlp)
-        true_doc_spacy = true_doc.spacy_to_doc(nlp)
+        pred_doc_spacy = if_spacy.document_to_spacy_doc(pred_doc, nlp)
+        true_doc_spacy = if_spacy.document_to_spacy_doc(true_doc, nlp)
 
         pred_tokens = [t for t in pred_doc_spacy]
         true_tokens = [t for t in true_doc_spacy]
