@@ -8,7 +8,7 @@ import sys
 sys.path.append("../../src")
 sys.path.append("../../scripts")
 
-from inception_fishing import *
+from inception_fishing import Corpus, wikipedia, inception, clef_hipe_scorer, entity_fishing, grobid_ner
 from utils import spacy_models_by_lng
 from data_file_paths import  S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, S2_INCEPTION_USER_NAME, S2_ENTITY_FISHING_2_11_OWN_EVALUATION_TRUE_FILE, S2_CLEF_HIPE_PRED_FILE, S2_CLEF_HIPE_TRUE_FILE, S2_ENTITY_FISHING_2_11_PREDICTION_OUTPUT_FILE, S2_ENTITY_FISHING_2_11_RAWTEXT_FOLDER, localize
 
@@ -98,7 +98,7 @@ def write_annotated_corpora_for_evaluation(
     **kwargs
     ):
     for language, corpus in annotated_corpora_by_lng.items():
-        corpus.set_annotations_wikipedia_page_titles_and_ids(language)
+        wikipedia.corpus_set_annotations_page_titles_and_ids(corpus, language)
 
         if language not in spacy_nlp_by_lng:
             spacy_nlp_by_lng[language] = spacy.load(spacy_models_by_lng[language])
@@ -185,7 +185,7 @@ def evaluation_2_11_true_treatment(annotated_corpora_by_lng):
             d.replace_regex("(\n| ){2,}", " ")
             d.replace_regex("'", '"')
             # Remove non-grobid tag classes
-            d.annotations = [a for a in d.annotations if a.grobid_tag not in DHS_NERD_EXTRA_TAGS]
+            d.annotations = [a for a in d.annotations if a.grobid_tag not in grobid_ner.DHS_NERD_EXTRA_TAGS]
             # Remove SUBSTANCE,  ARTIFACT and TITLE
             # TITLE might need refining (keep duke of savoy or bishop of geneva)  
             d.annotations = [a for a in d.annotations if a.grobid_tag not in ["SUBSTANCE", "ARTIFACT", "TITLE"]]
