@@ -8,7 +8,7 @@ import sys
 sys.path.append("../../src")
 sys.path.append("../../scripts")
 
-from inception_fishing import *
+from inception_fishing import entity_fishing, inception
 from utils import spacy_models_by_lng
 from data_file_paths import S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, S2_INCEPTION_IMPORT_FOLDER, S2_CLEF_HIPE_PRED_FILE, localize
 
@@ -25,7 +25,7 @@ for language in sampled_languages:
 
 
 
-# %% importing from EF
+    # %% importing from EF
     with open(localize(S2_ENTITY_FISHING_ANNOTATION_OUTPUT_FILE, language)) as entity_fishing_xml_file:
         entity_fishing_xml_root = etree.parse(entity_fishing_xml_file).getroot()
         corpus = entity_fishing.corpus_from_tag_and_corpus(entity_fishing_xml_root, localize(S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, language))
