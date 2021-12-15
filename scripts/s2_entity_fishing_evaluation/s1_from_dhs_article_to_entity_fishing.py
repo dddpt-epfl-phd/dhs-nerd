@@ -48,8 +48,7 @@ sampled_documents_and_articles_by_lng = {
         (
             dhs_article.document_from_dhs_article(
                 article,
-                dhs_wikidata_wikipedia_links_dict,
-                wikipedia_page_name_language=lng,
+                #dhs_wikidata_wikipedia_links_dict,
                 p_text_blocks_separator=" ",
                 non_p_text_blocks_separator=". "
             ),
