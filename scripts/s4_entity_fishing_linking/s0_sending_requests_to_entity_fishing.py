@@ -1,6 +1,7 @@
 # %%
 
 import json
+from re import A
 
 import requests as r
 
@@ -18,6 +19,17 @@ from s2_entity_fishing_evaluation.s0_sample_dhs_articles_for_evaluation import s
 article = sampled_articles_by_language["fr"][0]
 document = dhs_article.document_from_dhs_article(article)
 
+article.add_wikidata_id_wikipedia_page_title()
+article.add_wikidata_wikipedia_to_text_links()
+
+# %%
+
+articles10 = [a for a in sampled_articles_by_language["fr"][0:10]]
+for a in articles10:
+    a.add_wikidata_id_wikipedia_page_title()
+    a.add_wikidata_wikipedia_to_text_links()
+
+awk = [(a.title, a.wikidata_id, a.wikipedia_page_title) for a in articles10]
 
 # %% sending query by hand
 
@@ -41,6 +53,7 @@ if False:
 
 # %%
 
+wikipedia.document_set_annotations_page_titles_and_ids(document, "fr")
 nerd_doc = entity_fishing.document_named_entity_linking(document, "fr")
 
 nerda = [a for a in nerd_doc.annotations if a.extra_fields.get("origin")=="entity_fishing"]
