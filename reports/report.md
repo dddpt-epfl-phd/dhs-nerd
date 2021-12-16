@@ -1,3 +1,5 @@
+<link rel="stylesheet" type="text/css" href="./style.css">
+
 
 # Linking the DHS
 
@@ -39,10 +41,10 @@ All articles are versioned, for example as of this report Bioley-Orjulaz just go
 
 Most articles are quite short, consisting of a single paragraph, while a few articles are much longer. Articles about themes are longer on average. Spatial articles 
 
-![articles lengths by category](./figures/articles_lengths_by_category_save.png "articles lengths by category")
+![articles lengths by category](./figures/articles_lengths_by_category.png "articles lengths by category")
 
 
-![percentage of articles in Wikidata and Wikipedias](./figures/percent_articles_in_wd_by_category_save.png "percentage of articles in Wikidata and Wikipedias")
+![percentage of articles in Wikidata and Wikipedias](./figures/percent_articles_in_wd_by_category.png "percentage of articles in Wikidata and Wikipedias")
 *image_caption*
 
 
