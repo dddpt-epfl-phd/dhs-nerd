@@ -10,7 +10,7 @@ sys.path.append("../../src")
 sys.path.append("../../scripts")
 
 from dhs_scraper import DhsArticle, DhsTag
-from data_file_paths import S0_JSONL_ALL_ARTICLES_PARSED_FILE, S0_DHS_CATEGORIES, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, s0_png_articles_lengths_by_category_figure, s0_png_percent_articles_in_wd_by_category, localize, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS
+from data_file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ALL_ARTICLES_PARSED_FILE, S0_DHS_CATEGORIES, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, s0_png_articles_lengths_by_category_figure, s0_png_percent_articles_in_wd_by_category, localize, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS
 
 # %matplotlib inline
 
@@ -80,7 +80,7 @@ def tags_stats(articles, title=None, figure = None):
     #tags_plot.set_xticks([])
     return (tags_plot, tags_percentiles)
 
-tags_stats(articles, "Whole DHS", 31)
+tags_stats(articles, "Whole HDS", 31)
 ""
 
 # %%
@@ -126,7 +126,7 @@ def texts_stats(articles, title=None, figure=None):
         title = title_starter+"Length of Articles (character)")
     return texts_plot, pd_texts_length
 
-texts_stats(articles, "Whole DHS",3)
+texts_stats(articles, "Whole HDS",3)
 ""
 
 # %%
@@ -174,6 +174,14 @@ category_missing_articles = [
     for a in articles if a not in sarticles_category
 ]
 
+# %% nb of articles per category
+
+fig = plt.figure()
+ax = fig.add_axes([0,0,1,1])
+nb_articles_by_category_plot = ax.bar(S0_DHS_CATEGORIES,[len(articles) for articles in articles_by_category])
+ax.set(title="Number of Articles by HDS category")
+
+
 # %%
 
 articles_by_category_text_stats = [
@@ -183,8 +191,8 @@ articles_by_category_text_stats = [
 articles_by_category_text_stats_plot = articles_by_category_text_stats[0][0]
 #articles_by_category_text_stats_plot.legend([t[0]+f" ({len(articles_by_category[i])} articles, avg: {int(articles_by_category_text_stats[i][1].mean())}, md: {int(articles_by_category_text_stats[i][1].quantile(0.5))})" for i,t in enumerate(categories)])
 articles_by_category_text_stats_plot.legend([t[0]+f" ({len(articles_by_category[i])} articles, median: {int(articles_by_category_text_stats[i][1].quantile(0.5))}c)" for i,t in enumerate(S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items())])
-articles_by_category_text_stats_plot.set(title="Length of Articles (character) by DHS category")
-plt.gcf().set_figwidth(7) # default: 6.4
+articles_by_category_text_stats_plot.set(title="Length of Articles (character) by HDS category")
+plt.gcf().set_figwidth(8) # default: 6.4
 plt.gcf().set_figheight(5) # default: 4
 plt.gcf().savefig(s0_png_articles_lengths_by_category_figure, dpi=500)
 
@@ -193,7 +201,7 @@ plt.gcf().savefig(s0_png_articles_lengths_by_category_figure, dpi=500)
 
 """
 todo:
-- graph proportion of articles in DHS per category
+- graph proportion of articles in HDS per category
 - length of articles vs in/out wikidata
 """
 languages = ["fr", "de", "it", "en"]
@@ -208,8 +216,14 @@ def in_out_wikidata(articles, articles_ids=articles_in_wikidata_ids):
     return ([a for a in articles if a.id in articles_ids], [a for a in articles if a.id not in articles_ids])
 
 articles_in_out_wikidata = in_out_wikidata(articles)
+print(f"Proportion of HDS articles linked from wikidata: {len(articles_in_out_wikidata[0]) / len(articles)}")
+
 articles_in_out_wikidata_by_category = [in_out_wikidata(abyc) for abyc in articles_by_category]
 articles_in_wikipedia_by_lang = {l: in_out_wikidata(articles, articles_in_wikipedia_by_lang_ids[l]) for l in languages}
+
+for l in languages:
+    print(f"Proportion of HDS articles with a corresponding {l} Wikipedia article: {len(articles_in_wikipedia_by_lang[l][0]) / len(articles)}")
+
 articles_in_wikipedia_by_category_and_lang = [
     {l: in_out_wikidata(abyc, articles_in_wikipedia_by_lang_ids[l]) for l in languages}
      for abyc in articles_by_category
@@ -237,19 +251,19 @@ percent_articles_in_wd_by_category = prop_articles_in_wd_by_category.loc[:,["pro
 percent_articles_in_wd_by_category
 percent_articles_in_wd_by_category_plot = percent_articles_in_wd_by_category.plot.bar()
 percent_articles_in_wd_by_category_plot.legend([f"% in {lng}" for lng in ["Wikidata", "DE Wikipedia", "FR Wikipedia", "EN Wikipedia", "IT Wikipedia"]])
-percent_articles_in_wd_by_category_plot.set(title = "Proportion of DHS articles, by category, covered in different languages of wikipedia", ylabel="%")
-plt.gcf().set_figwidth(6) # default: 6.4
-plt.gcf().set_figheight(4) # default: 4
+percent_articles_in_wd_by_category_plot.set(title = "Proportion of HDS articles, by category, covered in different languages of wikipedia", ylabel="%")
+plt.gcf().set_figwidth(8) # default: 6.4
+plt.gcf().set_figheight(5) # default: 4
 plt.xticks(rotation=0)
 plt.gcf().savefig(s0_png_percent_articles_in_wd_by_category)
 
-print(f"""Proportion of DHS articles, by category, covered in different languages of wikipedia:
+print(f"""Proportion of HDS articles, by category, covered in different languages of wikipedia:
 {prop_articles_in_wd_by_category}
 Conclusion:
 - Lots of entities are in WikiData, but not that many in Wikipedia.
 - Articles on spatial themes are very well covered in wikipedia.
 - families are very badly covered in wikipedia.
-- DE wikipedia has a substantial better coverage of DHS articles.
+- DE wikipedia has a substantial better coverage of HDS articles.
 """)
 #prop_articles_in_wd_by_category
 

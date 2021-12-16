@@ -1,17 +1,5 @@
-<style>
+<link rel="stylesheet" type="text/css" href="./style.css">
 
-
-img{
-    width:100%;
-    max-width:600px;
-}
-
-body{
-    background-color: white;
-    color: black;
-}
-
-</style>
 
 # Linking the DHS
 
@@ -35,13 +23,14 @@ The rest of this report is organized as follows: in section 2) an overview of th
 
 ## 2) The Historical Dictionary of Switzerland
 
-The HDS contains 36'000 articles classified in 4 main categories: people, families, spatial (municipalities, regions, etc.) and themes (communism, contemporary art, etc.). Most articles are about people (25'290 articles), then come spatial (5'459 articles), themes (3'154) and finally families (2'557).
+The [Historical Dictionary of Switzerland](hls-dhs-dss.ch/) offers more than 36'359 articles. It offers a search interface and articles are classified in 4 main categories: people, families, spatial (municipalities, regions, etc.) and themes (communism, contemporary art, etc.).
+Most articles are about people (25'291 articles), then come spatial (5'459 articles), themes (3'154) and finally families (2'557).
 
 A HDS article has many components:
 1) article text
 2) media components (images, maps, data tables)
 3) a list of historical and bibliographic sources
-4) links to the same entity on other linked databases (GND, VIAF, Swiss diplomatic documents, etc.)
+4) links to the same entity on other linked databases (GND, metagrid, Swiss diplomatic documents, etc.)
 5) structured data (birth and death dates, alternative names, etc.)
 6) thematic indexation (categories such as "Elites before 1800", "Cantonal parliaments", etc.)
 
@@ -51,13 +40,14 @@ Two examples of articles with most of the above components are the [city of Zuri
 
 All articles are versioned, for example as of this report Bioley-Orjulaz just got updated from a [2004 version](https://hls-dhs-dss.ch/articles/002356/2004-09-30/) to [a new one](https://hls-dhs-dss.ch/articles/002356/2021-11-08/) with cross-linking. It clearly shows that the question of cross-linking is currently being adressed at the HDS, at the same time this project has been going.
 
-Most articles are quite short, consisting of a single paragraph, while a few articles are much longer. Articles about themes are longer on average. Spatial articles 
+Most articles are quite short, consisting of a single paragraph, while a few articles are much longer. As can be seen in figure figXXX, articles about themes are longer on average. While spatial articles are the longest.
 
 ![articles lengths by category](./figures/articles_lengths_by_category.png "articles lengths by category")
 
 
+The HDS is used as a source by Wikipedia and Wikidata. The coverage in Wikidata in particular is very good with 88% of HDS articles having a Wikidata entity linking to them. Regarding Wikipedia, 49% of HDS articles have a corresponding article in the German Wikipedia, for French and Italian the coverage is 28% and 20% respectively. Breaking those statistics further by category as in figure figXXX yields new insights: spatial articles are very well covered in all Wikipedias; families and people are well covered in Wikidata but not so in Wikipedia; themes are somewhere in between with a medium coverage in both Wikidata and Wikipedia. The most interesting result for the rest of our work is the much better coverage of people in the German Wikipedia at 44%.
+
 ![percentage of articles in Wikidata and Wikipedias](./figures/percent_articles_in_wd_by_category.png "percentage of articles in Wikidata and Wikipedias")
-*image_caption*
 
 
 ## 3) Methodology
@@ -72,15 +62,11 @@ The main steps of the projects are as follows:
 
 We created a python scraper to download and parse the whole HDS.
 
-Of the 6 type of components mentionned in section 1), the scraper gathers all of them except media components which squarely fall out of the scope of this project.
-
-
+Of the 6 type of components mentionned in section 1), the scraper gathers all of them except media components which are not central to this project.
 
 ### 3.2) Named Entity Recognition and Disambiguation with entity-fishing
 
-The main task of this project is named entities recognition and disambiguation.
-
-Based on the result of the CLEF-HIPE 2020 challenge,
+The main task of this project is named entities recognition and disambiguation. Based on the result of the CLEF-HIPE 2020 challenge, we decided to use the [entity-fishing](https://github.com/kermitt2/entity-fishing/) entity recognition and disambiguation framework.
 
 ### 3.3) Demonstration Interface for a linked HDS
 

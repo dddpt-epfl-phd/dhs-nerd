@@ -17,16 +17,18 @@ jsonl_articles_content_file = localize(S0_JSONL_ALL_ARTICLES_FILE, language)
 jsonl_articles_parsed_file = localize(S0_JSONL_ALL_ARTICLES_PARSED_FILE, language)
 
 buffer_size = 10
+info_interval = 100
 
 # %%
 
-def parsed_articles_without_page_content_generator(articles, info_interval=1000):
+def parsed_articles_without_page_content_generator(articles, already_visited_ids, info_interval=info_interval):
     for i, a in enumerate(articles):
-        a.parse_article()
-        if i % info_interval == 0:
-            print(f"parsing articles, currently at {i}th article....")
-        a.drop_page()
-        yield a
+        if a.id not in already_visited_ids:
+            a.parse_article()
+            if i % info_interval == 0:
+                print(f"parsing articles, currently at {i}th article....")
+            a.drop_page()
+            yield a
 
 
 # %%
@@ -38,9 +40,14 @@ unparsed_articles = list(DhsArticle.load_articles_from_jsonl(jsonl_articles_cont
 
 
 already_visited_ids = set(DhsArticle.get_articles_ids(jsonl_articles_parsed_file))
+
+# %%
 stream_to_jsonl(
     jsonl_articles_parsed_file,
-    parsed_articles_without_page_content_generator(unparsed_articles),
+    parsed_articles_without_page_content_generator(
+        unparsed_articles,
+        already_visited_ids
+    ),
     buffer_size=buffer_size
 )
 # %%
