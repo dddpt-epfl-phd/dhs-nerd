@@ -23,7 +23,7 @@ The rest of this report is organized as follows: in section 2) an overview of th
 
 ## 2) The Historical Dictionary of Switzerland
 
-The [Historical Dictionary of Switzerland](hls-dhs-dss.ch/) offers more than 36'359 articles. It offers a search interface and articles are classified in 4 main categories: people, families, spatial (municipalities, regions, etc.) and themes (communism, contemporary art, etc.).
+The [Historical Dictionary of Switzerland](hls-dhs-dss.ch/) offers more than 36'359 articles in 3 languages, Italian, German and French. It offers a search interface and articles are classified in 4 main categories: people, families, spatial (municipalities, regions, etc.) and themes (communism, contemporary art, etc.).
 Most articles are about people (25'291 articles), then come spatial (5'459 articles), themes (3'154) and finally families (2'557).
 
 A HDS article has many components:
