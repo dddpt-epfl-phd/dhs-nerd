@@ -1,5 +1,17 @@
-<link rel="stylesheet" type="text/css" href="./style.css">
+<style>
 
+
+img{
+    width:100%;
+    max-width:600px;
+}
+
+body{
+    background-color: white;
+    color: black;
+}
+
+</style>
 
 # Linking the DHS
 
