@@ -23,6 +23,7 @@ S0_DATA_FOLDER = path.join(DATA_FOLDER, "scrape_dhs")
 
 # s0_scrape_dhs/s0_scrape.py
 S0_JSONL_ALL_ARTICLES_FILE = path.join(S0_DATA_FOLDER, "dhs_<LANGUAGE>_all_articles_content.jsonl")
+S0_JSONL_ALL_ARTICLES_PARSED_FILE = path.join(S0_DATA_FOLDER, "dhs_<LANGUAGE>_all_articles_parsed.jsonl")
 S0_JSONL_ALL_ARTICLES_NO_PAGE_FILE = path.join(S0_DATA_FOLDER, "no-page-content","dhs_<LANGUAGE>_all_articles_content.jsonl")
 
 S0_THEMES_CATEGORY = "themes"

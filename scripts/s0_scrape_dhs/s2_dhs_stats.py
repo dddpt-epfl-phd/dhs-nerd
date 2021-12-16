@@ -4,19 +4,18 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from dhs_scraper import DhsArticle, DhsTag
 
 import sys
 sys.path.append("../../src")
 sys.path.append("../../scripts")
 
-from dhs_scraper import DhsArticle, stream_to_jsonl
-from data_file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_DHS_CATEGORIES, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, s0_png_articles_lengths_by_category_figure, s0_png_percent_articles_in_wd_by_category, localize, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS
+from dhs_scraper import DhsArticle, DhsTag
+from data_file_paths import S0_JSONL_ALL_ARTICLES_PARSED_FILE, S0_DHS_CATEGORIES, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, s0_png_articles_lengths_by_category_figure, s0_png_percent_articles_in_wd_by_category, localize, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS
 
 # %matplotlib inline
 
 language="fr"
-articles_jsonl_file = localize(S0_JSONL_ALL_ARTICLES_FILE, language)
+articles_jsonl_file = localize(S0_JSONL_ALL_ARTICLES_PARSED_FILE, language)
 #articles_jsonl_file = "data/dhs_all_articles_TESTfr.jsonl"
 
 # %%
