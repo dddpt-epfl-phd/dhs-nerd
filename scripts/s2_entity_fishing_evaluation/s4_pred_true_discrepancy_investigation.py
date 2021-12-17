@@ -9,7 +9,7 @@ sys.path.append("../../scripts")
 from inception_fishing import Corpus, spacy as if_spacy
 
 from s2_entity_fishing_evaluation.s2_from_entity_fishing_to_inception import predicted_corpora_by_lng
-from s2_entity_fishing_evaluation.s3_prepare_evaluation import annotated_corpora_by_lng
+from s2_entity_fishing_evaluation.s3_prepare_2_11_evaluation import annotated_corpora_by_lng
 from s2_entity_fishing_evaluation.s5_scoring_only_dhs_entities import dhs_only_corpora_by_lng, dhs_wk_only_corpora_by_lng 
 from utils import spacy_models_by_lng
 

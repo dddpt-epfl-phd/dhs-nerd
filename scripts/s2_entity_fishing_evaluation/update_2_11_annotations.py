@@ -7,7 +7,7 @@ sys.path.append("../../scripts")
 
 from inception_fishing import Document, inception, dhs_article
 from data_file_paths import S2_INCEPTION_REIMPORT_2_11_FOLDER
-from s3_prepare_evaluation import load_true_corpora_by_lng, evaluation_2_11
+from s2_entity_fishing_evaluation.s3_prepare_2_11_evaluation import load_true_corpora_by_lng, evaluation_2_11
 from s0_sample_dhs_articles_for_evaluation import sampled_articles_by_language
 
 

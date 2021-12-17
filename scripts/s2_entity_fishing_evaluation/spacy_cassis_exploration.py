@@ -74,7 +74,7 @@ doc._.hello = False
 """
 # %%
 
-from s2_entity_fishing_evaluation.s3_prepare_evaluation import corpus
+from s2_entity_fishing_evaluation.s3_prepare_2_11_evaluation import corpus
 
 doc = corpus.documents[0]
 

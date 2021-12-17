@@ -10,7 +10,7 @@ sys.path.append("../../scripts")
 
 from inception_fishing import Corpus, wikipedia, inception, clef_hipe_scorer, entity_fishing, grobid_ner
 from utils import spacy_models_by_lng
-from data_file_paths import  S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, S2_INCEPTION_USER_NAME, S2_ENTITY_FISHING_2_11_OWN_EVALUATION_TRUE_FILE, S2_CLEF_HIPE_PRED_FILE, S2_CLEF_HIPE_TRUE_FILE, S2_ENTITY_FISHING_2_11_PREDICTION_OUTPUT_FILE, S2_ENTITY_FISHING_2_11_RAWTEXT_FOLDER, localize
+from data_file_paths import  S2_INCEPTION_ANNOTATIONS_2_11_FOLDER, S2_INCEPTION_USER_NAME, S2_ENTITY_FISHING_2_11_OWN_EVALUATION_TRUE_FILE, S2_CLEF_HIPE_PRED_FILE_2_11, S2_CLEF_HIPE_TRUE_FILE_2_11, S2_ENTITY_FISHING_2_11_PREDICTION_OUTPUT_FILE, S2_ENTITY_FISHING_2_11_RAWTEXT_FOLDER, localize
 
 
 
@@ -93,7 +93,7 @@ def load_pred_true_files_for_evaluation(
 # %% write_annotated_corpora_for_evaluation
 def write_annotated_corpora_for_evaluation(
     annotated_corpora_by_lng,
-    clef_hipe_true_file = S2_CLEF_HIPE_TRUE_FILE,
+    clef_hipe_true_file = S2_CLEF_HIPE_TRUE_FILE_2_11,
     entity_fishing_true_xml = S2_ENTITY_FISHING_2_11_OWN_EVALUATION_TRUE_FILE,
     **kwargs
     ):
@@ -209,8 +209,8 @@ evaluation_2_11 = {
     "in_entity_fishing_rawtext_folder": S2_ENTITY_FISHING_2_11_RAWTEXT_FOLDER,
     "in_entity_fishing_corpora_treatment": lambda x: x,
     "out_entity_fishing_true_xml": S2_ENTITY_FISHING_2_11_OWN_EVALUATION_TRUE_FILE,
-    "out_clef_hipe_true_file": S2_CLEF_HIPE_TRUE_FILE,
-    "out_clef_hipe_pred_file": S2_CLEF_HIPE_PRED_FILE,
+    "out_clef_hipe_true_file": S2_CLEF_HIPE_TRUE_FILE_2_11,
+    "out_clef_hipe_pred_file": S2_CLEF_HIPE_PRED_FILE_2_11,
 }
 
 #annotated_corpora_by_lng = load_true_corpora_by_lng("inception-annotation-2-11")
