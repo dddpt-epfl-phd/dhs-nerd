@@ -46,6 +46,9 @@ Classes that are relevant but nut primordial:
 - LEGAL, important international treaties/declaration, such as "Traité de Lausanne"
 - TITLE, seulement ceux qui sont précisé comme "prince-évêque de Bâle" (et pas juste "prince-évêque" ou conseiller national)
 - FAMILY, when not already nested in a person entity
+- SUBSTANCE, when sufficiently important to have a dedicated DHS article (iron, salt, etc)
+- NATIONAL, when referring to an historic tribe, people (Alamanni, Romans), not modern countries (not Swiss, etc...)
+- PERSON_TYPE, when referring to a category relevant to our work such as political party
 
 Nice to have classes:
 - CONCEPT, such as "feminism", "mythes fondateurs", as there are some concept in DHS, but maybe better not
