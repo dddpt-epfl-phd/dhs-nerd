@@ -94,10 +94,11 @@ annotated_corpora_by_lng = load_true_corpora_by_lng_16_12()
 
 # %%
 
-tdalen = [len(d.annotations) for d in annotated_corpora_by_lng["fr"].documents]
+dalois = [d for d in annotated_corpora_by_lng["fr"].documents if "Alois" in d.name][0]
+aalois = [d for d in sampled_articles_by_language["fr"] if "Alois" in d.title][0]
 
-tdalen
-#result = entity_fishing.document_send_request(document, "fr")
+
+
 
 # %%
 
