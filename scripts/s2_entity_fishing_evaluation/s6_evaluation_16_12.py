@@ -162,7 +162,7 @@ def evaluate(annotated_corpus:Corpus, language:str, filetag:str):
 
 # %%
 
-lng = "fr"
+lng = "de"
 results, pred_corpus, true_corpus = evaluate(annotated_corpora_by_lng[lng], lng, "16-12-test")
 
 

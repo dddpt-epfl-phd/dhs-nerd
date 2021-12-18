@@ -68,6 +68,34 @@ Of the 6 type of components mentionned in section 1), the scraper gathers all of
 
 The main task of this project is named entities recognition and disambiguation. Based on the result of the CLEF-HIPE 2020 challenge, we decided to use the [entity-fishing](https://github.com/kermitt2/entity-fishing/) entity recognition and disambiguation framework.
 
+#### Results 16.12 on 16 documents:
+
+*French*:
+- TP: 606
+- FP: 203
+- FN: 216
+Micro:
+- precision: 0.749
+- recall: 0.737
+- F1: 0.743
+Macro:
+- precision: 0.748
+- recall: 0.721
+- F1: 0.729
+
+_German_:
+- TP: 602
+- FP: 295
+- FN: 270
+Micro:
+- precision: 0.671
+- recall: 0.69
+- F1: 0.681
+Macro:
+- precision: 0.661
+- recall: 0.66
+- F1: 0.653
+
 ### 3.3) Demonstration Interface for a linked HDS
 
 For this work
