@@ -11,7 +11,7 @@ sys.path.append("../../src")
 sys.path.append("../../scripts")
 sys.path.append("../../src/CLEF-HIPE-2020-scorer")
 
-from inception_fishing import entity_fishing, dhs_article, wikipedia, inception, Corpus, Document, clef_hipe_scorer
+from inception_fishing import entity_fishing, dhs_article, wikipedia, inception, Corpus, Document, clef_hipe_scorer, ANNOTATION_ORIGIN_DHS_ARTICLE_TITLE
 from dhs_scraper import DhsArticle
 from clef_evaluation import evaluation_wrapper, Evaluator, main
 
@@ -73,7 +73,7 @@ def load_true_corpora_by_lng_16_12(
 
 def get_title_annotations(document:Document):
     return [a for a in document.annotations if
-        a.extra_fields.get("origin")=="document_annotate_title_from_dhs_article"]
+        a.extra_fields.get("origin")==ANNOTATION_ORIGIN_DHS_ARTICLE_TITLE]
 
 def remove_title_annotations(document:Document):
     title_annotations = get_title_annotations(document)

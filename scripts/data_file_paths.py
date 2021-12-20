@@ -50,7 +50,7 @@ S1_DATA_FOLDER = path.join(DATA_FOLDER, "wikidata_dhs_linking")
 S1_WIKIDATA_DHS_WIKIPEDIA_LINKS = path.join(S1_DATA_FOLDER, "wikidata_dhs_wikipedia_articles_gndid_instanceof.csv")
 S1_WIKIDATA_DE_LABELS = path.join(S1_DATA_FOLDER, "wikidata_de_labels.csv")
 
-# s2_entity_fishing
+# s2_entity_fishing evaluation
 #####################
 S2_INCEPTION_DATA_FOLDER = path.join(DATA_FOLDER, "inception")
 S2_ENTITY_FISHING_DATA_FOLDER = path.join(DATA_FOLDER, "entity-fishing")
@@ -84,6 +84,14 @@ S2_CLEF_HIPE_PRED_FILE_16_12 = path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDE
 S2_CLEF_HIPE_TRUE_FILE_16_12 = path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER,f"dhs-16-12-<LANGUAGE>-true"+S2_CLEF_HIPE_FILE_SUFFIX)
 S2_CLEF_HIPE_TAGGED_FILE = path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER,f"dhs-<TAG>-<LANGUAGE>-<PREDTRUE>"+S2_CLEF_HIPE_FILE_SUFFIX)
 
+
+# s4 entity_fishing-linking:
+#####################
+
+S4_ENTITY_FISHING_LINKING_DATA_FOLDER = path.join(DATA_FOLDER, "entity-fishing-linking")
+
+S4_ENTITY_FISHING_LINKING_TEST_DATA_FOLDER = path.join(S4_ENTITY_FISHING_LINKING_DATA_FOLDER, "test")
+S4_JSONL_ENTITY_FISHING_LINKING_TEST_LINKED_DHSA = path.join(S4_ENTITY_FISHING_LINKING_TEST_DATA_FOLDER, "linked-dhs-<LANGUAGE>-test.jsonl")
 
 def localize(path, language):
     return path.replace("<LANGUAGE>", language)
