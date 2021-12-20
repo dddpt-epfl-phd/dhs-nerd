@@ -93,6 +93,11 @@ S4_ENTITY_FISHING_LINKING_DATA_FOLDER = path.join(DATA_FOLDER, "entity-fishing-l
 S4_ENTITY_FISHING_LINKING_TEST_DATA_FOLDER = path.join(S4_ENTITY_FISHING_LINKING_DATA_FOLDER, "test")
 S4_JSONL_ENTITY_FISHING_LINKING_TEST_LINKED_DHSA = path.join(S4_ENTITY_FISHING_LINKING_TEST_DATA_FOLDER, "linked-dhs-<LANGUAGE>-test.jsonl")
 
+
+S4_JSONL_ALL_ARTICLES_LINKED_FILE = path.join(S4_ENTITY_FISHING_LINKING_DATA_FOLDER, "dhs_<LANGUAGE>_all_articles_linked.jsonl")
+
+
+
 def localize(path, language):
     return path.replace("<LANGUAGE>", language)
 

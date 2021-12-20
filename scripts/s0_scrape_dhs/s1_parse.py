@@ -10,6 +10,12 @@ from data_file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ALL_ARTICLES_PA
 
 # %matplotlib inline
 
+"""
+Loads all the DhsArticle with their page_content from S0_JSONL_ALL_ARTICLES_FILE, parses them and save them back to S0_JSONL_ALL_ARTICLES_PARSED_FILE file.
+
+Used mainly for statistics in s2_dhs_stats.py.
+"""
+
 language="fr"
 
 
