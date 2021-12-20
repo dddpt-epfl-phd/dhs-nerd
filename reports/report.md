@@ -83,6 +83,19 @@ Macro:
 - recall: 0.721
 - F1: 0.729
 
+*French with article title annotation*:
+- TP: 551
+- FP: 203
+- FN: 209
+Micro:
+- precision: 0.731
+- recall: 0.725
+- F1: 0.728
+Macro:
+- precision: 0.731
+- recall: 0.722
+- F1: 0.719					
+
 _German_:
 - TP: 602
 - FP: 295
