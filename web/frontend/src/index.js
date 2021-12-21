@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 //import App from "./components/App";
-import Routes from "./Routes";
+import Routing from "./Routing";
 
 ReactDOM.render(
   <React.StrictMode>    
-      <Routes />
+      <Routing />
   </React.StrictMode>,
   document.getElementById("root")
 );

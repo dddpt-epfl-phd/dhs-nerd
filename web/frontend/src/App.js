@@ -1,7 +1,4 @@
 import React, { useState, useRef, useEffect, createRef, useCallback } from "react";
-import Split from "react-split-grid";
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
 
 //import "../MapRegistryComponents/css/style.scss";
 //import "./App.scss";

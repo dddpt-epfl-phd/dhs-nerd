@@ -1,26 +1,24 @@
 import React from "react";
 import {
   BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
+  Routes,
+  Route
+  //Link
 } from "react-router-dom";
 import Navbar from "./Navbar.js"
 import App from "./App.js"
 
 
-import "./Routes.scss";
+import "./Routing.scss";
 
-export default function Routes() {
+export default function Routing() {
   return (
     <Router>
       <div className="main">
         <Navbar/>
-        <Switch>
-          <Route path="/">
-            <App />
-          </Route>
-        </Switch>
+        <Routes>
+          <Route path="/" element={<App />}/>
+        </Routes>
       </div>
     </Router>
   );
