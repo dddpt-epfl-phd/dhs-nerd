@@ -2,6 +2,7 @@
 .vscode/
 venv
 **/__pycache__/
+**/node_modules/
 
 entity-fishing/entity-fishing/
 entity-fishing/grobid/
