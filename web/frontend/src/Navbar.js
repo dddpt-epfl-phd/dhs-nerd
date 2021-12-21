@@ -1,36 +1,26 @@
-import React from "react";
+import React from 'react'
+import {Navbar, Nav} from 'react-bootstrap'
+import {LinkContainer} from 'react-router-bootstrap'
 
-import {
-    Link
-} from "react-router-dom";
+const NavBarHeader = () => {
+    return (
+        <Navbar bg="light" expand="lg">
+            <LinkContainer to="/">
+                <Navbar.Brand>React-Bootstrap</Navbar.Brand>
+            </LinkContainer>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav">
+                <Nav className="mr-auto">
+                    <LinkContainer to="/service">
+                        <Nav.Link>Service</Nav.Link>
+                  </LinkContainer>
+                  <LinkContainer to="/about">
+                      <Nav.Link>About</Nav.Link>
+                  </LinkContainer>
+                </Nav>
+            </Navbar.Collapse>
+        </Navbar>
+    )
+}
 
-import DropdownMenu from "./dropdownMenu/DropdownMenu.js";
-
-import "./Navbar.scss";
-
-const Navbar = ()=>(
-<nav className="navbar">
-    <ul className="navbar-ul">
-        <li className="nav-li-nogrow">
-            <Link className="nav-link" to="/">Home</Link>
-        </li>
-        <li className="nav-li-grow">
-        </li>
-        <li className="nav-li-nogrow">
-            <DropdownMenu
-                title={<Link className="nav-link" to="/docs">Docs</Link>}
-            >
-                <Link className="nav-link" to="/docs/catastici" key="catastici">Catastici</Link>
-                <Link className="nav-link" to="/docs/cadaster"  key="cadaster">Cadaster</Link>
-                <Link className="nav-link" to="/docs/vectorization" key="vectorization">Vectorization</Link>
-            </DropdownMenu>
-        </li>
-        <li className="nav-li-nogrow">
-            <Link className="nav-link" to="/about">About</Link>
-        </li>
-    </ul>
-</nav>
-)
-
-
-export default Navbar;
+export default NavBarHeader

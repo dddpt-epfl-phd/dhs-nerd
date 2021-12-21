@@ -1,11 +1,12 @@
 import React from "react";
+import 'bootstrap/dist/css/bootstrap.min.css'
 import {
   BrowserRouter as Router,
   Routes,
   Route
   //Link
 } from "react-router-dom";
-import Navbar from "./Navbar.js"
+import NavBarHeader from "./Navbar.js"
 import App from "./App.js"
 
 
@@ -15,7 +16,7 @@ export default function Routing() {
   return (
     <Router>
       <div className="main">
-        <Navbar/>
+        <NavBarHeader/>
         <Routes>
           <Route path="/" element={<App />}/>
         </Routes>
@@ -23,27 +24,3 @@ export default function Routing() {
     </Router>
   );
 }
-
-
-/*
-
-          <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/docs">
-            <Switch>
-              <Route path="/docs/cadaster">
-                <DocCadaster />
-              </Route>
-              <Route path="/docs/catastici">
-                <DocCatastici />
-              </Route>
-              <Route path="/docs/vectorization">
-                <DocVectorization />
-              </Route>
-              <Route path="/docs">
-                <Docs />
-              </Route>
-            </Switch>
-          </Route>
-*/
