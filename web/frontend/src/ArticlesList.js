@@ -4,10 +4,12 @@ import {
   useParams
 } from "react-router-dom";
 
-import {CenteredArticleContainer} from "./Structure"
+import {CenteredLayout} from "./Layout"
 
 //import "../MapRegistryComponents/css/style.scss";
 import "./App.scss";
+
+const NB_MAX_DISPLAYED_ARTICLES = 100
 
 export function ArticlesListItem({articleTitle, dhsId}){
   return <div className="dhs-articles-list-item">
@@ -36,9 +38,9 @@ export function ArticlesList({}) {
   console.log("INDEX: ", index)
 
   return (
-    <CenteredArticleContainer>
-        {index.map(item=> <ArticlesListItem dhsId={item[0]} articleTitle={item[1]}/>)}
-    </CenteredArticleContainer>
+    <CenteredLayout>
+        {index.map((item,i)=> i<NB_MAX_DISPLAYED_ARTICLES? <ArticlesListItem key={i} dhsId={item[0]} articleTitle={item[1]}/> : "")}
+    </CenteredLayout>
   );
 }
 

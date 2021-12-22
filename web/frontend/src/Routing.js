@@ -6,9 +6,8 @@ import {
   Route
   //Link
 } from "react-router-dom";
-import NavBarHeader from "./Navbar.js"
 
-import {DhsArticleContainer} from "./DhsArticle"
+import {DhsArticle} from "./DhsArticle"
 import {ArticlesList} from "./ArticlesList"
 
 
@@ -19,13 +18,11 @@ export default function Routing() {
   console.log("prout")
   return (
     <Router>
-      <div className="main">
-        <NavBarHeader/>
-        <Routes>
-          <Route path="/:language/articles/:dhsId" element={<DhsArticleContainer />}/>
-          <Route path="/:language" element={<ArticlesList />}/>
-          </Routes>
-      </div>
+      <Routes>
+        <Route path="/:language/articles/:dhsId" element={<DhsArticle />}/>
+        <Route path="/:language" element={<ArticlesList />}/>
+        <Route path="/:language/articles" element={<ArticlesList />}/>
+      </Routes>
     </Router>
   );
 }

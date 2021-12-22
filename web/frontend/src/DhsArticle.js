@@ -3,8 +3,8 @@ import {
   useParams
 } from "react-router-dom";
 
-import {TextLink} from "./TextLink"
-import {CenteredArticleContainer} from "./Structure"
+import {TextLink, DhsArticleLink, RealDhsArticleLink} from "./TextLink"
+import {CenteredLayout} from "./Layout"
 
 //import "../MapRegistryComponents/css/style.scss";
 //import "./App.scss";
@@ -59,7 +59,7 @@ function TextBlock({tag="p", textLinks = [], children="", language="de"}){
       } 
 }
 
-export function DhsArticle({
+export function DhsArticleContent({
     article = {},
     language="de"
 }) {
@@ -69,7 +69,7 @@ export function DhsArticle({
     const textBlocks = article.text_blocks? article.text_blocks.map((tb,i)=>{
         const [tag, text] = tb
         return <TextBlock tag={tag} key={i} textLinks={article.text_links[i]} language={language}>{text}</TextBlock>
-    }) : "no article"
+    }) : "Loading..."
 
     return (
         <div className="dhs-article">
@@ -81,28 +81,55 @@ export function DhsArticle({
 
 
 
-export function DhsArticleContainer({
-}) {
+export function DhsArticle({}) {
   const { language, dhsId } = useParams();
-  console.log("DhsArticleContainer.js language", language, "dhsId:", dhsId)
+  console.log("DhsArticle.js language", language, "dhsId:", dhsId)
 
   const articleJsonUrl = "/data/"+language+"/"+dhsId+".json"
 
-  const [article, setArticle] = useState({})
+  const [article, setArticle] = useState({id:true})
 
   useEffect(()=>{
-    fetch(articleJsonUrl).then(x=>x.json()).then(article=>{
-      setArticle(article)
+    fetch(articleJsonUrl).then(x=>x.json()).then(newArticle=>{
+        //article.lastArticle = {id: article.lastArticle? article.lastArticle.id}
+        //newArticle.lastArticle = article
+        setArticle(newArticle)
+    }).catch(x=>{
+        console.warn("DhsArticle problem loading article: ", x)
+        setArticle({lastArticle: article})
     })
   }, [articleJsonUrl])
 
   console.log("ARTICLE: ", article)
+  if(!article.id){
+      return <MissingDhsArticle lastArticle={article.lastArticle}/>
+  }
 
   return (
-    <CenteredArticleContainer>
-        <DhsArticle article={article} language={language}/>
-    </CenteredArticleContainer>
+    <CenteredLayout>
+        <DhsArticleContent article={article} language={language}/>
+    </CenteredLayout>
   );
 }
 
-export default DhsArticleContainer;
+export function MissingDhsArticle({lastArticle={}}) {
+  const { language, dhsId } = useParams();
+  console.log("MissingDhsArticle.js language", language, "dhsId:", dhsId, "lastArticle.id: ", lastArticle.id)
+
+  return (
+    <CenteredLayout>
+        <h1>Erreur 404: Article pas encore traité</h1>
+        <p>Cet article n'a pas encore été linké par entity-fishing. La moulinette tourne, revenez plus tard.</p>
+        {lastArticle.id && lastArticle.id!==true?<p>
+            <DhsArticleLink dhsId={lastArticle.id}>Revenir au dernier article {lastArticle.title? "("+lastArticle.title+")":""}</DhsArticleLink>
+        </p> : ""}
+        {dhsId?
+        <p>
+            <RealDhsArticleLink dhsId={dhsId}>Visiter l'article du DHS original</RealDhsArticleLink>
+        </p>: ""}
+        
+    </CenteredLayout>
+  );
+}
+
+export default DhsArticle;

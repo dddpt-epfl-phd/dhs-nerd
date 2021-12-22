@@ -57,6 +57,9 @@ function getLinkAnnotationExtraField(textLink, extraField){
 export function getDhsUrlFromDhsId(dhsId, language="de"){
     return (language? "/"+language : "")+"/articles/"+dhsId
 }
+export function getRealDhsUrlFromDhsId(dhsId, language="de"){
+    return "https://hls-dhs-dss.ch"+ (language? "/"+language : "")+"/articles/"+dhsId
+}
 
 /** dhsArticle: has .dhsid property
  * 
@@ -97,6 +100,7 @@ export function getLinkWikidataUrl(textLink){
 
 export const noLinkClass = "no-text-link"
 export const dhsLinkClass = "dhs-dhs-link"
+export const realDhsLinkClass = "dhs-real-dhs-link"
 export const wikipediaLinkClass = "dhs-wikipedia-link"
 export const wikidataLinkClass = "dhs-wikidata-link"
 
@@ -115,6 +119,13 @@ export function DhsArticleLink({dhsId = "", children=[]}){
     const { language } = useParams();
     const dhsUrl = getDhsUrlFromDhsId(dhsId, language)
     return <Link className={dhsLinkClass} to={dhsUrl}>{children}</Link>
+}
+export function RealDhsArticleLink({dhsId = "", children=[]}){
+    //https://hls-dhs-dss.ch/fr/articles/008015/2014-02-19/
+    //const link = { pathname: getRealDhsUrlFromDhsId(dhsId) }
+    const url = getRealDhsUrlFromDhsId(dhsId)
+    console.log("RealDhsArticleLink url: ", url)
+    return <a className={realDhsLinkClass} href={url} target="_blank">{children}</a>
 }
 
 
