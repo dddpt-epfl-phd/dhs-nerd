@@ -6,15 +6,11 @@ import {
 import {TextLink, DhsArticleLink, RealDhsArticleLink} from "./TextLink"
 import {CenteredLayout} from "./Layout"
 
-//import "../MapRegistryComponents/css/style.scss";
-//import "./App.scss";
-
 
 
 
 function TextWithLinks({text, textLinks=[], language="de"}){
     if(textLinks.length==0){
-        console.log("textLinks.length==0", textLinks)
         return text
     }
     //console.log("textLinks: ", textLinks)
@@ -64,8 +60,6 @@ export function DhsArticleContent({
     language="de"
 }) {
 
-    console.log("ARTICLE DHS DHS: ", article)
-    console.log("ARTICLE TEXT_LINKS: ", article.text_links)
     const textBlocks = article.text_blocks? article.text_blocks.map((tb,i)=>{
         const [tag, text] = tb
         return <TextBlock tag={tag} key={i} textLinks={article.text_links[i]} language={language}>{text}</TextBlock>
@@ -83,7 +77,6 @@ export function DhsArticleContent({
 
 export function DhsArticle({}) {
   const { language, dhsId } = useParams();
-  console.log("DhsArticle.js language", language, "dhsId:", dhsId)
 
   const articleJsonUrl = "/data/"+language+"/"+dhsId+".json"
 
@@ -100,7 +93,7 @@ export function DhsArticle({}) {
     })
   }, [articleJsonUrl])
 
-  console.log("ARTICLE: ", article)
+  console.log("DhsArticle.js language", language, "dhsId:", dhsId, ", article:", article)
   if(!article.id){
       return <MissingDhsArticle lastArticle={article.lastArticle}/>
   }
@@ -114,7 +107,7 @@ export function DhsArticle({}) {
 
 export function MissingDhsArticle({lastArticle={}}) {
   const { language, dhsId } = useParams();
-  console.log("MissingDhsArticle.js language", language, "dhsId:", dhsId, "lastArticle.id: ", lastArticle.id)
+  //console.log("MissingDhsArticle.js language", language, "dhsId:", dhsId, "lastArticle.id: ", lastArticle.id)
 
   return (
     <CenteredLayout>
@@ -125,7 +118,7 @@ export function MissingDhsArticle({lastArticle={}}) {
         </p>
         {dhsId?
         <p>
-            <RealDhsArticleLink dhsId={dhsId}>Visiter l'article du DHS original</RealDhsArticleLink>
+            <RealDhsArticleLink dhsId={dhsId} language={language}>Visiter l'article du DHS original</RealDhsArticleLink>
         </p>: ""}
         
     </CenteredLayout>

@@ -3,3 +3,33 @@
 .language-chooser{
     width: 3em;
 }
+
+.main{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    height: 100vh;
+}
+
+
+// TEXT LINKS
+
+
+.no-text-link:hover{
+    background-color: #f2f2f2;
+    text-decoration: underline dashed grey;
+}
+.dhs-dhs-link{
+}
+.dhs-original-dhs-link{
+    text-decoration: underline dashed;
+}
+.dhs-real-dhs-link{
+
+}
+.dhs-wikipedia-link{
+    color: green
+}
+.dhs-wikidata-link{
+    color: red
+}

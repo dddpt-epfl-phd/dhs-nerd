@@ -12,13 +12,11 @@ const LanguageChooser = ({}) => {
 
     const links = possibleLanguages.filter(l=>l!= language).map(l=>{
             const urlToLng = window.location.pathname.replace(language,l)
-            console.log("LanguageChooser l: ", l,"urlToLng: ", urlToLng)
             return  <LinkContainer key={l} to={urlToLng}>
                         <NavDropdown.Item>{l.toUpperCase()}</NavDropdown.Item>
                     </LinkContainer>
         }
     )
-    console.log("LanguageChooser links: ", links)
     return <NavDropdown className="language-chooser" title={language.toUpperCase()} id="basic-nav-dropdown">
             {links}
         </NavDropdown>
@@ -26,7 +24,7 @@ const LanguageChooser = ({}) => {
 
 const NavBarHeader = () => {
     const { language, dhsId } = useParams();
-    console.log("NavBarHeader, language: ", language, ", dhsId: ", dhsId, "window.location.pathname=",window.location.pathname)
+    //console.log("NavBarHeader, language: ", language, ", dhsId: ", dhsId, "window.location.pathname=",window.location.pathname)
     return (
         <Navbar bg="light" expand="lg">
             <Navbar.Toggle aria-controls="basic-navbar-nav" />

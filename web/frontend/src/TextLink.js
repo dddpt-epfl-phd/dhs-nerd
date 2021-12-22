@@ -41,11 +41,11 @@ function getLinkSubProperty(textLink, property, subproperty){
 }
 
 function getLinkWikiProperty(textLink, property){
-    return getLinkSubProperty(TextLink,"wiki", property)
+    return getLinkSubProperty(textLink,"wiki", property)
 }
 
 function getLinkAnnotationProperty(textLink, property){
-    return getLinkSubProperty(TextLink,"wiki", property)
+    return getLinkSubProperty(textLink,"annotation", property)
 }
 
 
@@ -79,13 +79,15 @@ export function getLinkDhsUrl(textLink, language=false){
     return dhsId? (language? "/"+language : "")+"/articles/"+dhsId : false
 }
 
+const wikipediaBaseUrl = "https://<LNG>.wikipedia.org/wiki/"
 /**  wikipedia: has .wiki.articleLNG not null property
  * 
  * @param {*} textLink 
  * @returns {str or null}: this textLink wikipediaUrl or false if no wikipediaUrl in this link
  */
 export function getLinkWikipediaUrl(textLink, language){
-    return getLinkWikiProperty(textLink, "article"+language)
+    const pageTitle = getLinkAnnotationProperty(textLink, "wikipedia_page_title")
+    return pageTitle? wikipediaBaseUrl.replace("<LNG>",language)+pageTitle : false
 }
 
 /**  wikidata: has .wiki.item not null property
@@ -94,12 +96,13 @@ export function getLinkWikipediaUrl(textLink, language){
  * @returns {str or null}: this textLink wikidataUrl or false if no wikidataUrl in this link
  */
 export function getLinkWikidataUrl(textLink){
-    return getLinkWikiProperty(textLink, "item")
+    return getLinkAnnotationProperty(textLink, "wikidata_entity_url")
 }
 
 
 export const noLinkClass = "no-text-link"
 export const dhsLinkClass = "dhs-dhs-link"
+export const originalDhsLinkClass = "dhs-original-dhs-link"
 export const realDhsLinkClass = "dhs-real-dhs-link"
 export const wikipediaLinkClass = "dhs-wikipedia-link"
 export const wikidataLinkClass = "dhs-wikidata-link"
@@ -120,26 +123,21 @@ export function DhsArticleLink({dhsId = "", children=[]}){
     const dhsUrl = getDhsUrlFromDhsId(dhsId, language)
     return <Link className={dhsLinkClass} to={dhsUrl}>{children}</Link>
 }
-export function RealDhsArticleLink({dhsId = "", children=[]}){
-    //https://hls-dhs-dss.ch/fr/articles/008015/2014-02-19/
-    //const link = { pathname: getRealDhsUrlFromDhsId(dhsId) }
-    const url = getRealDhsUrlFromDhsId(dhsId)
-    console.log("RealDhsArticleLink url: ", url)
+export function RealDhsArticleLink({dhsId = "", language="de", children=[]}){
+    const url = getRealDhsUrlFromDhsId(dhsId, language)
     return <a className={realDhsLinkClass} href={url} target="_blank">{children}</a>
 }
 
 
 
 export function WikipediaTextLink({url = "", children=[]}){
-    const link = { pathname: url }
-    return <Link className={wikipediaLinkClass} to={link} target="_blank">{children}</Link>
+    return <a className={wikipediaLinkClass} href={url} target="_blank">{children}</a>
 }
 
 
 
 export function WikidataTextLink({url = "", children=[]}){
-    const link = { pathname: url }
-    return <Link className={wikidataLinkClass} to={link} target="_blank">{children}</Link>
+    return <a className={wikidataLinkClass} href={url} target="_blank">{children}</a>
 }
 
 
@@ -160,6 +158,7 @@ export function TextLink({
         return <DhsArticleTextLink dhsUrl={dhsUrl}>{children}</DhsArticleTextLink>
     }*/
     const wikipediaUrl = getLinkWikipediaUrl(textLink, language)
+    console.log("TextLink no DHS id wikipediaUrl=",wikipediaUrl, "textLink.annotation.wikipedia_page_title: ",textLink.annotation.wikipedia_page_title, "textLink.annotation.wikipedia_page_id: ",textLink.annotation.wikipedia_page_id)
     if(wikipediaUrl){
         return <WikipediaTextLink url={wikipediaUrl}>{children}</WikipediaTextLink>
     }

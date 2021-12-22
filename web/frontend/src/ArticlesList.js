@@ -6,8 +6,6 @@ import {
 
 import {CenteredLayout} from "./Layout"
 
-//import "../MapRegistryComponents/css/style.scss";
-import "./App.scss";
 
 const NB_MAX_DISPLAYED_ARTICLES = 100
 
@@ -28,14 +26,14 @@ export function ArticlesList({}) {
 
   const [index, setIndex] = useState([])
 
-  console.log("ArticlesList indexJsonUrl: ", indexJsonUrl)
   useEffect(()=>{
     fetch(indexJsonUrl).then(x=>x.json()).then(index=>{
       setIndex(index)
     })
   }, [indexJsonUrl])
 
-  console.log("INDEX: ", index)
+
+  //console.log("ArticlesList indexJsonUrl: ", indexJsonUrl, " index:", index)
 
   return (
     <CenteredLayout>

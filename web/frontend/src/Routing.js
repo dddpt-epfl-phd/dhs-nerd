@@ -13,10 +13,7 @@ import {ArticlesList} from "./ArticlesList"
 
 
 
-import "./Routing.scss";
-
 export default function Routing() {
-  console.log("prout")
   return (
     <Router>
       <Routes>
