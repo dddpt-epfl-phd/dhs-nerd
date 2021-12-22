@@ -48,11 +48,11 @@ Classes that are relevant but nut primordial:
 - FAMILY, when not already nested in a person entity
 - SUBSTANCE, when sufficiently important to have a dedicated DHS article (iron, salt, etc)
 - NATIONAL, when referring to an historic tribe, people (Alamanni, Romans), not modern countries (not Swiss, etc...)
-- PERSON_TYPE, when referring to a category relevant to our work such as political party
 
 Nice to have classes:
 - CONCEPT, such as "feminism", "mythes fondateurs", as there are some concept in DHS, but maybe better not
 - NATIONAL? maybe not
+- PERSON_TYPE, when referring to a category relevant to our work such as political party
 
 Proposition:
 For the tags, do the absolutely needed classes and the relevant ones, not the nice-to-have ones.

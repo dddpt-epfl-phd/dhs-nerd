@@ -29,11 +29,17 @@ Todo
 """
 
 # LINKING AND STREAMING LINKED ARTICLES TO JSONL
-lng="fr"
+lng="de"
 
 
 jsonl_linked_articles_file = localize(S4_JSONL_ALL_ARTICLES_LINKED_FILE, lng)
 already_visited_ids = set(DhsArticle.get_articles_ids(jsonl_linked_articles_file))
+bugged_ids = {
+    "de": ["012199", "012463", "029202", "012509", "058090", "041455", "020785", "020786", "020787", "020589", "020590", "011635", "020772"],
+    "fr": ["058089", "058090", "044498", "031336"]
+}
+for bugged_id in bugged_ids[lng]:
+    already_visited_ids.add(bugged_id)
 print(f"Skipping {len(already_visited_ids)} articles that already have been linked")
 stream_to_jsonl(
     jsonl_linked_articles_file,
@@ -48,5 +54,7 @@ stream_to_jsonl(
     drop_page_content=True
 )
 
+
+# %%
 
 # %%
