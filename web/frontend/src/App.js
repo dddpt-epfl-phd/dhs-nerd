@@ -7,14 +7,15 @@ import DhsArticle from "./DhsArticle"
 import "./App.scss";
 
 
+
 function App({
   articleUrl = "/data/001620.json"
 }) {
   const [article, setArticle] = useState({})
 
   useEffect(()=>{
-    fetch(articleUrl).then(x=>x.json()).then(articlestr=>{
-      setArticle(JSON.parse( articlestr))
+    fetch(articleUrl).then(x=>x.json()).then(article=>{
+      setArticle(article)
     })
   }, [articleUrl])
 
