@@ -39,7 +39,7 @@ export function ArticlesList({}) {
 
   return (
     <CenteredLayout>
-        {index.map((item,i)=> i<NB_MAX_DISPLAYED_ARTICLES? <ArticlesListItem key={i} dhsId={item[0]} articleTitle={item[1]}/> : "")}
+        {index.filter((a,i)=>i<NB_MAX_DISPLAYED_ARTICLES).map((item,i)=> <ArticlesListItem key={i} dhsId={item[0]} articleTitle={item[1]}/>)}
     </CenteredLayout>
   );
 }

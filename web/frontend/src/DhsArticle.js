@@ -120,9 +120,9 @@ export function MissingDhsArticle({lastArticle={}}) {
     <CenteredLayout>
         <h1>Erreur 404: Article pas encore traité</h1>
         <p>Cet article n'a pas encore été linké par entity-fishing. La moulinette tourne, revenez plus tard.</p>
-        {lastArticle.id && lastArticle.id!==true?<p>
-            <DhsArticleLink dhsId={lastArticle.id}>Revenir au dernier article {lastArticle.title? "("+lastArticle.title+")":""}</DhsArticleLink>
-        </p> : ""}
+        <p>
+            <a href="#" onClick={()=>window.history.back()}>Revenir en arrière {lastArticle.title? "("+lastArticle.title+")":""}</a>
+        </p>
         {dhsId?
         <p>
             <RealDhsArticleLink dhsId={dhsId}>Visiter l'article du DHS original</RealDhsArticleLink>
