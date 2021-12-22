@@ -17,20 +17,20 @@ This scripts load all the DhsArticles in S0_JSONL_ALL_ARTICLES_FILE and writes t
 """
 
 # LINKING AND STREAMING LINKED ARTICLES TO JSONL
-lng="de"
-max_nb_articles=2500
+lng="fr"
+max_nb_articles=13380
 
 
 jsonl_linked_articles_file = localize(S4_JSONL_ALL_ARTICLES_LINKED_FILE, lng)
 json_folder = localize(S5_WEBSITE_SINGLE_ARTICLES_LOCALIZED_FOLDER, lng)
 
 articles_ids_titles = list()
-for a in DhsArticle.load_articles_from_jsonl(
+for i,a in enumerate(DhsArticle.load_articles_from_jsonl(
             localize(S4_JSONL_ALL_ARTICLES_LINKED_FILE,lng),
             indices_to_keep=[i for i in range(max_nb_articles)]
-        ):
+        )):
     with open(path.join(json_folder, f'{a.id}.json'), 'w') as f:
-        print(f"writing json for {a.title}")
+        print(f"{i} writing {lng} json for {a.title}")
         json.dump(a.to_json(as_dict=True), f)
     articles_ids_titles.append((a.id, a.title))
 
