@@ -30,7 +30,7 @@ for a in DhsArticle.load_articles_from_jsonl(
         ):
     with open(path.join(json_folder, f'{a.id}.json'), 'w') as f:
         print(f"writing json for {a.title}")
-        json.dump(a.to_json(as_dict=False), f)
+        json.dump(a.to_json(as_dict=True), f)
 
 
 # %%
