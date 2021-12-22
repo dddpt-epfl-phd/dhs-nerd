@@ -80,14 +80,15 @@ export function getLinkDhsUrl(textLink, language=false){
 }
 
 const wikipediaBaseUrl = "https://<LNG>.wikipedia.org/wiki/"
+const wikipediaBaseUrlFromPageId = "https://<LNG>.wikipedia.org/?curid="
 /**  wikipedia: has .wiki.articleLNG not null property
  * 
  * @param {*} textLink 
  * @returns {str or null}: this textLink wikipediaUrl or false if no wikipediaUrl in this link
  */
 export function getLinkWikipediaUrl(textLink, language){
-    const pageTitle = getLinkAnnotationProperty(textLink, "wikipedia_page_title")
-    return pageTitle? wikipediaBaseUrl.replace("<LNG>",language)+pageTitle : false
+    const pageId = getLinkAnnotationProperty(textLink, "wikipedia_page_id")
+    return pageId? wikipediaBaseUrlFromPageId.replace("<LNG>",language)+pageId : false
 }
 
 /**  wikidata: has .wiki.item not null property
@@ -158,12 +159,13 @@ export function TextLink({
         return <DhsArticleTextLink dhsUrl={dhsUrl}>{children}</DhsArticleTextLink>
     }*/
     const wikipediaUrl = getLinkWikipediaUrl(textLink, language)
-    console.log("TextLink no DHS id wikipediaUrl=",wikipediaUrl, "textLink.annotation.wikipedia_page_title: ",textLink.annotation.wikipedia_page_title, "textLink.annotation.wikipedia_page_id: ",textLink.annotation.wikipedia_page_id)
+    //console.log("TextLink no DHS id wikipediaUrl=",wikipediaUrl, "textLink.annotation.wikipedia_page_title: ",textLink.annotation.wikipedia_page_title, "textLink.annotation.wikipedia_page_id: ",textLink.annotation.wikipedia_page_id)
     if(wikipediaUrl){
         return <WikipediaTextLink url={wikipediaUrl}>{children}</WikipediaTextLink>
     }
     const wikidataUrl = getLinkWikidataUrl(textLink)
     if(wikidataUrl){
+        console.log("TextLink WIKIDATA! wikidataUrl=", wikidataUrl, " text:", children)
         return <WikidataTextLink url={wikidataUrl}>{children}</WikidataTextLink>
     }
     return <NoTextLink>{children}</NoTextLink>

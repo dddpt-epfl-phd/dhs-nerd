@@ -2,8 +2,10 @@ import React, { useState, useRef, useEffect, createRef, useCallback } from "reac
 import {
   useParams
 } from "react-router-dom";
+Alert
+import {Alert} from "react-bootstrap"
 
-import {TextLink, DhsArticleLink, RealDhsArticleLink} from "./TextLink"
+import {TextLink, DhsArticleLink, RealDhsArticleLink, dhsLinkClass, wikipediaLinkClass} from "./TextLink"
 import {CenteredLayout} from "./Layout"
 
 
@@ -100,6 +102,11 @@ export function DhsArticle({}) {
 
   return (
     <CenteredLayout>
+        <Alert variant="info">
+            Voici la version linkée du DHS.<br/>
+            <a className={dhsLinkClass}>Les liens bleus</a> pointent vers d'autres articles du DHS.<br/>
+            <a className={wikipediaLinkClass}>Les liens verts</a> pointent vers Wikipedia.
+        </Alert>
         <DhsArticleContent article={article} language={language}/>
     </CenteredLayout>
   );
