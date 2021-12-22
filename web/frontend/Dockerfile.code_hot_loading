@@ -25,4 +25,4 @@ CMD ["npm", "start"]
 
 # build and run using:
 # docker build -f 'Dockerfile.code_hot_loading' -t dhs-nerd-frontend:dev .
-# docker run -it --rm -v ${PWD}:/app -p 3001:80 -e CHOKIDAR_USEPOLLING=true dhs-nerd-frontend:dev
+# docker run -it --rm -v ${PWD}:/app -v "${PWD}/../../data/website/single-dhs-articles":/app/public/data -p 3001:80 -e CHOKIDAR_USEPOLLING=true dhs-nerd-frontend:dev

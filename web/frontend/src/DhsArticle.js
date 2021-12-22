@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect, createRef, useCallback } from "react";
 import {
-    Link
-  } from "react-router-dom";
+  useParams
+} from "react-router-dom";
 
 import {TextLink} from "./TextLink"
+import {CenteredArticleContainer} from "./Structure"
 
 //import "../MapRegistryComponents/css/style.scss";
 //import "./App.scss";
@@ -11,24 +12,23 @@ import {TextLink} from "./TextLink"
 
 
 
-
-function TextWithLinks({text, textLinks=[]}){
+function TextWithLinks({text, textLinks=[], language="de"}){
     if(textLinks.length==0){
         console.log("textLinks.length==0", textLinks)
         return text
     }
-    console.log("textLinks: ", textLinks)
+    //console.log("textLinks: ", textLinks)
     textLinks.sort((a,b) => a.start-b.start)
     let previousTextLink = {start:0, end: 0}
     const textsAndLinks = textLinks.map((textLink,i) =>{
-        console.log("textsAndLinks mapping\npreviousTextLink:", previousTextLink, "\ntextLink: ",textLink)
+        //console.log("textsAndLinks mapping\npreviousTextLink:", previousTextLink, "\ntextLink: ",textLink)
         if(textLink.start>=previousTextLink.end){
             const previousTextLinkEnd = previousTextLink.end
             previousTextLink = textLink
-            console.log("textsAndLinks mapping bis, textLink: ",textLink)
+            //console.log("textsAndLinks mapping bis, textLink: ",textLink)
             return [
                 text.substring(previousTextLinkEnd, textLink.start),
-                <TextLink textlink={textLink} zulu="43">{text.substring(textLink.start, textLink.end)}</TextLink>
+                <TextLink textlink={textLink} language={language} key={i}>{text.substring(textLink.start, textLink.end)}</TextLink>
             ]
         }else{
             console.warn("Overlapping text links\npreviousTextLink:", previousTextLink, "\ntextLink: ",textLink)
@@ -39,42 +39,70 @@ function TextWithLinks({text, textLinks=[]}){
     return textsAndLinks
 }
 
-function textBlockToTag(textBlock, key, textLinks = []){
-    const [tag, text] = textBlock
+function TextBlock({tag="p", textLinks = [], children="", language="de"}){
+    const text = children
 
-    const textWithLinks = [<TextWithLinks text={text} textLinks={textLinks}/>]
-    console.log("textWithLinks", textWithLinks)
+    //const textWithLinks = []
     switch(tag) {
         case "h1":
-            return <h1 key={key}>{textWithLinks}</h1>
+            return <h1>{text}</h1>
         case "h2":
-            return <h2 key={key}>{textWithLinks}</h2>
+            return <h2>{text}</h2>
         case "h3":
-            return <h3 key={key}>{textWithLinks}</h3>
+            return <h3>{text}</h3>
         case "h4":
-            return <h4 key={key}>{textWithLinks}</h4>
+            return <h4>{text}</h4>
         case "p":
-            return <p key={key}>{textWithLinks}</p>
+            return <p><TextWithLinks text={text} textLinks={textLinks} language={language}/></p>
         default:
-            return <div key={key}>{textWithLinks}</div>
+            return <div><TextWithLinks text={text} textLinks={textLinks} language={language}/></div>
       } 
 }
 
-function DhsArticle({
-    article = {}
+export function DhsArticle({
+    article = {},
+    language="de"
 }) {
 
     console.log("ARTICLE DHS DHS: ", article)
     console.log("ARTICLE TEXT_LINKS: ", article.text_links)
-    const textBlocks = article.text_blocks? article.text_blocks.map((tb,i)=> textBlockToTag(tb,i, article.text_links[i])) : "no article"
+    const textBlocks = article.text_blocks? article.text_blocks.map((tb,i)=>{
+        const [tag, text] = tb
+        return <TextBlock tag={tag} key={i} textLinks={article.text_links[i]} language={language}>{text}</TextBlock>
+    }) : "no article"
 
     return (
         <div className="dhs-article">
             {textBlocks}
-            <TextLink/>
         </div>
     );
 }
-
-export default DhsArticle;
 //{}
+
+
+
+export function DhsArticleContainer({
+}) {
+  const { language, dhsId } = useParams();
+  console.log("DhsArticleContainer.js language", language, "dhsId:", dhsId)
+
+  const articleJsonUrl = "/data/"+language+"/"+dhsId+".json"
+
+  const [article, setArticle] = useState({})
+
+  useEffect(()=>{
+    fetch(articleJsonUrl).then(x=>x.json()).then(article=>{
+      setArticle(article)
+    })
+  }, [articleJsonUrl])
+
+  console.log("ARTICLE: ", article)
+
+  return (
+    <CenteredArticleContainer>
+        <DhsArticle article={article} language={language}/>
+    </CenteredArticleContainer>
+  );
+}
+
+export default DhsArticleContainer;

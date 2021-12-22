@@ -1,5 +1,6 @@
 import {
-    Link
+    Link,
+    useParams
   } from "react-router-dom";
 
 
@@ -53,14 +54,26 @@ function getLinkAnnotationExtraField(textLink, extraField){
     return extraFields? extraFields[extraField] : false
 }
 
+export function getDhsUrlFromDhsId(dhsId, language="de"){
+    return (language? "/"+language : "")+"/articles/"+dhsId
+}
 
 /** dhsArticle: has .dhsid property
  * 
  * @param {*} textLink 
  * @returns {str or null}: this textLink dhs-id or false if no dhs id in this link (doesn't link to a dhs article)
  */
-export function getLinkDhsId(textLink){
+ export function getLinkDhsId(textLink){
     return textLink.dhsid && textLink.dhsid!="" && textLink.dhsid!==undefined && textLink.dhsid!==null? textLink.dhsid : false
+}
+/** dhsArticle: has .dhsid property
+ * 
+ * @param {*} textLink 
+ * @returns {str or null}: this textLink dhs-id or false if no dhs id in this link (doesn't link to a dhs article)
+ */
+export function getLinkDhsUrl(textLink, language=false){
+    const dhsId = getLinkDhsId(textLink)
+    return dhsId? (language? "/"+language : "")+"/articles/"+dhsId : false
 }
 
 /**  wikipedia: has .wiki.articleLNG not null property
@@ -94,9 +107,14 @@ export function NoTextLink({className="", children=[]}){
 
 
 
-export function DhsArticleTextLink({dhsId = "", children=[]}){
-    const link = "/"+dhsId+".json"
-    return <Link className={dhsLinkClass} to={link}>{children}</Link>
+export function DhsArticleTextLink({dhsUrl = "", children=[]}){
+    return <Link className={dhsLinkClass} to={dhsUrl}>{children}</Link>
+}
+
+export function DhsArticleLink({dhsId = "", children=[]}){
+    const { language } = useParams();
+    const dhsUrl = getDhsUrlFromDhsId(dhsId, language)
+    return <Link className={dhsLinkClass} to={dhsUrl}>{children}</Link>
 }
 
 
@@ -117,16 +135,19 @@ export function WikidataTextLink({url = "", children=[]}){
 
 export function TextLink({
     textlink = {},
-    language="en",
-    children = [],
-    zulu="32"
+    language="de",
+    children = []
 }){
     const textLink = textlink
-    console.log("<TextLink/> textLink:", textLink, "\nlanguage: ", language, "\nchildren: ", children,"\nzulu: ",zulu)
+    //console.log("<TextLink/> textLink:", textLink, "\nlanguage: ", language, "\nchildren: ", children,"\nzulu: ",zulu)
     const dhsId = getLinkDhsId(textLink)
     if(dhsId){
-        return <DhsArticleTextLink dhsId={dhsId}>{children}</DhsArticleTextLink>
+        return <DhsArticleLink dhsId={dhsId}>{children}</DhsArticleLink>
     }
+    /*const dhsUrl = getLinkDhsUrl(textLink, language)
+    if(dhsUrl){
+        return <DhsArticleTextLink dhsUrl={dhsUrl}>{children}</DhsArticleTextLink>
+    }*/
     const wikipediaUrl = getLinkWikipediaUrl(textLink, language)
     if(wikipediaUrl){
         return <WikipediaTextLink url={wikipediaUrl}>{children}</WikipediaTextLink>
