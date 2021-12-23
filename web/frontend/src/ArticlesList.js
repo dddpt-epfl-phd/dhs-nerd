@@ -3,6 +3,8 @@ import {DhsArticleLink} from "./TextLink"
 import {
   useParams
 } from "react-router-dom";
+import {Form, Button} from "react-bootstrap"
+
 
 import {CenteredLayout} from "./Layout"
 
@@ -18,6 +20,12 @@ export function ArticlesListItem({articleTitle, dhsId}){
   </div>
 }
 
+export function searchInIndex(completeIndex, searchTerm){
+  const lowerCaseSearchTerm = searchTerm.toLowerCase()
+  return completeIndex.filter(aid => aid[1].toLowerCase().indexOf(lowerCaseSearchTerm)!=-1)
+}
+
+
 export function ArticlesList({}) {
   const { language } = useParams();
   console.log("ArticlesList.js language", language)
@@ -25,22 +33,42 @@ export function ArticlesList({}) {
   const indexJsonUrl = "/data/indices/"+language+".json"
 
   const [index, setIndex] = useState([])
+  const [completeIndex, setCompleteIndex] = useState([])
 
   useEffect(()=>{
     fetch(indexJsonUrl).then(x=>x.json()).then(index=>{
+      setCompleteIndex(index)
       setIndex(index)
     })
   }, [indexJsonUrl])
 
+  const onSearchFormSubmit = (event)=>{
+    const searchTerm = document.getElementById('dhs-article-text-search').value
+    setIndex(searchInIndex(completeIndex, searchTerm))
+    event.preventDefault()
+    event.stopPropagation()
+  }
 
   //console.log("ArticlesList indexJsonUrl: ", indexJsonUrl, " index:", index)
 
   return (
     <CenteredLayout>
-        {index.filter((a,i)=>i<NB_MAX_DISPLAYED_ARTICLES).map((item,i)=> <ArticlesListItem key={i} dhsId={item[0]} articleTitle={item[1]}/>)}
+      <Form id="dhs-article-search" onSubmit={onSearchFormSubmit}>
+        <Form.Group className="mb-3" controlId="dhs-article-text-search">
+          <Form.Control type="text" placeholder="Search in articles' titles..." />
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          Search
+        </Button>
+      </Form>
+      {index.filter((a,i)=>i<NB_MAX_DISPLAYED_ARTICLES).map((item,i)=> <ArticlesListItem key={i} dhsId={item[0]} articleTitle={item[1]}/>)}
     </CenteredLayout>
   );
 }
 
 export default ArticlesList;
 
+// <Form.Label>Search</Form.Label>
+/*
+
+*/

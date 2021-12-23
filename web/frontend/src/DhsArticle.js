@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, createRef, useCallback } from "reac
 import {
   useParams
 } from "react-router-dom";
-Alert
 import {Alert} from "react-bootstrap"
 
 import {TextLink, DhsArticleLink, RealDhsArticleLink, dhsLinkClass, wikipediaLinkClass} from "./TextLink"
@@ -38,18 +37,18 @@ function TextWithLinks({text, textLinks=[], language="de"}){
 }
 
 function TextBlock({tag="p", textLinks = [], children="", language="de"}){
-    const text = children
+    const text = children[0]
 
     //const textWithLinks = []
     switch(tag) {
         case "h1":
-            return <h1>{text}</h1>
+            return <h1>{children}</h1>
         case "h2":
-            return <h2>{text}</h2>
+            return <h2>{children}</h2>
         case "h3":
-            return <h3>{text}</h3>
+            return <h3>{children}</h3>
         case "h4":
-            return <h4>{text}</h4>
+            return <h4>{children}</h4>
         case "p":
             return <p><TextWithLinks text={text} textLinks={textLinks} language={language}/></p>
         default:
@@ -62,9 +61,14 @@ export function DhsArticleContent({
     language="de"
 }) {
 
+    // hack: use the search_result_name to have a nice title
+    if(article.text_blocks && article.text_blocks.length>0){
+        article.text_blocks[0][1] = article.search_result_name
+    }
     const textBlocks = article.text_blocks? article.text_blocks.map((tb,i)=>{
         const [tag, text] = tb
-        return <TextBlock tag={tag} key={i} textLinks={article.text_links[i]} language={language}>{text}</TextBlock>
+        const realDHsLink = i==0? <RealDhsArticleLink dhsId={article.id} language={language}><img src="/external-link.png" className="real-dhs-article-external-link" /></RealDhsArticleLink>:""
+        return <TextBlock tag={tag} key={i} textLinks={article.text_links[i]} language={language}>{[text," ",realDHsLink]}</TextBlock>
     }) : "Loading..."
 
     return (
@@ -102,8 +106,7 @@ export function DhsArticle({}) {
 
   return (
     <CenteredLayout>
-        <Alert variant="info">
-            Voici la version linkée du DHS.<br/>
+        <Alert className="dhs-article-info" variant="info">
             <a className={dhsLinkClass}>Les liens bleus</a> pointent vers d'autres articles du DHS.<br/>
             <a className={wikipediaLinkClass}>Les liens verts</a> pointent vers Wikipedia.
         </Alert>
