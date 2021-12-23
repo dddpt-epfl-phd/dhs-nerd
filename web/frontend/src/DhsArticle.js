@@ -4,7 +4,7 @@ import {
 } from "react-router-dom";
 import {Alert} from "react-bootstrap"
 
-import {TextLink, DhsArticleLink, RealDhsArticleLink, dhsLinkClass, wikipediaLinkClass} from "./TextLink"
+import {TextLink, DhsArticleLink, RealDhsArticleLink, dhsLinkClass, wikipediaLinkClass, originalDhsLinkClass} from "./TextLink"
 import {CenteredLayout} from "./Layout"
 
 
@@ -59,7 +59,9 @@ function TextBlock({tag="p", textLinks = [], children="", language="de"}){
 export function DhsArticleContent({
     article = {},
     language="de"
-}) {
+}) {    
+    //"wikidata_url": "http://www.wikidata.org/entity/Q121410",
+    //"wikipedia_page_title": "District d'Aarau",
 
     // hack: use the search_result_name to have a nice title
     if(article.text_blocks && article.text_blocks.length>0){
@@ -108,7 +110,8 @@ export function DhsArticle({}) {
     <CenteredLayout>
         <Alert className="dhs-article-info" variant="info">
             <a className={dhsLinkClass}>Les liens bleus</a> pointent vers d'autres articles du DHS.<br/>
-            <a className={wikipediaLinkClass}>Les liens verts</a> pointent vers Wikipedia.
+            <a className={wikipediaLinkClass}>Les liens verts</a> pointent vers Wikipedia.<br/>
+            <a className={dhsLinkClass+" "+originalDhsLinkClass}>Les liens bleus souligné en traitillé</a> sont des liens provenant du DHS original.<br/>
         </Alert>
         <DhsArticleContent article={article} language={language}/>
     </CenteredLayout>

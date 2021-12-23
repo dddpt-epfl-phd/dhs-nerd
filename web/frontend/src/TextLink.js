@@ -119,10 +119,10 @@ export function DhsArticleTextLink({dhsUrl = "", children=[]}){
     return <Link className={dhsLinkClass} to={dhsUrl}>{children}</Link>
 }
 
-export function DhsArticleLink({dhsId = "", children=[]}){
+export function DhsArticleLink({dhsId = "", children=[], originalLink=false}){
     const { language } = useParams();
     const dhsUrl = getDhsUrlFromDhsId(dhsId, language)
-    return <Link className={dhsLinkClass} to={dhsUrl}>{children}</Link>
+    return <Link className={dhsLinkClass+" "+(originalLink? originalDhsLinkClass: "")} to={dhsUrl}>{children}</Link>
 }
 export function RealDhsArticleLink({dhsId = "", language="de", children=[]}){
     const url = getRealDhsUrlFromDhsId(dhsId, language)
@@ -152,7 +152,7 @@ export function TextLink({
     //console.log("<TextLink/> textLink:", textLink, "\nlanguage: ", language, "\nchildren: ", children,"\nzulu: ",zulu)
     const dhsId = getLinkDhsId(textLink)
     if(dhsId){
-        return <DhsArticleLink dhsId={dhsId}>{children}</DhsArticleLink>
+        return <DhsArticleLink dhsId={dhsId} originalLink={textLink.origin!=="entity_fishing"}>{children}</DhsArticleLink>
     }
     /*const dhsUrl = getLinkDhsUrl(textLink, language)
     if(dhsUrl){
