@@ -16,9 +16,9 @@ from data_file_paths import S4_JSONL_ALL_ARTICLES_LINKED_FILE, S5_WEBSITE_SINGLE
 This scripts load all the DhsArticles in S0_JSONL_ALL_ARTICLES_FILE and writes them to single json files
 """
 
-# LINKING AND STREAMING LINKED ARTICLES TO JSONL
-lng="fr"
-max_nb_articles=13380
+# LOAD LINKED ARTICLES AND STREAMING THEM TO INDIVIDUAL JSON
+lng="de"
+max_nb_articles=10000
 
 
 jsonl_linked_articles_file = localize(S4_JSONL_ALL_ARTICLES_LINKED_FILE, lng)
@@ -32,7 +32,7 @@ for i,a in enumerate(DhsArticle.load_articles_from_jsonl(
     with open(path.join(json_folder, f'{a.id}.json'), 'w') as f:
         print(f"{i} writing {lng} json for {a.title}")
         json.dump(a.to_json(as_dict=True), f)
-    articles_ids_titles.append((a.id, a.title))
+    articles_ids_titles.append((a.id, a.search_result_name))
 
 index_json = localize(S5_WEBSITE_SINGLE_ARTICLES_LOCALIZED_FOLDER, "indices/"+lng+".json")
 with open(index_json, 'w') as f:
