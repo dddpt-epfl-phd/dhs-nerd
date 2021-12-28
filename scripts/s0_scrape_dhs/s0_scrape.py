@@ -10,7 +10,23 @@ from data_file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ARTICLES_BY_CAT
 
 # %% scrape args
 
-language="de"
+"""
+command to run script to have logs both on screen and in file:
+python s0_scrape.py LNG 2>&1 | tee ../../data/scrape_dhs/logs/LNG-YYYY-MM-DD.log
+With LNG and YYYY-MM-DD replaced with proper values such as:
+python s0_scrape.py it 2>&1 | tee ../../data/scrape_dhs/logs/it-2021-12-28.log
+"""
+
+default_language="it"
+
+print("HAHA")
+language = default_language
+possible_languages = ["fr", "de", "it"]
+if len(sys.argv)>1:
+    if sys.argv[1] in possible_languages:
+        language = sys.argv[1]
+    else:
+        raise Exception(f"s0_scrape.py: unrecognized language argument from sys.argv[1]: '{sys.argv[1]}'. Must be one of {possible_languages}")
 
 buffer_size = 100
 max_nb_articles_per_letter = None
@@ -23,6 +39,7 @@ if True:
 
     jsonl_articles_content_file = localize(S0_JSONL_ALL_ARTICLES_FILE, language)
     already_visited_ids = set(DhsArticle.get_articles_ids(jsonl_articles_content_file))
+    print(f"Skipping {len(already_visited_ids)} articles that already have been downloaded")
     stream_to_jsonl(
         jsonl_articles_content_file,
         DhsArticle.scrape_all_articles(

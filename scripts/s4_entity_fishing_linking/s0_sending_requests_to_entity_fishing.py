@@ -29,30 +29,39 @@ Todo
 """
 
 # LINKING AND STREAMING LINKED ARTICLES TO JSONL
-lng="de"
+default_language="it"
 
 
-jsonl_linked_articles_file = localize(S4_JSONL_ALL_ARTICLES_LINKED_FILE, lng)
+language = default_language
+possible_languages = ["fr", "de", "it"]
+if len(sys.argv)>1:
+    if sys.argv[1] in possible_languages:
+        language = sys.argv[1]
+    else:
+        raise Exception(f"s0_scrape.py: unrecognized language argument from sys.argv[1]: '{sys.argv[1]}'. Must be one of {possible_languages}")
+
+
+jsonl_linked_articles_file = localize(S4_JSONL_ALL_ARTICLES_LINKED_FILE, language)
 already_visited_ids = set(DhsArticle.get_articles_ids(jsonl_linked_articles_file))
 bugged_ids = {
     "de": [
         "012199", "012463", "029202", "012509", "058090", "041455", "020785", "020786",
         "020787", "020589", "020590", "011635", "020772", "012584", "012583", "020793",
-        "012614", "029215", "029199", "029200"
+        "012614", "029215", "029199", "029200", "029209"
     ],
     "fr": [
         "058089", "058090", "044498", "031336", "048634", "048313", "044235", "027390",
         "049777"
     ]
 }
-for bugged_id in bugged_ids[lng]:
+for bugged_id in bugged_ids[language]:
     already_visited_ids.add(bugged_id)
 print(f"Skipping {len(already_visited_ids)} articles that already have been linked")
 stream_to_jsonl(
     jsonl_linked_articles_file,
     dhs_article.link_dhs_articles(
         DhsArticle.load_articles_from_jsonl(
-            localize(S0_JSONL_ALL_ARTICLES_FILE,lng),
+            localize(S0_JSONL_ALL_ARTICLES_FILE,language),
             ids_to_drop=already_visited_ids
         ),
         include_entities=False
