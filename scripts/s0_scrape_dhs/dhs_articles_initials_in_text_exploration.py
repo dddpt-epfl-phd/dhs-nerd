@@ -17,7 +17,7 @@ seed(54367)
 # %%
 
 explored_languages=["fr", "de"]
-lng="fr"
+lng="de"
 
 # %%
 
@@ -163,4 +163,48 @@ len(no_initials) # fr: 6016, de: 8486
 len(one_initial_orphelins) # fr: 397, de:462
 sum(two_most_likely_initial_not_in_title_initials) # fr: 36, de 76
 sum(ii is not None for a,i,it,ii in identifying_initial)+len(no_initials)+len(one_initial_orphelins)+sum(two_most_likely_initial_not_in_title_initials) # fr: 29906+6016+397+36 = 36355
+# %%
+
+
+
+bugged_ids = {
+    "de": [
+        "012199", "012463", "029202", "012509", "058090", "041455", "020785", "020786",
+        "020787", "020589", "020590", "011635", "020772", "012584", "012583", "020793",
+        "012614", "029215", "029199", "029200", "029209", "012635", "029219", "029217",
+        "029210", "046529", "019681"
+    ],
+    "fr": [
+        "058089", "058090", "044498", "031336", "048634", "048313", "044235", "027390",
+        "049777"
+    ]
+}
+
+bugged_articles = [a for a in articles if a.id in bugged_ids[lng]]
+
+# %%
+
+[(a.id, a.title) for a in bugged_articles]
+
+# %%
+
+
+for a in bugged_articles:
+    print(f"{a.id} '{a.title}' initial: {a.initial}")
+    print(a.text+"\n\n\n")
+
+# %%
+
+for a in bugged_articles:
+    initial = a.parse_identifying_initial()
+    print(f"{a.id} initial={initial}\n\n")
+# %%
+
+a = bugged_articles[0]
+a.parse_identifying_initial()
+
+# %%
+
+
+napo = [a for a in bugged_articles if a.id=="041455"][0]
 # %%
