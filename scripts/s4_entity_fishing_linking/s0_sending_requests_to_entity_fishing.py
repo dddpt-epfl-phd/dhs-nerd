@@ -43,20 +43,6 @@ if len(sys.argv)>1:
 
 jsonl_linked_articles_file = localize(S4_JSONL_ALL_ARTICLES_LINKED_FILE, language)
 already_visited_ids = set(DhsArticle.get_articles_ids(jsonl_linked_articles_file))
-bugged_ids = {
-    "de": [
-        "012199", "012463", "029202", "012509", "058090", "041455", "020785", "020786",
-        "020787", "020589", "020590", "011635", "020772", "012584", "012583", "020793",
-        "012614", "029215", "029199", "029200", "029209", "012635", "029219", "029217",
-        "029210", "046529", "019681"
-    ],
-    "fr": [
-        "058089", "058090", "044498", "031336", "048634", "048313", "044235", "027390",
-        "049777"
-    ]
-}
-#for bugged_id in bugged_ids[language]:
-#    already_visited_ids.add(bugged_id)
 print(f"Skipping {len(already_visited_ids)} articles that already have been linked")
 stream_to_jsonl(
     jsonl_linked_articles_file,
