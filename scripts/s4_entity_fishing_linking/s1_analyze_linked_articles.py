@@ -80,37 +80,40 @@ linked_articles = {
 
 
 def article_text_links_stats(article: DhsArticle):
-    nb_from_dhs = 0
-    nb_from_ef = 0
-    nb_to_dhs = 0
-    nb_to_wk = 0
-    nb_to_wd = 0
+    from_dhs = set()
+    from_ef = set()
+    to_dhs = set()
+    to_wk = set()
+    to_wd = set()
     nb_unlinked = 0
     for text_block in article.text_links:
         for tl in text_block:
             origin = get_origin(tl)
+            dhsid = get_dhsid(tl)
             if origin==ORIGIN_FROM_DHS:
-                nb_from_dhs+=1
+                from_dhs.add(dhsid)
             elif origin==ORIGIN_FROM_ENTITY_FISHING:
-                nb_from_ef+=1
-                if get_dhsid(tl) is not None:
-                    nb_to_dhs+=1
-                elif get_wikidata_url(tl) is not None:
-                    nb_to_wd+=1
-                elif get_wikipedia_page_id(tl) is not None:
-                    nb_to_wk+=1
+                wd_url = get_wikidata_url(tl)
+                wk_page = get_wikipedia_page_id(tl)
+                from_ef.add(wd_url)    
+                if dhsid is not None:
+                    to_dhs.add(dhsid)
+                elif wd_url is not None:
+                    to_wd.add(wd_url)
+                elif wk_page is not None:
+                    to_wk.add(wk_page)
                 else:
                     nb_unlinked+=1
     return {
         "dhsid": article.id,
         "year": int(article.version[0:4]),
         "nb_char": len(article.text),
-        "nb_from_dhs": nb_from_dhs,
-        "nb_from_ef": nb_from_ef,
-        "nb_to_dhs": nb_to_dhs,
-        "nb_to_wd": nb_to_wd,
-        "nb_to_wk": nb_to_wk,
-        "nb_to_dhs_wd": nb_to_wd+nb_to_dhs,
+        "nb_from_dhs": len(from_dhs),
+        "nb_from_ef": len(from_ef),
+        "nb_to_dhs": len(to_dhs),
+        "nb_to_wd": len(to_wd),
+        "nb_to_wk": len(to_wk),
+        "nb_to_dhs_wd": len(to_wd)+len(to_dhs),
         "nb_unlinked": nb_unlinked,
     }
 
@@ -212,7 +215,26 @@ nb_from_dhs_per_article_per_year_plot.set(
 
 
 
-totals_from_dhs = [links_stats_per_article["fr"].nb_from_dhs.sum(), 0]
+
+labels = ["Original HDS links", "Links from entity-fishing"]
+nb_links_plot_lng = "de"
+denominator = links_stats_per_article[nb_links_plot_lng].nb_char.sum() / 1000
+totals_to_dhs = [links_stats_per_article[nb_links_plot_lng].nb_from_dhs.sum()/denominator, links_stats_per_article[nb_links_plot_lng].nb_to_dhs.sum()/denominator]
+totals_to_wk = [0, links_stats_per_article[nb_links_plot_lng].nb_to_wd.sum()/denominator]
+width = 0.35       # the width of the bars: can also be len(x) sequence
+
+fig, ax = plt.subplots(figsize=(4,5))
+
+ax.bar(labels, totals_to_dhs, label='Links to DHS', width=width)
+ax.bar(labels, totals_to_wk, bottom=totals_to_dhs,label='Links to Wikidata/pedia', width=width)
+ax.set(
+    title='Number of links in original HDS and found by entity-fishing',
+    ylabel=" # links per 1000 characters"
+)
+ax.legend()
+
+plt.show()
+
 # %%
 
 # %%
