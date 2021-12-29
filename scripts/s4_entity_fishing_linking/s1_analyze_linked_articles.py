@@ -4,6 +4,7 @@
 import sys
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
 sys.path.append("../../src")
@@ -59,6 +60,9 @@ def get_origin(text_link):
     if origin is None:
         return ORIGIN_FROM_DHS
     return origin
+
+quantiles = [0.1, 0.25, 0.5, 0.75, 0.9, 0.99, 1]
+percentiles = np.arange(0,1.005,0.01)
 
 # %%
 
@@ -147,9 +151,9 @@ links_stats_per_year = {
 
 # %%
 
-plt.figure(42)
+plt.figure(33)
 nb_articles_per_year_plot_fr = links_stats_per_year["fr"]["nb_articles"].plot()
-plt.figure(42)
+plt.figure(33)
 nb_articles_per_year_plot_de = links_stats_per_year["de"]["nb_articles"].plot()
 nb_articles_per_year_plot_de.legend(["French HDS","German HDS"])
 nb_articles_per_year_plot_de.set(
@@ -162,19 +166,20 @@ nb_articles_per_year_plot_de.set(
 
 links_stats_per_article["fr"].groupby("year").get_group(2001).describe()
 
-
 # %%
 
-def plot_nb_per_year(dtf, col="nb_from_dhs", denominator_col="nb_articles",figure=None, multiplier_factor=1):
+def normalize_col(dtf, col="nb_from_dhs", denominator_col="nb_articles", multiplier_factor=1):
     new_col = col+"_per_"+denominator_col 
     dtf[new_col] = dtf[col] / dtf[denominator_col] * multiplier_factor
-    plt.figure(figure)
-    return dtf[new_col].plot()
+    return new_col
+
 
 # %%
 
-plot_nb_per_year(links_stats_per_year["fr"], figure=34)
-nb_from_dhs_per_article_per_year_plot = plot_nb_per_year(links_stats_per_year["de"], figure=34)
+for lng in languages:
+    new_col = normalize_col(links_stats_per_year[lng])
+    plt.figure(34)
+    nb_from_dhs_per_article_per_year_plot = links_stats_per_year[lng][new_col].plot()
 nb_from_dhs_per_article_per_year_plot.legend(["French HDS","German HDS"])
 nb_from_dhs_per_article_per_year_plot.set(
     title = "Average number of links per article per year in the HDS",
@@ -183,31 +188,41 @@ nb_from_dhs_per_article_per_year_plot.set(
 )
 
 
+
 # %%
 
-nb_from_dhs_per_article_per_year_plot = plot_nb_per_year(links_stats_per_year["fr"], denominator_col="nb_char", figure=36, multiplier_factor=1000)
-nb_from_dhs_per_article_per_year_plot = plot_nb_per_year(links_stats_per_year["de"], denominator_col="nb_char", figure=36, multiplier_factor=1000)
-nb_from_dhs_per_article_per_year_plot.legend(["French HDS","German HDS"])
-nb_from_dhs_per_article_per_year_plot.set(
+for lng in languages:
+    new_col = normalize_col(links_stats_per_year[lng], denominator_col="nb_char", multiplier_factor=1000)
+    plt.figure(35)
+    nb_from_dhs_per_1000char_per_year_plot = links_stats_per_year[lng][new_col].plot()
+nb_from_dhs_per_1000char_per_year_plot.legend(["French HDS","German HDS"])
+nb_from_dhs_per_1000char_per_year_plot.set(
     title = "Average number of links per 1000 characters per year in the HDS",
     xlabel="Year",
     ylabel="# of links per 1000 characters",
 )
 # %%
 
-nb_from_dhs_per_article_per_year_plot = plot_nb_per_year(links_stats_per_year["fr"], denominator_col="nb_char", figure=37, multiplier_factor=1000)
-nb_from_dhs_per_article_per_year_plot = plot_nb_per_year(links_stats_per_year["de"], denominator_col="nb_char", figure=37, multiplier_factor=1000)
-nb_from_dhs_per_article_per_year_plot = plot_nb_per_year(links_stats_per_year["fr"], col="nb_to_dhs_wd",denominator_col="nb_char", figure=37, multiplier_factor=1000)
-nb_from_dhs_per_article_per_year_plot = plot_nb_per_year(links_stats_per_year["de"], col="nb_to_dhs_wd", denominator_col="nb_char", figure=37, multiplier_factor=1000)
-nb_from_dhs_per_article_per_year_plot = plot_nb_per_year(links_stats_per_year["fr"], col="nb_to_dhs",denominator_col="nb_char", figure=37, multiplier_factor=1000)
-nb_from_dhs_per_article_per_year_plot = plot_nb_per_year(links_stats_per_year["de"], col="nb_to_dhs", denominator_col="nb_char", figure=37, multiplier_factor=1000)
-nb_from_dhs_per_article_per_year_plot.legend([
+
+for lng in languages:
+    new_col = normalize_col(links_stats_per_year[lng], denominator_col="nb_char", multiplier_factor=1000)
+    plt.figure(36)
+    nb_per_1000char_per_year_plot = links_stats_per_year[lng][new_col].plot()
+for lng in languages:
+    new_col = normalize_col(links_stats_per_year[lng], col="nb_to_dhs_wd", denominator_col="nb_char", multiplier_factor=1000)
+    plt.figure(36)
+    nb_per_1000char_per_year_plot = links_stats_per_year[lng][new_col].plot()
+for lng in languages:
+    new_col = normalize_col(links_stats_per_year[lng], col="nb_to_dhs", denominator_col="nb_char", multiplier_factor=1000)
+    plt.figure(36)
+    nb_per_1000char_per_year_plot = links_stats_per_year[lng][new_col].plot()
+nb_per_1000char_per_year_plot.legend([
     "Original HDS links FR","Original HDS links DE",
     "Wikidata links from entity-fishing FR", "Wikidata links from entity-fishing DE",
     "HDS Links from entity-fishing FR", "HDS Links from entity-fishing DE"
 ])
-nb_from_dhs_per_article_per_year_plot.set(
-    title = "Average number of links per 1000 characters per year in the HDS",
+nb_per_1000char_per_year_plot.set(
+    title = "Average number of links per 1000 characters per year in the HDS, compared with entity-fishing links",
     xlabel="Year",
     ylabel="# of links per 1000 characters",
 )
@@ -217,7 +232,7 @@ nb_from_dhs_per_article_per_year_plot.set(
 
 
 labels = ["Original HDS links", "Links from entity-fishing"]
-nb_links_plot_lng = "de"
+nb_links_plot_lng = "fr"
 denominator = links_stats_per_article[nb_links_plot_lng].nb_char.sum() / 1000
 totals_to_dhs = [links_stats_per_article[nb_links_plot_lng].nb_from_dhs.sum()/denominator, links_stats_per_article[nb_links_plot_lng].nb_to_dhs.sum()/denominator]
 totals_to_wk = [0, links_stats_per_article[nb_links_plot_lng].nb_to_wd.sum()/denominator]
@@ -237,4 +252,72 @@ plt.show()
 
 # %%
 
+
+# %%
+
+for lng in languages:
+    for col in ["nb_from_dhs", "nb_to_dhs", "nb_to_dhs_wd"]:
+        normalize_col(links_stats_per_article[lng], col=col, denominator_col="nb_char", multiplier_factor=1000)
+
+# %%
+
+def links_stats_distribution(links_stats, col, title=None, figure=None):
+    title_starter = title+": " if title else ""
+    values = [x for x in links_stats[col]]
+    values.sort(reverse=True)
+
+    pd_values = pd.Series(values)
+    values_quantiles = pd.DataFrame([(q, pd_values.quantile(q, interpolation="higher")) for q in quantiles], columns=["quantile", "number of articles"])
+    pdtl_percentiles = pd.Series([pd_values.quantile(q, interpolation="higher") for q in percentiles])
+
+    print(f"{title_starter}Number of entries: {len(links_stats)}")
+    print(f"{title_starter}Median value of {col}: {pd_values.quantile(0.5, interpolation='higher')},"+
+    f"mean: {pd_values.mean().round(2)}")
+    print(f"{values_quantiles}")
+    plt.figure(figure)
+    texts_plot = pdtl_percentiles.plot()
+    return texts_plot, pd_values
+
+
+
+# %%
+
+
+
+for col in ["nb_from_dhs", "nb_to_dhs"]:
+    for lng in languages:
+        links_per_article_distribution_plot, values = links_stats_distribution(links_stats_per_article[lng], col, "Whole HDS",37)
+links_per_article_distribution_plot.legend([
+    "Original HDS links FR", "Original HDS links DE",
+    "HDS Links from entity-fishing FR", "HDS Links from entity-fishing DE"
+])
+links_per_article_distribution_plot.set(
+    title= "Distribution of articles according to number of HDS links",
+    ylabel="# of links",
+    xlabel= "Articles (percentiles by number of links)"
+)
+
+
+
+
+
+# %%
+for col in ["nb_from_dhs_per_nb_char", "nb_to_dhs_per_nb_char", "nb_to_dhs_wd_per_nb_char"]:
+    for lng in languages:
+        links_per_article_distribution_plot, values = links_stats_distribution(links_stats_per_article[lng], col, "Whole HDS",38)
+links_per_article_distribution_plot.legend([
+    "Original HDS links FR", "Original HDS links DE",
+    "HDS Links from entity-fishing FR", "HDS Links from entity-fishing DE",
+    "All Links from entity-fishing FR", "All Links from entity-fishing DE"
+])
+links_per_article_distribution_plot.set(
+    title= "Distribution of articles according to number of HDS links per 1000 character",
+    ylabel="# of links per 1000 characters",
+    xlabel= "Articles (percentiles by number of links per 1000 characters)"
+)
+
+# %%
+
+
+links_stats_per_article["fr"][links_stats_per_article["fr"].nb_from_dhs>100]
 # %%
