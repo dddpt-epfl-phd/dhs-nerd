@@ -5,6 +5,7 @@ venv
 **/node_modules/
 
 entity-fishing/entity-fishing/
+entity-fishing/entity-fishing-data/
 entity-fishing/grobid/
 grisp/
 

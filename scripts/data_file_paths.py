@@ -97,6 +97,14 @@ S4_JSONL_ENTITY_FISHING_LINKING_TEST_LINKED_DHSA = path.join(S4_ENTITY_FISHING_L
 S4_JSONL_ALL_ARTICLES_LINKED_FILE = path.join(S4_ENTITY_FISHING_LINKING_DATA_FOLDER, "dhs_<LANGUAGE>_all_articles_linked.jsonl")
 S4_ENTITY_FISHING_TIMED_OUT_ARTICLES_FILE = path.join(S4_ENTITY_FISHING_LINKING_DATA_FOLDER, "dhs_<LANGUAGE>_timed_out_articles.txt")
 
+s4_nb_articles_per_year_figure = path.join(FIGURES_FOLDER, "s4_nb_articles_per_year.png")
+s4_avg_nb_links_per_article_per_year_figure = path.join(FIGURES_FOLDER, "s4_avg_nb_links_per_article_per_year.png")
+s4_nb_links_per_1000char_per_year_figure = path.join(FIGURES_FOLDER, "s4_avg_nb_links_per_1000char_per_year.png")
+s4_nb_hds_ef_links_per_1000char_per_year_figure = path.join(FIGURES_FOLDER, "s4_nb_hds_ef_links_per_1000char_per_year.png")
+s4_hds_ef_links_per_article_distribution_figure = path.join(FIGURES_FOLDER, "s4_hds_ef_links_per_article_distribution.png")
+s4_hds_ef_links_per_article_distribution_breakdown_figure = path.join(FIGURES_FOLDER, "s4_hds_ef_links_per_article_distribution_breakdown.png")
+s4_nb_links_from_hds_and_ef_figure = path.join(FIGURES_FOLDER, "s4_nb_links_from_hds_and_ef.png")
+
 # website
 #####################
 

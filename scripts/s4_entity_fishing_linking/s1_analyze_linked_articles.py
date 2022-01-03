@@ -13,7 +13,7 @@ sys.path.append("../../scripts")
 from inception_fishing import entity_fishing, dhs_article, wikipedia
 from dhs_scraper import DhsArticle
 
-from data_file_paths import S0_JSONL_ALL_ARTICLES_FILE, S4_JSONL_ALL_ARTICLES_LINKED_FILE, localize
+from data_file_paths import S4_JSONL_ALL_ARTICLES_LINKED_FILE, s4_avg_nb_links_per_article_per_year_figure, s4_nb_links_per_1000char_per_year_figure, s4_nb_hds_ef_links_per_1000char_per_year_figure, s4_hds_ef_links_per_article_distribution_figure, s4_hds_ef_links_per_article_distribution_breakdown_figure, s4_nb_links_from_hds_and_ef_figure, localize
 # %%
 """
 
@@ -61,6 +61,13 @@ def get_origin(text_link):
         return ORIGIN_FROM_DHS
     return origin
 
+
+def get_original_text_links(dhs_article):
+    return [tl for tb in dhs_article.text_links for tl in tb if get_origin(tl)==ORIGIN_FROM_DHS]
+
+def get_article(lng, dhsid):
+    return [a for a in linked_articles[lng] if a.id==dhsid][0]
+
 quantiles = [0.1, 0.25, 0.5, 0.75, 0.9, 0.99, 1]
 percentiles = np.arange(0,1.005,0.01)
 
@@ -72,12 +79,33 @@ max_nb_articles=1000
 
 
 
+print("loading articles...")
 linked_articles = {
     lng: list(DhsArticle.load_articles_from_jsonl(
         localize(S4_JSONL_ALL_ARTICLES_LINKED_FILE,lng)
         #indices_to_keep=[i for i in range(max_nb_articles)]
     )) for lng in languages
 }
+print("articles loaded")
+
+# %% understanding the missing text_links problem
+
+alpen0 = [a for a in linked_articles["de"] if a.id =="008569"][0]
+
+sum(len(tb) for tb in alpen0.text_links)
+sum(1 for tb in alpen0.text_links for tl in tb if tl.get("origin") is None)
+sum(1 for tb in alpen0.text_links for tl in tb if get_origin(tl) == ORIGIN_FROM_DHS)
+
+print("ensuring text_links have their dhsid parsed...")
+for a in linked_articles["de"]:
+    #a.parse_text_links()
+    for tb in a.text_links:
+        for tl in tb:
+            if get_origin(tl)==ORIGIN_FROM_DHS:
+                l, dhsid, v = DhsArticle.get_language_id_version_from_url(tl["href"])
+                tl["dhsid"] = dhsid
+print("text_links dhsid parsed")
+
 
 
 # %%
@@ -110,6 +138,7 @@ def article_text_links_stats(article: DhsArticle):
                     nb_unlinked+=1
     return {
         "dhsid": article.id,
+        "title": article.title,
         "year": int(article.version[0:4]),
         "nb_char": len(article.text),
         "nb_from_dhs": len(from_dhs),
@@ -123,12 +152,13 @@ def article_text_links_stats(article: DhsArticle):
 
 # %%
 
+print("computing links statistics...")
 links_stats_per_article = {
     lng: pd.DataFrame([article_text_links_stats(a) for a in linked_articles[lng]])
     for lng in languages
 }
 links_stats_per_article["fr"]
-
+print("links statistics done.")
 
 # %%
 
@@ -162,6 +192,9 @@ nb_articles_per_year_plot_de.set(
     ylabel="# of articles",
 )
 
+plt.gcf().set_figwidth(8) # default: 6.4
+plt.gcf().set_figheight(5) # default: 4
+plt.gcf().savefig(s4_nb_links_from_hds_and_ef_figure, dpi=500)
 # %%
 
 links_stats_per_article["fr"].groupby("year").get_group(2001).describe()
@@ -186,7 +219,9 @@ nb_from_dhs_per_article_per_year_plot.set(
     xlabel="Year",
     ylabel="# of links per article",
 )
-
+plt.gcf().set_figwidth(8) # default: 6.4
+plt.gcf().set_figheight(5) # default: 4
+plt.gcf().savefig(s4_avg_nb_links_per_article_per_year_figure, dpi=500)
 
 
 # %%
@@ -197,10 +232,13 @@ for lng in languages:
     nb_from_dhs_per_1000char_per_year_plot = links_stats_per_year[lng][new_col].plot()
 nb_from_dhs_per_1000char_per_year_plot.legend(["French HDS","German HDS"])
 nb_from_dhs_per_1000char_per_year_plot.set(
-    title = "Average number of links per 1000 characters per year in the HDS",
+    title = "Number of links per 1000 characters per year in the HDS",
     xlabel="Year",
     ylabel="# of links per 1000 characters",
 )
+plt.gcf().set_figwidth(8) # default: 6.4
+plt.gcf().set_figheight(5) # default: 4
+plt.gcf().savefig(s4_nb_links_per_1000char_per_year_figure, dpi=500)
 # %%
 
 
@@ -222,20 +260,39 @@ nb_per_1000char_per_year_plot.legend([
     "HDS Links from entity-fishing FR", "HDS Links from entity-fishing DE"
 ])
 nb_per_1000char_per_year_plot.set(
-    title = "Average number of links per 1000 characters per year in the HDS, compared with entity-fishing links",
+    title = "Number of links per 1000 characters per year in the HDS, compared with entity-fishing links",
     xlabel="Year",
     ylabel="# of links per 1000 characters",
 )
+
+plt.gcf().set_figwidth(8) # default: 6.4
+plt.gcf().set_figheight(5) # default: 4
+plt.gcf().savefig(s4_nb_hds_ef_links_per_1000char_per_year_figure, dpi=500)
 # %%
 
 
 
 
-labels = ["Original HDS links", "Links from entity-fishing"]
-nb_links_plot_lng = "fr"
-denominator = links_stats_per_article[nb_links_plot_lng].nb_char.sum() / 1000
-totals_to_dhs = [links_stats_per_article[nb_links_plot_lng].nb_from_dhs.sum()/denominator, links_stats_per_article[nb_links_plot_lng].nb_to_dhs.sum()/denominator]
-totals_to_wk = [0, links_stats_per_article[nb_links_plot_lng].nb_to_wd.sum()/denominator]
+labels = [
+    "FR HDS",
+    "DE HDS",
+    "FR entity-fishing",
+    "DE entity-fishing"
+]
+#nb_links_plot_lng = "de"
+denominator_fr = links_stats_per_article["fr"].nb_char.sum() / 1000
+denominator_de = links_stats_per_article["de"].nb_char.sum() / 1000
+totals_to_dhs = [
+    links_stats_per_article["fr"].nb_from_dhs.sum()/denominator_fr,
+    links_stats_per_article["de"].nb_from_dhs.sum()/denominator_de,
+    links_stats_per_article["fr"].nb_to_dhs.sum()/denominator_fr,
+    links_stats_per_article["de"].nb_to_dhs.sum()/denominator_de
+]
+totals_to_wk = [
+    0, 0,
+    links_stats_per_article["fr"].nb_to_wd.sum()/denominator_fr,
+    links_stats_per_article["de"].nb_to_wd.sum()/denominator_de
+]
 width = 0.35       # the width of the bars: can also be len(x) sequence
 
 fig, ax = plt.subplots(figsize=(4,5))
@@ -243,12 +300,16 @@ fig, ax = plt.subplots(figsize=(4,5))
 ax.bar(labels, totals_to_dhs, label='Links to DHS', width=width)
 ax.bar(labels, totals_to_wk, bottom=totals_to_dhs,label='Links to Wikidata/pedia', width=width)
 ax.set(
-    title='Number of links in original HDS and found by entity-fishing',
+    title=f'Number of links in original HDS and found by entity-fishing',
     ylabel=" # links per 1000 characters"
 )
+ax.set_xticklabels(labels, rotation= 10)
 ax.legend()
 
 plt.show()
+plt.gcf().set_figwidth(8) # default: 6.4
+plt.gcf().set_figheight(5) # default: 4
+plt.gcf().savefig(s4_nb_links_from_hds_and_ef_figure, dpi=500)
 
 # %%
 
@@ -297,6 +358,10 @@ links_per_article_distribution_plot.set(
     xlabel= "Articles (percentiles by number of links)"
 )
 
+plt.show()
+plt.gcf().set_figwidth(8) # default: 6.4
+plt.gcf().set_figheight(5) # default: 4
+plt.gcf().savefig(s4_hds_ef_links_per_article_distribution_figure, dpi=500)
 
 
 
@@ -315,9 +380,39 @@ links_per_article_distribution_plot.set(
     ylabel="# of links per 1000 characters",
     xlabel= "Articles (percentiles by number of links per 1000 characters)"
 )
+plt.show()
+plt.gcf().set_figwidth(8) # default: 6.4
+plt.gcf().set_figheight(5) # default: 4
+plt.gcf().savefig(s4_hds_ef_links_per_article_distribution_breakdown_figure, dpi=500)
 
 # %%
 
 
 links_stats_per_article["fr"][links_stats_per_article["fr"].nb_from_dhs>100]
 # %%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# %%
+
+print("DONE")
+
+# %%
+
+# %%
+
+"""
+SCP COPY FIGURES:
+scp -r ddupertu@128.178.21.4:/home/ddupertu/Documents/dhs-nerd/reports/figures .
+"""
