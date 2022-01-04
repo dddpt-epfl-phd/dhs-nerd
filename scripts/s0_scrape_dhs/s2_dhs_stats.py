@@ -11,6 +11,7 @@ sys.path.append("../../scripts")
 
 from dhs_scraper import DhsArticle, DhsTag
 from data_file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ALL_ARTICLES_PARSED_FILE, S0_DHS_CATEGORIES, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, s0_png_articles_lengths_by_category_figure, s0_png_percent_articles_in_wd_by_category, localize, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS
+from plot_styles import *
 
 # %matplotlib inline
 
@@ -59,7 +60,7 @@ percentiles = np.arange(0,1.005,0.01)
 # %%
 
 
-def tags_stats(articles, title=None, figure = None):
+def tags_stats(articles, title=None, figure = None, **plot_kwargs):
     title_starter = title+": " if title else ""
     tags = [t for a in articles for t in a.tags]
 
@@ -75,12 +76,12 @@ def tags_stats(articles, title=None, figure = None):
     f"mean: {tags_vc.mean()}")#".round(2)}")
     print(f"{tags_quantiles}")
     plt.figure(figure)
-    tags_plot = tags_percentiles.plot()
+    tags_plot = tags_percentiles.plot(**plot_kwargs)
     tags_plot.set(xlabel="Tag (by number of articles percentile)", ylabel="Number of articles", title = title_starter+"Number of Articles per Tag")
     #tags_plot.set_xticks([])
     return (tags_plot, tags_percentiles)
 
-tags_stats(articles, "Whole HDS", 31)
+tags_stats(articles, "Whole HDS", 31, color=colors_by_language[language])
 ""
 
 # %%
@@ -105,7 +106,7 @@ tags_by_level_quantiles = [
 
 # %%
 
-def texts_stats(articles, title=None, figure=None):
+def texts_stats(articles, title=None, figure=None, **plot_kwargs):
     title_starter = title+": " if title else ""
     texts_length = [len(a.text) for a in articles]
     texts_length.sort(reverse=True)
@@ -119,14 +120,14 @@ def texts_stats(articles, title=None, figure=None):
     f"mean: {pd_texts_length.mean().round(2)}")
     print(f"{texts_lengths_quantiles}")
     plt.figure(figure)
-    texts_plot = pdtl_percentiles.plot()
+    texts_plot = pdtl_percentiles.plot(**plot_kwargs)
     texts_plot.set(
         xlabel="Article (by length percentile)",
         ylabel="Article length (characters)",
         title = title_starter+"Length of Articles (character)")
     return texts_plot, pd_texts_length
 
-texts_stats(articles, "Whole HDS",3)
+texts_stats(articles, "Whole HDS",3, color=colors_by_language[language])
 ""
 
 # %%
@@ -183,19 +184,40 @@ ax.set(title="Number of Articles by HDS category")
 
 
 # %%
-
+category_colors = list(colors_by_category.values())
 articles_by_category_text_stats = [
-    texts_stats(articles_in_category, S0_DHS_CATEGORIES[i],figure=42)
+    texts_stats(articles_in_category, S0_DHS_CATEGORIES[i],figure=42, color=category_colors[i])
     for i, articles_in_category in enumerate(articles_by_category)
 ]
 articles_by_category_text_stats_plot = articles_by_category_text_stats[0][0]
 #articles_by_category_text_stats_plot.legend([t[0]+f" ({len(articles_by_category[i])} articles, avg: {int(articles_by_category_text_stats[i][1].mean())}, md: {int(articles_by_category_text_stats[i][1].quantile(0.5))})" for i,t in enumerate(categories)])
-articles_by_category_text_stats_plot.legend([t[0]+f" ({len(articles_by_category[i])} articles, median: {int(articles_by_category_text_stats[i][1].quantile(0.5))}c)" for i,t in enumerate(S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items())])
-articles_by_category_text_stats_plot.set(title="Length of Articles (character) by HDS category")
+articles_by_category_text_stats_plot.legend([category+f" ({len(articles_by_category[i])} articles, median: {int(articles_by_category_text_stats[i][1].quantile(0.5))}c)" for i,(category,file) in enumerate(S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items())])
+articles_by_category_text_stats_plot.set(
+    title="Length of Articles (character) by HDS category",
+    ylim=(0,40000)
+)
+plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5)
+articles_by_category_text_stats_plot.text(
+    63, 37800,
+    f'themes max. length: {"{:,}".format(articles_by_category_text_stats[0][1].max())}c'.replace(",","'"),
+    style='italic', color=colors_by_category["themes"], fontsize=9
+)
+articles_by_category_text_stats_plot.text(
+    97.2, 37800, f'=', style='italic',
+    color=colors_by_category["themes"], fontsize=12, rotation=30
+)
+articles_by_category_text_stats_plot.text(
+    64, 35000,
+    f'spatial max. length: {"{:,}".format(articles_by_category_text_stats[3][1].max())}c'.replace(",","'"),
+    style='italic', color=colors_by_category["spatial"], fontsize=9
+)
+articles_by_category_text_stats_plot.text(
+    97.2, 35000, f'=', style='italic',
+    color=colors_by_category["spatial"], fontsize=12, rotation=30
+)
 plt.gcf().set_figwidth(8) # default: 6.4
 plt.gcf().set_figheight(5) # default: 4
 plt.gcf().savefig(s0_png_articles_lengths_by_category_figure, dpi=500)
-
 
 # %%
 
@@ -247,14 +269,21 @@ prop_articles_in_wd_by_category = pd.DataFrame(
 )
 prop_articles_in_wd_by_category.set_index("category", inplace=True)
 
+percent_articles_in_wd_by_category_plot_colors = [
+    color_in_wikidata, colors_by_language["de"], colors_by_language["fr"], colors_by_language["en"], colors_by_language["it"], 
+]
 percent_articles_in_wd_by_category = prop_articles_in_wd_by_category.loc[:,["prop_in_wd", "prop_in_de_wk", "prop_in_fr_wk", "prop_in_en_wk", "prop_in_it_wk"]].apply(lambda x: x*100)
 percent_articles_in_wd_by_category
-percent_articles_in_wd_by_category_plot = percent_articles_in_wd_by_category.plot.bar()
+percent_articles_in_wd_by_category_plot = percent_articles_in_wd_by_category.plot.bar(
+    color = percent_articles_in_wd_by_category_plot_colors,
+    zorder=3
+)
 percent_articles_in_wd_by_category_plot.legend([f"% in {lng}" for lng in ["Wikidata", "DE Wikipedia", "FR Wikipedia", "EN Wikipedia", "IT Wikipedia"]])
 percent_articles_in_wd_by_category_plot.set(title = "Proportion of HDS articles, by category, covered in different languages of wikipedia", ylabel="%")
+plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
+plt.xticks(rotation=0)
 plt.gcf().set_figwidth(8) # default: 6.4
 plt.gcf().set_figheight(5) # default: 4
-plt.xticks(rotation=0)
 plt.gcf().savefig(s0_png_percent_articles_in_wd_by_category)
 
 print(f"""Proportion of HDS articles, by category, covered in different languages of wikipedia:

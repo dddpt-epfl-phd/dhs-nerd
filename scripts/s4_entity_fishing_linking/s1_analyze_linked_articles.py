@@ -13,7 +13,8 @@ sys.path.append("../../scripts")
 from inception_fishing import entity_fishing, dhs_article, wikipedia
 from dhs_scraper import DhsArticle
 
-from data_file_paths import S4_JSONL_ALL_ARTICLES_LINKED_FILE, s4_avg_nb_links_per_article_per_year_figure, s4_nb_links_per_1000char_per_year_figure, s4_nb_hds_ef_links_per_1000char_per_year_figure, s4_hds_ef_links_per_article_distribution_figure, s4_hds_ef_links_per_article_distribution_breakdown_figure, s4_nb_links_from_hds_and_ef_figure, localize
+from data_file_paths import *
+from plot_styles import *
 # %%
 """
 
@@ -40,25 +41,6 @@ Steps:
 
 
 # %%
-
-# d3.schemeCategory10:
-# 1f77b4 ff7f0e 2ca02c d62728 9467bd 8c564b e377c2 7f7f7f bcbd22 17becf
-colors_by_language = {
-    "fr": "#1f77b4",
-    "de": "#ff7f0e",
-    "it": "#2ca02c",
-    "en": "#d62728",
-}
-
-linestyle_from_dhs = "solid"
-linestyle_from_ef_to_dhs = "dashed"
-linestyle_from_ef_to_wkwd = "dotted"
-linestyle_from_ef_to_all = "dashdot"
-
-# d3.schemePaired:
-# a6cee3 1f78b4 b2df8a 33a02c fb9a99 e31a1c fdbf6f ff7f00 cab2d6 6a3d9a ffff99 b15928
-color_to_hds = "#b2df8a"
-color_to_wkwd = "#cab2d6"
 
 
 def get_dhsid(text_link):
@@ -203,7 +185,7 @@ links_stats_per_year = {
 for lng in languages:
     plt.figure(33)
     nb_articles_per_year_plot = links_stats_per_year[lng]["nb_articles"].plot(
-        color = colors_by_language[lng], linestyle=linestyle_from_dhs
+        color = colors_by_language[lng], linestyle=linestyle_from_dhs, zorder=3
     )
 nb_articles_per_year_plot.legend(["French HDS","German HDS"])
 nb_articles_per_year_plot.set(
@@ -211,10 +193,11 @@ nb_articles_per_year_plot.set(
     xlabel="Year",
     ylabel="# of articles",
 )
+plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
 
 plt.gcf().set_figwidth(8) # default: 6.4
 plt.gcf().set_figheight(5) # default: 4
-plt.gcf().savefig(s4_nb_links_from_hds_and_ef_figure, dpi=500)
+plt.gcf().savefig(s4_nb_articles_per_year_figure, dpi=500)
 # %%
 
 links_stats_per_article["fr"].groupby("year").get_group(2001).describe()
@@ -252,7 +235,7 @@ for lng in languages:
     new_col = normalize_col(links_stats_per_year[lng], denominator_col="nb_char", multiplier_factor=1000)
     plt.figure(35)
     nb_from_dhs_per_1000char_per_year_plot = links_stats_per_year[lng][new_col].plot(
-        color = colors_by_language[lng], linestyle=linestyle_from_dhs
+        color = colors_by_language[lng], linestyle=linestyle_from_dhs, zorder=3
     )
 nb_from_dhs_per_1000char_per_year_plot.legend(["French HDS","German HDS"])
 nb_from_dhs_per_1000char_per_year_plot.set(
@@ -260,6 +243,7 @@ nb_from_dhs_per_1000char_per_year_plot.set(
     xlabel="Year",
     ylabel="# of links per 1000 characters",
 )
+plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
 plt.gcf().set_figwidth(8) # default: 6.4
 plt.gcf().set_figheight(5) # default: 4
 plt.gcf().savefig(s4_nb_links_per_1000char_per_year_figure, dpi=500)
@@ -273,16 +257,7 @@ for lng in languages:
     )
     plt.figure(36)
     nb_per_1000char_per_year_plot = links_stats_per_year[lng][new_col].plot(
-        color = colors_by_language[lng], linestyle=linestyle_from_dhs
-    )
-for lng in languages:
-    new_col = normalize_col(
-        links_stats_per_year[lng], col="nb_to_dhs_wd",
-        denominator_col="nb_char", multiplier_factor=1000
-    )
-    plt.figure(36)
-    nb_per_1000char_per_year_plot = links_stats_per_year[lng][new_col].plot(
-        color = colors_by_language[lng], linestyle=linestyle_from_ef_to_wkwd
+        color = colors_by_language[lng], linestyle=linestyle_from_dhs, zorder=3
     )
 for lng in languages:
     new_col = normalize_col(
@@ -291,12 +266,21 @@ for lng in languages:
     )
     plt.figure(36)
     nb_per_1000char_per_year_plot = links_stats_per_year[lng][new_col].plot(
-        color = colors_by_language[lng], linestyle=linestyle_from_ef_to_dhs
+        color = colors_by_language[lng], linestyle=linestyle_from_ef_to_dhs, zorder=3
+    )
+for lng in languages:
+    new_col = normalize_col(
+        links_stats_per_year[lng], col="nb_to_dhs_wd",
+        denominator_col="nb_char", multiplier_factor=1000
+    )
+    plt.figure(36)
+    nb_per_1000char_per_year_plot = links_stats_per_year[lng][new_col].plot(
+        color = colors_by_language[lng], linestyle=linestyle_from_ef_to_wkwd, zorder=3
     )
 nb_per_1000char_per_year_plot.legend([
     "Original HDS links FR","Original HDS links DE",
-    "Wikidata links from entity-fishing FR", "Wikidata links from entity-fishing DE",
-    "HDS Links from entity-fishing FR", "HDS Links from entity-fishing DE"
+    "HDS Links from entity-fishing FR", "HDS Links from entity-fishing DE",
+    "All links from entity-fishing FR", "All links from entity-fishing DE",
 ])
 nb_per_1000char_per_year_plot.set(
     title = "Number of links per 1000 characters per year in the HDS, compared with entity-fishing links",
@@ -304,6 +288,7 @@ nb_per_1000char_per_year_plot.set(
     ylabel="# of links per 1000 characters",
 )
 
+plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
 plt.gcf().set_figwidth(8) # default: 6.4
 plt.gcf().set_figheight(5) # default: 4
 plt.gcf().savefig(s4_nb_hds_ef_links_per_1000char_per_year_figure, dpi=500)
@@ -342,7 +327,7 @@ ax.bar(
 )
 ax.bar(
     labels, totals_to_wk, bottom=totals_to_dhs,
-    label='Links to Wikidata/pedia', width=width, color=color_to_wkwd
+    label='Links to Wikidata/pedia', width=width, color=color_to_wkwd, zorder=3
 )
 ax.set(
     title=f'Number of links in original HDS and found by entity-fishing',
@@ -350,6 +335,7 @@ ax.set(
 )
 ax.set_xticklabels(labels, rotation= 10)
 ax.legend()
+plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
 
 plt.show()
 plt.gcf().set_figwidth(8) # default: 6.4
@@ -398,7 +384,7 @@ for col, linestyle in [
         links_per_article_distribution_plot, values = links_stats_distribution(
             links_stats_per_article[lng],
             col,"Whole HDS",37,
-            color=colors_by_language[lng], linestyle=linestyle
+            color=colors_by_language[lng], linestyle=linestyle, zorder=3
         )
 links_per_article_distribution_plot.legend([
     "Original HDS links FR", "Original HDS links DE",
@@ -409,6 +395,7 @@ links_per_article_distribution_plot.set(
     ylabel="# of links",
     xlabel= "Articles (percentiles by number of links)"
 )
+plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
 
 plt.show()
 plt.gcf().set_figwidth(8) # default: 6.4
@@ -428,7 +415,7 @@ for col, linestyle in [
         links_per_article_distribution_plot, values = links_stats_distribution(
             links_stats_per_article[lng],
             col, "Whole HDS",38,
-            color=colors_by_language[lng], linestyle=linestyle
+            color=colors_by_language[lng], linestyle=linestyle, zorder=3
         )
 links_per_article_distribution_plot.legend([
     "Original HDS links FR", "Original HDS links DE",
@@ -440,6 +427,7 @@ links_per_article_distribution_plot.set(
     ylabel="# of links per 1000 characters",
     xlabel= "Articles (percentiles by number of links per 1000 characters)"
 )
+plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
 plt.show()
 plt.gcf().set_figwidth(8) # default: 6.4
 plt.gcf().set_figheight(5) # default: 4
