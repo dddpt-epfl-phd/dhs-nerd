@@ -4,8 +4,8 @@
 colors_by_language = {
     "fr": "#1f77b4",
     "de": "#ff7f0e",
-    "it": "#2ca02c",
-    "en": "#d62728",
+    "it": "#d62728",
+    "en": "#2ca02c",
 }
 
 # s0/s2_dhs_stats:
