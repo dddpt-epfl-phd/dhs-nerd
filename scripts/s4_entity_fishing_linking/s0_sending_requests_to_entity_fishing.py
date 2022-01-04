@@ -43,6 +43,13 @@ if len(sys.argv)>1:
 
 jsonl_linked_articles_file = localize(S4_JSONL_ALL_ARTICLES_LINKED_FILE, language)
 already_visited_ids = set(DhsArticle.get_articles_ids(jsonl_linked_articles_file))
+if language=="de":
+    # overlapping annotations in de
+    already_visited_ids.add("048869") 
+if language=="it":
+    # overlapping annotations in it
+    already_visited_ids.add("029202")
+    already_visited_ids.add("029195")    
 print(f"Skipping {len(already_visited_ids)} articles that already have been linked")
 stream_to_jsonl(
     jsonl_linked_articles_file,
