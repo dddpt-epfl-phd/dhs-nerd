@@ -75,8 +75,8 @@ export function DhsArticleContent({
         if(i==0){
             const wikipediaUrl = article.wikipedia_page_title? getWikipediaUrlFromPageId(language, article.wikipedia_page_title):false
             const wikidataUrl = article.wikidata_url? article.wikidata_url:false
-            const wikipediaLink = wikipediaUrl? <WikipediaTextLink dhsId={article.id} language={language}><img src="/wikipedia.png" width="16px" /></WikipediaTextLink>:""
-            const wikidataLink = wikidataUrl? <WikidataTextLink dhsId={article.id} language={language}><img src="/wikidata.svg" width="16px" /></WikidataTextLink>: ""
+            const wikipediaLink = wikipediaUrl? <WikipediaTextLink url={wikipediaUrl}><img src="/wikipedia.png" width="16px" /></WikipediaTextLink>:""
+            const wikidataLink = wikidataUrl? <WikidataTextLink url={wikidataUrl}><img src="/wikidata.svg" width="16px" /></WikidataTextLink>: ""
             externalLinks = <span>
                 {" "}
                 <RealDhsArticleLink dhsId={article.id} language={language}><img src="/hds.png" className="real-dhs-article-external-link" width="16px" /></RealDhsArticleLink>
