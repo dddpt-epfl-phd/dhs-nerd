@@ -49,7 +49,11 @@ if language=="de":
 if language=="it":
     # overlapping annotations in it
     already_visited_ids.add("029202")
-    already_visited_ids.add("029195")    
+    already_visited_ids.add("029195")
+    already_visited_ids.add("023316")
+    already_visited_ids.add("020778")
+    already_visited_ids.add("012939")
+    already_visited_ids.add("012797")
 print(f"Skipping {len(already_visited_ids)} articles that already have been linked")
 stream_to_jsonl(
     jsonl_linked_articles_file,

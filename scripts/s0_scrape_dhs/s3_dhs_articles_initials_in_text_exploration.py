@@ -28,6 +28,7 @@ sampled_ids = sample(all_ids, 1000)
 
 print("loading articles...")
 articles = list(DhsArticle.load_articles_from_jsonl(localize(S0_JSONL_ALL_ARTICLES_FILE, lng)))#, sampled_ids))
+nb_articles = len(set(a.id for a in articles))
 print("articles loaded!")
 
 # %%
@@ -64,17 +65,22 @@ initials_nb_distrib
 
 
 one_initial = [i  for i in initials if len(i[1])==1]
+print(f"Proportion of articles with 1 initial (in title or not): {len(one_initial)/nb_articles}")
 
 one_initial_orphelins = [(a,i,it) for a,i,it in one_initial if i.index[0] not in it]
+print(f"Proportion of articles with 1 initial that isn't in title: {len(one_initial_orphelins)/nb_articles}")
 # -> 1 initial that isn't in title initials: artifact, not valid
 
 no_initials = [i  for i in initials if len(i[1])==0]
+print(f"Proportion of articles without initial: {len(no_initials)/nb_articles}")
 # -> mostly short articles about people/families
 
 # %%
 
 multiple_initials = [i for i in initials if len(i[1])>1]
 multiple_initials
+print(f"Proportion of articles with multiple initials (in title or not): {len(multiple_initials)/nb_articles}")
+
 
 two_most_likely_initials_occurence_diff = [i[0]-i[1] for a, i, it in multiple_initials]
 pd.Series(two_most_likely_initials_occurence_diff).value_counts()
@@ -133,7 +139,7 @@ two_most[21][1] # -> "Rodolphe Louis de Goumoëns" is a challenging example: L. 
 
 # %%
 
-articles_ids_by_category = [(c, set(DhsArticle.get_articles_ids(localize(p, lng)))) for c,p in S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items()]
+articles_ids_by_category = [(c, set(DhsArticle.get_articles_ids(localize(p, "fr")))) for c,p in S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items()]
 
 print("categories of articles with two most likely text initials in title:")
 for c, ids in articles_ids_by_category:
@@ -205,6 +211,6 @@ a.parse_identifying_initial()
 
 # %%
 
-
-napo = [a for a in bugged_articles if a.id=="041455"][0]
+if lng=="de":
+    napo = [a for a in bugged_articles if a.id=="041455"][0]
 # %%

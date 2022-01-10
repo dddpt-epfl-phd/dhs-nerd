@@ -15,7 +15,7 @@ from data_file_paths import S4_JSONL_ALL_ARTICLES_LINKED_FILE, S5_WEBSITE_SINGLE
 """
 This scripts load all the DhsArticles in S0_JSONL_ALL_ARTICLES_FILE and writes them to single json files
 """
-max_nb_articles=19000
+max_nb_articles=40000
 
 
 # LOAD LINKED ARTICLES AND STREAMING THEM TO INDIVIDUAL JSON
