@@ -3,6 +3,8 @@
 
 import sys
 
+from typing import Sequence
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -112,50 +114,68 @@ print("text_links dhsid parsed")
 # %%
 
 
-def article_text_links_stats(article: DhsArticle):
-    from_dhs = set()
-    from_ef = set()
-    to_dhs = set()
-    to_wk = set()
-    to_wd = set()
-    nb_unlinked = 0
-    for text_block in article.text_links:
-        for tl in text_block:
-            origin = get_origin(tl)
-            dhsid = get_dhsid(tl)
-            if origin==ORIGIN_FROM_DHS:
-                from_dhs.add(dhsid)
-            elif origin==ORIGIN_FROM_ENTITY_FISHING:
-                wd_url = get_wikidata_url(tl)
-                wk_page = get_wikipedia_page_id(tl)
-                from_ef.add(wd_url)    
-                if dhsid is not None:
-                    to_dhs.add(dhsid)
-                elif wd_url is not None:
-                    to_wd.add(wd_url)
-                elif wk_page is not None:
-                    to_wk.add(wk_page)
-                else:
-                    nb_unlinked+=1
-    return {
-        "dhsid": article.id,
-        "title": article.title,
-        "year": int(article.version[0:4]),
-        "nb_char": len(article.text),
-        "nb_from_dhs": len(from_dhs),
-        "nb_from_ef": len(from_ef),
-        "nb_to_dhs": len(to_dhs),
-        "nb_to_wd": len(to_wd),
-        "nb_to_wk": len(to_wk),
-        "nb_to_dhs_wd": len(to_wd)+len(to_dhs),
-        "nb_unlinked": nb_unlinked,
+def articles_text_links_stats(articles:Sequence[DhsArticle]):
+    articles_stats = []
+    articles_linking_to_stats = {
+        a.id: {
+            "from_dhs": set(),
+            "from_ef": set(),
+        }
+        for a in articles
     }
+    for article in articles:
+        from_dhs = set()
+        from_ef = set()
+        to_dhs = set()
+        to_wk = set()
+        to_wd = set()
+        nb_unlinked = 0
+        for text_block in article.text_links:
+            for tl in text_block:
+                origin = get_origin(tl)
+                dhsid = get_dhsid(tl)
+                if origin==ORIGIN_FROM_DHS:
+                    from_dhs.add(dhsid)
+                    if dhsid is not None and dhsid in articles_linking_to_stats:
+                        articles_linking_to_stats[dhsid]["from_dhs"].add(article.id)
+                elif origin==ORIGIN_FROM_ENTITY_FISHING:
+                    wd_url = get_wikidata_url(tl)
+                    wk_page = get_wikipedia_page_id(tl)
+                    from_ef.add(wd_url)    
+                    if dhsid is not None:
+                        to_dhs.add(dhsid)
+                        if dhsid in articles_linking_to_stats:
+                            articles_linking_to_stats[dhsid]["from_ef"].add(article.id)
+                    elif wd_url is not None:
+                        to_wd.add(wd_url)
+                    elif wk_page is not None:
+                        to_wk.add(wk_page)
+                    else:
+                        nb_unlinked+=1
+        articles_stats.append({
+            "dhsid": article.id,
+            "title": article.title,
+            "year": int(article.version[0:4]),
+            "nb_char": len(article.text),
+            "nb_from_dhs": len(from_dhs),
+            "nb_from_ef": len(from_ef),
+            "nb_to_dhs": len(to_dhs),
+            "nb_to_wd": len(to_wd),
+            "nb_to_wk": len(to_wk),
+            "nb_to_dhs_wd": len(to_wd)+len(to_dhs),
+            "nb_unlinked": nb_unlinked,
+        })
+    for a in articles_stats:
+        a["nb_linking_to_from_dhs"] = len(articles_linking_to_stats[a["dhsid"]]["from_dhs"])
+        a["nb_linking_to_from_ef"] = len(articles_linking_to_stats[a["dhsid"]]["from_ef"])
+    return pd.DataFrame(articles_stats)
+
 
 # %%
 
 print("computing links statistics...")
 links_stats_per_article = {
-    lng: pd.DataFrame([article_text_links_stats(a) for a in linked_articles[lng]])
+    lng: articles_text_links_stats(linked_articles[lng])
     for lng in languages
 }
 links_stats_per_article["fr"]
@@ -453,6 +473,43 @@ links_stats_per_article["fr"][links_stats_per_article["fr"].nb_from_dhs>100]
 
 
 
+# %%
+nb_linking_to_article_distribution_values_by_col_lng = dict()
+for col, linestyle in [
+    ("nb_linking_to_from_dhs", linestyle_from_dhs),
+    ("nb_linking_to_from_ef", linestyle_from_ef_to_dhs),
+]:
+    nb_linking_to_article_distribution_values_by_col_lng[col] = dict()
+    for lng in languages:
+        nb_linking_to_article_distribution_plot, values = links_stats_distribution(
+            links_stats_per_article[lng],
+            col, f"Whole {lng} HDS",469,
+            color=colors_by_language[lng], linestyle=linestyle, zorder=3
+        )
+        nb_linking_to_article_distribution_values_by_col_lng[col][lng] = values
+ladvcl = nb_linking_to_article_distribution_values_by_col_lng
+nb_linking_to_article_distribution_plot.legend(
+    ["Original HDS links "+lng.upper() for lng in languages] + \
+    ["HDS Links from entity-fishing "+lng.upper() for lng in languages] + \
+    ["All Links from entity-fishing "+lng.upper() for lng in languages]
+)
+nb_linking_to_article_distribution_plot.set(
+    title= "Distribution of articles according to number of other HDS articles linking to article",
+    ylabel="# of other articles linking to article",
+    xlabel= "Articles (percentiles by number of other articles linking to article)"
+)
+plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
+plt.gcf().set_figwidth(8) # default: 6.4
+plt.gcf().set_figheight(5) # default: 4
+plt.gcf().savefig(s4_hds_ef_nb_linking_to_article_distribution_breakdown_figure, dpi=500)
+
+print("Article median and avg for 'number of other HDS articles linking to article':\n- " + ("\n- ".join(
+    ["Original HDS links "+lng.upper()+f", median: {round(ladvcl['nb_linking_to_from_dhs'][lng].median(),2)}, avg: {round(ladvcl['nb_linking_to_from_dhs'][lng].mean(),2)}" for lng in languages] + \
+    ["HDS Links from entity-fishing "+lng.upper()+f", median: {round(ladvcl['nb_linking_to_from_ef'][lng].median(),2)}, avg: {round(ladvcl['nb_linking_to_from_ef'][lng].mean(),2)}" for lng in languages]
+)))
+
+
+links_stats_per_article["fr"][links_stats_per_article["fr"].nb_linking_to_from_ef>2000].sort_values(by="nb_linking_to_from_ef")
 
 
 

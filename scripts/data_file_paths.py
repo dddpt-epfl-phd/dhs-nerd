@@ -104,6 +104,7 @@ s4_nb_hds_ef_links_per_1000char_per_year_figure = path.join(FIGURES_FOLDER, "s4_
 s4_hds_ef_links_per_article_distribution_figure = path.join(FIGURES_FOLDER, "s4_hds_ef_links_per_article_distribution.png")
 s4_hds_ef_links_per_article_distribution_breakdown_figure = path.join(FIGURES_FOLDER, "s4_hds_ef_links_per_article_distribution_breakdown.png")
 s4_nb_links_from_hds_and_ef_figure = path.join(FIGURES_FOLDER, "s4_nb_links_from_hds_and_ef.png")
+s4_hds_ef_nb_linking_to_article_distribution_breakdown_figure = path.join(FIGURES_FOLDER, "s4_nb_linking_to_article_distribution_breakdown.png")
 
 # website
 #####################
