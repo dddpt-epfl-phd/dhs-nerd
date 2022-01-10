@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 
 const LanguageChooser = ({}) => {
-    const possibleLanguages = ["de", "fr"]
+    const possibleLanguages = ["de", "fr", "it"]
     const { language } = useParams();
 
     const links = possibleLanguages.filter(l=>l!= language).map(l=>{
