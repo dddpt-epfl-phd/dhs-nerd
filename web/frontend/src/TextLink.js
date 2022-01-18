@@ -60,6 +60,13 @@ export function getDhsUrlFromDhsId(dhsId, language="de"){
 export function getRealDhsUrlFromDhsId(dhsId, language="de"){
     return "https://hls-dhs-dss.ch"+ (language? "/"+language : "")+"/articles/"+dhsId
 }
+export function decomposeDhsUrl(dhsUrl){
+    const urlRegex = /\/(\w+)?\/?articles\/(.+?)\/(\d{4}-\d{2}-\d{2})?/
+    return dhsUrl.match(urlRegex) // 0: whole path, 1: language, 2: dhs id, 3: version
+}
+export function getDhsIdFromDhsUrl(dhsUrl){
+    return decomposeDhsUrl(dhsUrl)[2]
+}
 
 /** dhsArticle: has .dhsid property
  * 
@@ -67,7 +74,12 @@ export function getRealDhsUrlFromDhsId(dhsId, language="de"){
  * @returns {str or null}: this textLink dhs-id or false if no dhs id in this link (doesn't link to a dhs article)
  */
  export function getLinkDhsId(textLink){
-    return textLink.dhsid && textLink.dhsid!="" && textLink.dhsid!==undefined && textLink.dhsid!==null? textLink.dhsid : false
+    let dhsId = textLink.dhsid && textLink.dhsid!="" && textLink.dhsid!==undefined && textLink.dhsid!==null? textLink.dhsid : false
+    // if the dhsId field is missing, the dhsId is sometimes in the href field only
+    if(!dhsId){
+        dhsId = textLink.href && textLink.href!="" && textLink.href!==undefined && textLink.href!==null? getDhsIdFromDhsUrl(textLink.href) : false    
+    }
+    return dhsId
 }
 /** dhsArticle: has .dhsid property
  * 

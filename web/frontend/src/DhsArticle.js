@@ -74,7 +74,7 @@ export function DhsArticleContent({
         // adding links to DHS, WK, WD to first block, the title
         let externalLinks=""
         if(i==0){
-            const logoSize = "24px" 
+            const logoSize = "20px" 
             const wikipediaUrl = article.wikipedia_page_title? getWikipediaUrlFromPageId(language, article.wikipedia_page_title):false
             const wikidataUrl = article.wikidata_url? article.wikidata_url:false
             const wikipediaLink = wikipediaUrl? <WikipediaTextLink url={wikipediaUrl}><img src="/wikipedia.png" width={logoSize} height={logoSize} /></WikipediaTextLink>:""
