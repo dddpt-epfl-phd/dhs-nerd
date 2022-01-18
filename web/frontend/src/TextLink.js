@@ -81,6 +81,7 @@ export function getLinkDhsUrl(textLink, language=false){
 
 const wikipediaBaseUrl = "https://<LNG>.wikipedia.org/wiki/"
 const wikipediaBaseUrlFromPageId = "https://<LNG>.wikipedia.org/?curid="
+const getWikipediaUrlFromPageId = (language, pageId) => wikipediaBaseUrlFromPageId.replace("<LNG>",language)+pageId
 /**  wikipedia: has .wiki.articleLNG not null property
  * 
  * @param {*} textLink 
@@ -88,7 +89,7 @@ const wikipediaBaseUrlFromPageId = "https://<LNG>.wikipedia.org/?curid="
  */
 export function getLinkWikipediaUrl(textLink, language){
     const pageId = getLinkAnnotationProperty(textLink, "wikipedia_page_id")
-    return pageId? wikipediaBaseUrlFromPageId.replace("<LNG>",language)+pageId : false
+    return pageId? getWikipediaUrlFromPageId(language, pageId) : false
 }
 
 /**  wikidata: has .wiki.item not null property

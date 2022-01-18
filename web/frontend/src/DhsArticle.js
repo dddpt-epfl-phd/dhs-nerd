@@ -4,7 +4,7 @@ import {
 } from "react-router-dom";
 import {Alert} from "react-bootstrap"
 
-import {TextLink, DhsArticleLink, RealDhsArticleLink, dhsLinkClass, wikipediaLinkClass, originalDhsLinkClass} from "./TextLink"
+import {TextLink, DhsArticleLink, RealDhsArticleLink, getWikipediaUrlFromPageId, dhsLinkClass, wikipediaLinkClass, originalDhsLinkClass} from "./TextLink"
 import {CenteredLayout} from "./Layout"
 
 
@@ -67,9 +67,22 @@ export function DhsArticleContent({
     if(article.text_blocks && article.text_blocks.length>0){
         article.text_blocks[0][1] = article.search_result_name
     }
+
     const textBlocks = article.text_blocks? article.text_blocks.map((tb,i)=>{
         const [tag, text] = tb
-        const realDHsLink = i==0? <RealDhsArticleLink dhsId={article.id} language={language}><img src="/external-link.png" className="real-dhs-article-external-link" /></RealDhsArticleLink>:""
+
+        let externalLinks=""
+        if(i==0){
+            const wikipediaUrl = article.wikipedia_page_title? getWikipediaUrlFromPageId(language, article.wikipedia_page_title):false
+            const wikidataUrl = article.wikidata_url? article.wikidata_url:false
+            const wikipediaLink = wikipediaUrl? <WikipediaTextLink url={wikipediaUrl}><img src="/wikipedia.png" width="16px" /></WikipediaTextLink>:""
+            const wikidataLink = wikidataUrl? <WikidataTextLink url={wikidataUrl}><img src="/wikidata.svg" width="16px" /></WikidataTextLink>: ""
+            externalLinks = <span>
+                {" "}
+                <RealDhsArticleLink dhsId={article.id} language={language}><img src="/hds.png" className="real-dhs-article-external-link" width="16px" /></RealDhsArticleLink>
+                {[wikipediaLink, wikidataLink]}  
+            </span>
+        }
         return <TextBlock tag={tag} key={i} textLinks={article.text_links[i]} language={language}>{[text," ",realDHsLink]}</TextBlock>
     }) : "Loading..."
 
