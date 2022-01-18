@@ -81,7 +81,7 @@ export function getLinkDhsUrl(textLink, language=false){
 
 const wikipediaBaseUrl = "https://<LNG>.wikipedia.org/wiki/"
 const wikipediaBaseUrlFromPageId = "https://<LNG>.wikipedia.org/?curid="
-const getWikipediaUrlFromPageId = (language, pageId) => wikipediaBaseUrlFromPageId.replace("<LNG>",language)+pageId
+export const getWikipediaUrlFromPageId = (language, pageId) => wikipediaBaseUrlFromPageId.replace("<LNG>",language)+pageId
 /**  wikipedia: has .wiki.articleLNG not null property
  * 
  * @param {*} textLink 

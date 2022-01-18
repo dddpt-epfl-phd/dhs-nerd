@@ -4,7 +4,7 @@ import {
 } from "react-router-dom";
 import {Alert} from "react-bootstrap"
 
-import {TextLink, DhsArticleLink, RealDhsArticleLink, getWikipediaUrlFromPageId, dhsLinkClass, wikipediaLinkClass, originalDhsLinkClass} from "./TextLink"
+import {TextLink, WikidataTextLink, WikipediaTextLink, realDhsLink, RealDhsArticleLink, getWikipediaUrlFromPageId, dhsLinkClass, wikipediaLinkClass, originalDhsLinkClass} from "./TextLink"
 import {CenteredLayout} from "./Layout"
 
 
@@ -71,19 +71,21 @@ export function DhsArticleContent({
     const textBlocks = article.text_blocks? article.text_blocks.map((tb,i)=>{
         const [tag, text] = tb
 
+        // adding links to DHS, WK, WD to first block, the title
         let externalLinks=""
         if(i==0){
+            const logoSize = "24px" 
             const wikipediaUrl = article.wikipedia_page_title? getWikipediaUrlFromPageId(language, article.wikipedia_page_title):false
             const wikidataUrl = article.wikidata_url? article.wikidata_url:false
-            const wikipediaLink = wikipediaUrl? <WikipediaTextLink url={wikipediaUrl}><img src="/wikipedia.png" width="16px" /></WikipediaTextLink>:""
-            const wikidataLink = wikidataUrl? <WikidataTextLink url={wikidataUrl}><img src="/wikidata.svg" width="16px" /></WikidataTextLink>: ""
+            const wikipediaLink = wikipediaUrl? <WikipediaTextLink url={wikipediaUrl}><img src="/wikipedia.png" width={logoSize} height={logoSize} /></WikipediaTextLink>:""
+            const wikidataLink = wikidataUrl? <WikidataTextLink url={wikidataUrl}><img src="/wikidata.svg" width={logoSize} height={logoSize} /></WikidataTextLink>: ""
             externalLinks = <span>
                 {" "}
-                <RealDhsArticleLink dhsId={article.id} language={language}><img src="/hds.png" className="real-dhs-article-external-link" width="16px" /></RealDhsArticleLink>
+                <RealDhsArticleLink dhsId={article.id} language={language}><img src="/hds.png" className="real-dhs-article-external-link" width={logoSize} height={logoSize} /></RealDhsArticleLink>
                 {[wikipediaLink, wikidataLink]}  
             </span>
         }
-        return <TextBlock tag={tag} key={i} textLinks={article.text_links[i]} language={language}>{[text," ",realDHsLink]}</TextBlock>
+        return <TextBlock tag={tag} key={i} textLinks={article.text_links[i]} language={language}>{[text," ",externalLinks]}</TextBlock>
     }) : "Loading..."
 
     return (
