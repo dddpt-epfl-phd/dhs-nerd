@@ -193,7 +193,7 @@ articles_by_category_text_stats_plot = articles_by_category_text_stats[0][0]
 #articles_by_category_text_stats_plot.legend([t[0]+f" ({len(articles_by_category[i])} articles, avg: {int(articles_by_category_text_stats[i][1].mean())}, md: {int(articles_by_category_text_stats[i][1].quantile(0.5))})" for i,t in enumerate(categories)])
 articles_by_category_text_stats_plot.legend([category+f" ({len(articles_by_category[i])} articles, median: {int(articles_by_category_text_stats[i][1].quantile(0.5))}c)" for i,(category,file) in enumerate(S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items())])
 articles_by_category_text_stats_plot.set(
-    title="Length of Articles (character) by HDS category",
+    title="Figure 1: Length of Articles (character) by HDS category",
     ylim=(0,40000)
 )
 plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5)
@@ -279,7 +279,7 @@ percent_articles_in_wd_by_category_plot = percent_articles_in_wd_by_category.plo
     zorder=3
 )
 percent_articles_in_wd_by_category_plot.legend([f"% in {lng}" for lng in ["Wikidata", "DE Wikipedia", "FR Wikipedia", "EN Wikipedia", "IT Wikipedia"]])
-percent_articles_in_wd_by_category_plot.set(title = "Proportion of HDS articles, by category, covered in different languages of wikipedia", ylabel="%")
+percent_articles_in_wd_by_category_plot.set(title = "Figure 4: Proportion of HDS articles, by category, covered in different languages of wikipedia", ylabel="%")
 plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
 plt.xticks(rotation=0)
 plt.gcf().set_figwidth(8) # default: 6.4

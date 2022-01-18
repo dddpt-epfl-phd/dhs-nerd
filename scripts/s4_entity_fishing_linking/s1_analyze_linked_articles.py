@@ -109,7 +109,11 @@ for a in linked_articles["de"]:
                 tl["dhsid"] = dhsid
 print("text_links dhsid parsed")
 
-
+lng_names={
+    "fr": "French",
+    "de": "German",
+    "it": "Italian"
+}
 
 # %%
 
@@ -209,7 +213,7 @@ for lng in languages:
     )
 nb_articles_per_year_plot.legend(["French HDS","German HDS","Italian HDS"])
 nb_articles_per_year_plot.set(
-    title = "Number of HDS articles whose last version is in year",
+    title = "Figure 2: Number of HDS articles whose last version is in year",
     xlabel="Year",
     ylabel="# of articles",
 )
@@ -259,7 +263,7 @@ for lng in languages:
     )
 nb_from_dhs_per_1000char_per_year_plot.legend(["French HDS","German HDS","Italian HDS"])
 nb_from_dhs_per_1000char_per_year_plot.set(
-    title = "Number of links per 1000 characters per year in the HDS",
+    title = "Figure 3: Number of links per 1000 characters per year in the HDS",
     xlabel="Year",
     ylabel="# of links per 1000 characters",
 )
@@ -447,7 +451,7 @@ links_per_article_distribution_plot.legend(
     ["All Links from entity-fishing "+lng.upper() for lng in languages]
 )
 links_per_article_distribution_plot.set(
-    title= "Distribution of articles according to number of HDS links per 1000 character",
+    title= "Figure 5: Distribution of articles according to number of HDS links per 1000 characters",
     ylabel="# of links per 1000 characters",
     xlabel= "Articles (percentiles by number of links per 1000 characters)"
 )
@@ -456,7 +460,7 @@ plt.gcf().set_figwidth(8) # default: 6.4
 plt.gcf().set_figheight(5) # default: 4
 plt.gcf().savefig(s4_hds_ef_links_per_article_distribution_breakdown_figure, dpi=500)
 
-print("Article median and avg for 'number of HDS links per 1000 character':\n- " + ("\n- ".join(
+print("Article median and avg for 'number of HDS links per 1000 characters':\n- " + ("\n- ".join(
     ["Original HDS links "+lng.upper()+f", median: {round(ladvcl['nb_from_dhs_per_nb_char'][lng].median(),2)}, avg: {round(ladvcl['nb_from_dhs_per_nb_char'][lng].mean(),2)}" for lng in languages] + \
     ["HDS Links from entity-fishing "+lng.upper()+f", median: {round(ladvcl['nb_to_dhs_per_nb_char'][lng].median(),2)}, avg: {round(ladvcl['nb_from_dhs_per_nb_char'][lng].mean(),2)}" for lng in languages] + \
     ["All Links from entity-fishing "+lng.upper()+f", median: {round(ladvcl['nb_to_dhs_wd_per_nb_char'][lng].median(),2)}, avg: {round(ladvcl['nb_from_dhs_per_nb_char'][lng].mean(),2)}" for lng in languages]
@@ -518,6 +522,94 @@ links_stats_per_article["fr"][links_stats_per_article["fr"].nb_linking_to_from_e
 
 
 
+# %%
+
+nb_linking_to_language="fr"
+dtf = links_stats_per_article[nb_linking_to_language]
+articles_ids_by_category = {c:set(a.id for a in DhsArticle.load_articles_from_jsonl(localize(f, "fr"))) for c,f in S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items()}
+#categories = [c for c in S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.keys()]
+# category="themes"
+# %%
+
+links_stats_per_article_by_category = {
+    category: dtf[dtf.dhsid.apply(lambda x: x in article_ids)]
+    for category, article_ids in articles_ids_by_category.items()
+}
+
+nb_linking_to_article_distribution_by_col_category_legend = []
+for col, linestyle, legend in [
+    ("nb_linking_to_from_dhs", linestyle_from_dhs, "Original HDS links to CAT articles"),
+    ("nb_linking_to_from_ef", linestyle_from_ef_to_dhs, "Links from entity-fishing to HDS CAT articles"),
+]:
+    for category, links_stats in list(links_stats_per_article_by_category.items()).__reversed__():
+        nb_linking_to_article_distribution_by_col_category_legend.append(legend.replace("CAT",category))
+        nb_linking_to_article_distribution_by_category_plot, values = links_stats_distribution(
+            links_stats,
+            col, legend.replace("CAT",category),321,
+            color=colors_by_category[category], linestyle=linestyle, zorder=3
+        )
+
+nb_linking_to_article_distribution_by_category_plot.legend(
+    nb_linking_to_article_distribution_by_col_category_legend,
+    loc='center left'
+    #[f"Original HDS links to {category} articles" for category in articles_ids_by_category.keys()] + \
+    #[f"Links from entity-fishing to {category} articles" for category in articles_ids_by_category.keys()] 
+)
+nb_linking_to_article_distribution_by_category_plot.set(
+    title= f"Figure 6: Distribution of articles according to number of other\nHDS articles linking to article, by category ({lng_names[nb_linking_to_language]})",
+    ylabel="# of other articles linking to article",
+    xlabel= "Articles (percentiles by number of other articles linking to article)",
+    ylim=(0,1200)
+)
+plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
+
+nb_linking_to_article_distribution_by_category_plot.text(
+    48, 1100,
+    f'themes max. nb of articles links to: {"{:,}".format(8172)}c'.replace(",","'"),
+    style='italic', color=colors_by_category["themes"], fontsize=9
+)
+nb_linking_to_article_distribution_by_category_plot.text(
+    97.2, 1100, f'=', style='italic',
+    color=colors_by_category["themes"], fontsize=12, rotation=30
+)
+nb_linking_to_article_distribution_by_category_plot.text(
+    49, 1030,
+    f'spatial max. nb of articles links to: {"{:,}".format(8052)}c'.replace(",","'"),
+    style='italic', color=colors_by_category["spatial"], fontsize=9
+)
+nb_linking_to_article_distribution_by_category_plot.text(
+    97.2, 1030, f'=', style='italic',
+    color=colors_by_category["spatial"], fontsize=12, rotation=30
+)
+
+plt.gcf().set_figwidth(8) # default: 6.4
+plt.gcf().set_figheight(5) # default: 4
+plt.gcf().savefig(s4_hds_ef_nb_linking_to_article_distribution_by_category_breakdown_figure, dpi=500)
+
+# %%
+cat = "themes"
+threshold = 1000
+links_stats_per_article_by_category[cat][links_stats_per_article_by_category[cat].nb_linking_to_from_ef>threshold].sort_values(by="nb_linking_to_from_ef")
+
+
+# %%
+list(links_stats_per_article_by_category[cat][links_stats_per_article_by_category[cat].nb_linking_to_from_ef>threshold].sort_values(by="nb_linking_to_from_ef").title)
+# %%
+
+nb_to_stats = pd.DataFrame([
+        (
+            c,
+            links_stats_per_article["nb_linking_to_from_dhs"].sum(),
+            links_stats_per_article["nb_linking_to_from_ef"].sum()
+        )
+        for c,links_stats_per_article
+        in links_stats_per_article_by_category.items()
+    ],
+    columns=["category", "nb_linking_to_from_dhs", "nb_linking_to_from_ef"]
+)
+nb_to_stats["nb_linking_to_from_dhs_pct"] = (nb_to_stats["nb_linking_to_from_dhs"] / nb_to_stats["nb_linking_to_from_dhs"].sum() *100).round(2)
+nb_to_stats["nb_linking_to_from_ef_pct"] = (nb_to_stats["nb_linking_to_from_ef"] / nb_to_stats["nb_linking_to_from_ef"].sum() *100).round(2)
+nb_to_stats
 # %%
 
 print("DONE")

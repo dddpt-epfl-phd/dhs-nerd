@@ -38,8 +38,8 @@ S0_JSONL_ARTICLES_BY_CATEGORIES_FILES = {
 }
 
 # s0_scrape_dhs/s1_dhs_stats.py
-s0_png_articles_lengths_by_category_figure = path.join(FIGURES_FOLDER, "articles_lengths_by_category.png")
-s0_png_percent_articles_in_wd_by_category = path.join(FIGURES_FOLDER, "percent_articles_in_wd_by_category.png")
+s0_png_articles_lengths_by_category_figure = path.join(FIGURES_FOLDER, "s0_articles_lengths_by_category.png")
+s0_png_percent_articles_in_wd_by_category = path.join(FIGURES_FOLDER, "s0_percent_articles_in_wd_by_category.png")
 
 
 # s1_wikidata_dhs_linking
@@ -105,6 +105,7 @@ s4_hds_ef_links_per_article_distribution_figure = path.join(FIGURES_FOLDER, "s4_
 s4_hds_ef_links_per_article_distribution_breakdown_figure = path.join(FIGURES_FOLDER, "s4_hds_ef_links_per_article_distribution_breakdown.png")
 s4_nb_links_from_hds_and_ef_figure = path.join(FIGURES_FOLDER, "s4_nb_links_from_hds_and_ef.png")
 s4_hds_ef_nb_linking_to_article_distribution_breakdown_figure = path.join(FIGURES_FOLDER, "s4_nb_linking_to_article_distribution_breakdown.png")
+s4_hds_ef_nb_linking_to_article_distribution_by_category_breakdown_figure = path.join(FIGURES_FOLDER, "s4_hds_ef_nb_linking_to_article_distribution_by_category_breakdown.png")
 
 # website
 #####################
