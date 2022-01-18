@@ -214,7 +214,7 @@ for lng in languages:
 nb_articles_per_year_plot.legend(["French HDS","German HDS","Italian HDS"])
 nb_articles_per_year_plot.set(
     title = "Figure 2: Number of HDS articles whose last version is in year",
-    xlabel="Year",
+    xlabel="Year of latest version",
     ylabel="# of articles",
 )
 plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
@@ -245,7 +245,7 @@ for lng in languages:
 nb_from_dhs_per_article_per_year_plot.legend(["French HDS","German HDS","Italian HDS"])
 nb_from_dhs_per_article_per_year_plot.set(
     title = "Average number of links per article per year in the HDS",
-    xlabel="Year",
+    xlabel="Year of latest version",
     ylabel="# of links per article",
 )
 plt.gcf().set_figwidth(8) # default: 6.4
@@ -264,7 +264,7 @@ for lng in languages:
 nb_from_dhs_per_1000char_per_year_plot.legend(["French HDS","German HDS","Italian HDS"])
 nb_from_dhs_per_1000char_per_year_plot.set(
     title = "Figure 3: Number of links per 1000 characters per year in the HDS",
-    xlabel="Year",
+    xlabel="Year of latest version",
     ylabel="# of links per 1000 characters",
 )
 plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
@@ -308,7 +308,7 @@ nb_per_1000char_per_year_plot.legend(
 )
 nb_per_1000char_per_year_plot.set(
     title = "Number of links per 1000 characters per year in the HDS, compared with entity-fishing links",
-    xlabel="Year",
+    xlabel="Year of latest version",
     ylabel="# of links per 1000 characters",
     ylim=(0,30)
 )
@@ -430,6 +430,7 @@ plt.gcf().savefig(s4_hds_ef_links_per_article_distribution_figure, dpi=500)
 
 
 # %%
+links_per_a_distrib_languages = ["fr", "de"]
 links_per_article_distribution_values_by_col_lng = dict()
 for col, linestyle in [
     ("nb_from_dhs_per_nb_char", linestyle_from_dhs),
@@ -437,7 +438,7 @@ for col, linestyle in [
     ("nb_to_dhs_wd_per_nb_char", linestyle_from_ef_to_all)
 ]:
     links_per_article_distribution_values_by_col_lng[col] = dict()
-    for lng in languages:
+    for lng in links_per_a_distrib_languages:
         links_per_article_distribution_plot, values = links_stats_distribution(
             links_stats_per_article[lng],
             col, "Whole HDS",38,
@@ -446,9 +447,9 @@ for col, linestyle in [
         links_per_article_distribution_values_by_col_lng[col][lng] = values
 ladvcl = links_per_article_distribution_values_by_col_lng
 links_per_article_distribution_plot.legend(
-    ["Original HDS links "+lng.upper() for lng in languages] + \
-    ["HDS Links from entity-fishing "+lng.upper() for lng in languages] + \
-    ["All Links from entity-fishing "+lng.upper() for lng in languages]
+    ["Original HDS links "+lng.upper() for lng in links_per_a_distrib_languages] + \
+    ["HDS Links from entity-fishing "+lng.upper() for lng in links_per_a_distrib_languages] + \
+    ["All Links from entity-fishing "+lng.upper() for lng in links_per_a_distrib_languages]
 )
 links_per_article_distribution_plot.set(
     title= "Figure 5: Distribution of articles according to number of HDS links per 1000 characters",
@@ -461,9 +462,9 @@ plt.gcf().set_figheight(5) # default: 4
 plt.gcf().savefig(s4_hds_ef_links_per_article_distribution_breakdown_figure, dpi=500)
 
 print("Article median and avg for 'number of HDS links per 1000 characters':\n- " + ("\n- ".join(
-    ["Original HDS links "+lng.upper()+f", median: {round(ladvcl['nb_from_dhs_per_nb_char'][lng].median(),2)}, avg: {round(ladvcl['nb_from_dhs_per_nb_char'][lng].mean(),2)}" for lng in languages] + \
-    ["HDS Links from entity-fishing "+lng.upper()+f", median: {round(ladvcl['nb_to_dhs_per_nb_char'][lng].median(),2)}, avg: {round(ladvcl['nb_from_dhs_per_nb_char'][lng].mean(),2)}" for lng in languages] + \
-    ["All Links from entity-fishing "+lng.upper()+f", median: {round(ladvcl['nb_to_dhs_wd_per_nb_char'][lng].median(),2)}, avg: {round(ladvcl['nb_from_dhs_per_nb_char'][lng].mean(),2)}" for lng in languages]
+    ["Original HDS links "+lng.upper()+f", median: {round(ladvcl['nb_from_dhs_per_nb_char'][lng].median(),2)}, avg: {round(ladvcl['nb_from_dhs_per_nb_char'][lng].mean(),2)}" for lng in links_per_a_distrib_languages] + \
+    ["HDS Links from entity-fishing "+lng.upper()+f", median: {round(ladvcl['nb_to_dhs_per_nb_char'][lng].median(),2)}, avg: {round(ladvcl['nb_from_dhs_per_nb_char'][lng].mean(),2)}" for lng in links_per_a_distrib_languages] + \
+    ["All Links from entity-fishing "+lng.upper()+f", median: {round(ladvcl['nb_to_dhs_wd_per_nb_char'][lng].median(),2)}, avg: {round(ladvcl['nb_from_dhs_per_nb_char'][lng].mean(),2)}" for lng in links_per_a_distrib_languages]
 )))
 
 # %%
