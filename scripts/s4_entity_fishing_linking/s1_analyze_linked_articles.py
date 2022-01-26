@@ -557,7 +557,7 @@ nb_linking_to_article_distribution_by_category_plot.legend(
     #[f"Links from entity-fishing to {category} articles" for category in articles_ids_by_category.keys()] 
 )
 nb_linking_to_article_distribution_by_category_plot.set(
-    title= f"Figure 6: Distribution of articles according to number of other\nHDS articles linking to article, by category ({lng_names[nb_linking_to_language]})",
+    title= f"Figure 7: Distribution of articles according to number of other\nHDS articles linking to article, by category ({lng_names[nb_linking_to_language]})",
     ylabel="# of other articles linking to article",
     xlabel= "Articles (percentiles by number of other articles linking to article)",
     ylim=(0,1200)
@@ -611,6 +611,45 @@ nb_to_stats = pd.DataFrame([
 nb_to_stats["nb_linking_to_from_dhs_pct"] = (nb_to_stats["nb_linking_to_from_dhs"] / nb_to_stats["nb_linking_to_from_dhs"].sum() *100).round(2)
 nb_to_stats["nb_linking_to_from_ef_pct"] = (nb_to_stats["nb_linking_to_from_ef"] / nb_to_stats["nb_linking_to_from_ef"].sum() *100).round(2)
 nb_to_stats
+
+
+# %%
+
+
+fig, ax = plt.subplots(figsize=(5,5))
+
+width = 0.3
+columns = ["nb_linking_to_from_dhs_pct", "nb_linking_to_from_ef_pct"]
+accu = [0]*len(columns)
+xlabels = [
+    f"Original links from HDS\n({sum(nb_to_stats['nb_linking_to_from_dhs'])} links)",
+    f"Links from entity-fishing\n({sum(nb_to_stats['nb_linking_to_from_ef'])} links)"
+]
+
+for cat in nb_to_stats["category"]:
+    values = [
+        float(nb_to_stats[nb_to_stats["category"]==cat][col])
+        for col in columns
+    ]
+    ax.bar(
+        xlabels, values,
+        bottom=[x for x in accu],
+        label=cat,
+        width=width, color=colors_by_category[cat],
+        zorder=3
+    )
+    accu = [a+values[i] for i,a in enumerate(accu)]
+ 
+ax.set(
+    title=f"Figure 6: Distribution of links according to\n destination article category",
+    #+"\n(43% of links from the HDS point to a 'themes' article)",
+    ylabel="% of links"
+)
+#ax.set_xticklabels(xlabels)
+ax.legend(bbox_to_anchor=(1,1), loc="upper left")
+plt.grid(color = 'lightgrey', linestyle = '--', linewidth = 0.5, zorder=5)
+plt.tight_layout()
+plt.gcf().savefig(s4_hds_ef_links_to_categories_distribution, dpi=500)
 # %%
 
 print("DONE")
