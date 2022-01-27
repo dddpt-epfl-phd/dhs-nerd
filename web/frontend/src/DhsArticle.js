@@ -77,12 +77,12 @@ export function DhsArticleContent({
             const logoSize = "20px" 
             const wikipediaUrl = article.wikipedia_page_title? getWikipediaUrlFromPageId(language, article.wikipedia_page_title):false
             const wikidataUrl = article.wikidata_url? article.wikidata_url:false
-            const wikipediaLink = wikipediaUrl? <WikipediaTextLink url={wikipediaUrl}><img src="/wikipedia.png" width={logoSize} height={logoSize} /></WikipediaTextLink>:""
-            const wikidataLink = wikidataUrl? <WikidataTextLink url={wikidataUrl}><img src="/wikidata.svg" width={logoSize} height={logoSize} /></WikidataTextLink>: ""
+            const wikipediaLink = wikipediaUrl? <WikipediaTextLink key="wk-tl" url={wikipediaUrl}><img src="/wikipedia.png" width={logoSize} height={logoSize} /></WikipediaTextLink>:""
+            const wikidataLink = wikidataUrl? <WikidataTextLink key="wdt-l" url={wikidataUrl}><img src="/wikidata.svg" width={logoSize} height={logoSize} /></WikidataTextLink>: ""
             externalLinks = <span>
-                {" "}
-                <RealDhsArticleLink dhsId={article.id} language={language}><img src="/hds.png" className="real-dhs-article-external-link" width={logoSize} height={logoSize} /></RealDhsArticleLink>
-                {[wikipediaLink, wikidataLink]}  
+                <RealDhsArticleLink key="r-dhs-tl" dhsId={article.id} language={language}> <img src="/hds.png" className="real-dhs-article-external-link" width={logoSize} height={logoSize} /></RealDhsArticleLink>
+                {wikipediaLink}
+                {wikidataLink}
             </span>
         }
         return <TextBlock tag={tag} key={i} textLinks={article.text_links[i]} language={language}>{[text," ",externalLinks]}</TextBlock>
