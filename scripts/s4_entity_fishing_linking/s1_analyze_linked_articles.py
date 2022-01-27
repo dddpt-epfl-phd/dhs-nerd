@@ -530,6 +530,20 @@ dtf = links_stats_per_article[nb_linking_to_language]
 articles_ids_by_category = {c:set(a.id for a in DhsArticle.load_articles_from_jsonl(localize(f, "fr"))) for c,f in S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items()}
 #categories = [c for c in S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.keys()]
 # category="themes"
+
+# %%
+
+
+slng = "fr"
+threshold = 1000
+top_linked_to = links_stats_per_article[slng][links_stats_per_article[slng].nb_linking_to_from_ef>threshold].sort_values(by="nb_linking_to_from_ef", ascending=False).drop_duplicates()
+top_linked_to["EF_nb_linking_to"] = top_linked_to["nb_linking_to_from_ef"]
+top_linked_to["Original_HDS_nb_linking_to"] = top_linked_to["nb_linking_to_from_dhs"]
+top_linked_to.loc[:,["title", "EF_nb_linking_to", "Original_HDS_nb_linking_to"]].iloc[0:25]
+
+# %%
+top_linked_to.loc[:,["title", "EF_nb_linking_to", "Original_HDS_nb_linking_to"]].iloc[25:]
+
 # %%
 
 links_stats_per_article_by_category = {
