@@ -15,7 +15,7 @@ import {ArticlesList} from "./ArticlesList"
 
 export default function Routing() {
   return (
-    <Router>
+    <Router basename="/dhs-nerd">
       <Routes>
         <Route path="/:language/articles/:dhsId" element={<DhsArticle />}/>
         <Route path="/:language" element={<ArticlesList />}/>
