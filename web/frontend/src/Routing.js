@@ -18,6 +18,7 @@ export default function Routing() {
   console.log("doin' the routin', basename is: ", process.env.PUBLIC_URL)
   return (
     <Router basename={process.env.PUBLIC_URL}>
+      HOLLA HOWDY
       <Routes>
         <Route path="/:language/articles/:dhsId" element={<DhsArticle />}/>
         <Route path="/:language" element={<ArticlesList />}/>

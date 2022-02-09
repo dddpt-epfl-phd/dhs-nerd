@@ -2,7 +2,7 @@
   "name": "dhs-nerd-frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://dddpt-epfl-phd.github.io/dhs-nerd",
+  "homepage": "/dhs-nerd",
   "dependencies": {
     "bootstrap": "^5.1.3",
     "react": "^17.0.2",
