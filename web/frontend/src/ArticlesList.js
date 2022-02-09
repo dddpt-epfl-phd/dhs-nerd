@@ -27,6 +27,8 @@ export function searchInIndex(completeIndex, searchTerm){
 
 
 export function ArticlesList({}) {
+
+  console.log("ArticlesList ArticlesList ArticlesList ArticlesList")
   const { language } = useParams();
   console.log("ArticlesList.js language", language)
 

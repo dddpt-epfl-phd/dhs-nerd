@@ -99,6 +99,8 @@ export function DhsArticleContent({
 
 
 export function DhsArticle({}) {
+    console.log("DhsArticle DhsArticle DhsArticle DhsArticle")
+
   const { language, dhsId } = useParams();
 
   const articleJsonUrl = "/data/"+language+"/"+dhsId+".json"

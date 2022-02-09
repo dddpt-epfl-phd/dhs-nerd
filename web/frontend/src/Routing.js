@@ -10,7 +10,7 @@ import {
 
 import {DhsArticle} from "./DhsArticle"
 import {ArticlesList} from "./ArticlesList"
-
+console.log("ROOOOOOUUUUTING")
 
 
 export default function Routing() {
