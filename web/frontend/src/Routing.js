@@ -23,7 +23,7 @@ export default function Routing() {
         <Route path={process.env.PUBLIC_URL+"/:language"} element={<ArticlesList />}/>
         <Route path={process.env.PUBLIC_URL+"/:language/articles"} element={<ArticlesList />}/>
         <Route exact path={process.env.PUBLIC_URL+"/"} element={<Navigate to={process.env.PUBLIC_URL+"/fr"} />} />
-        <Route path='*' element={<ArticlesList />} />
+        <Route path='*' element={"HOLA HOLA HOW YOU DOIN?"} />
       </Routes>
     </Router>
   );
