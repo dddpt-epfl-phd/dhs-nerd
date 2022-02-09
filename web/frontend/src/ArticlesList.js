@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, createRef, useCallback } from "react";
 import {DhsArticleLink} from "./TextLink"
 import {
-  useParams
+  useParams,
+  useLocation
 } from "react-router-dom";
 import {Form, Button} from "react-bootstrap"
 
@@ -27,8 +28,12 @@ export function searchInIndex(completeIndex, searchTerm){
 
 
 export function ArticlesList({}) {
-
+  // DEBUG START
   console.log("ArticlesList ArticlesList ArticlesList ArticlesList")
+  const location = useLocation();
+  console.log("ArticlesList location.pathname: ", location.pathname); // path is /contact
+  // /DEBUG FIN
+
   const { language } = useParams();
   console.log("ArticlesList.js language", language)
 
