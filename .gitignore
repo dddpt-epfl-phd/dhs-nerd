@@ -11,6 +11,8 @@ grisp/
 
 data/
 
+web/frontend/build
+
 **/*.csv
 **/*.tsv
 **/*.json
