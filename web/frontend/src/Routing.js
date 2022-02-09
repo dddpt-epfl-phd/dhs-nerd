@@ -10,7 +10,7 @@ import {
 
 import {DhsArticle} from "./DhsArticle"
 import {ArticlesList} from "./ArticlesList"
-console.log("ROOOOOOUUUUTING")
+console.log("ROOOOOOUUUUTING, basename is: ", process.env.PUBLIC_URL)
 
 
 export default function Routing() {
@@ -18,9 +18,9 @@ export default function Routing() {
     <Router basename={process.env.PUBLIC_URL}>
       <Routes>
         <Route path="/:language/articles/:dhsId" element={<DhsArticle />}/>
-        <Route path="/:language" element={<ArticlesList />}/>
-        <Route path="/:language/articles" element={<ArticlesList />}/>
-        <Route exact path="/" element={<Navigate to="/fr" />} />
+        <Route path={process.env.PUBLIC_URL+"/:language"} element={<ArticlesList />}/>
+        <Route path={process.env.PUBLIC_URL+"/:language/articles"} element={<ArticlesList />}/>
+        <Route exact path={process.env.PUBLIC_URL+"/"} element={<Navigate to={process.env.PUBLIC_URL+"/fr"} />} />
       </Routes>
     </Router>
   );
