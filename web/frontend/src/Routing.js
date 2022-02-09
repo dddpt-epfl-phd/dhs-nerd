@@ -15,7 +15,7 @@ import {ArticlesList} from "./ArticlesList"
 
 export default function Routing() {
   return (
-    <Router basename="/dhs-nerd">
+    <Router basename={process.env.PUBLIC_URL}>
       <Routes>
         <Route path="/:language/articles/:dhsId" element={<DhsArticle />}/>
         <Route path="/:language" element={<ArticlesList />}/>
