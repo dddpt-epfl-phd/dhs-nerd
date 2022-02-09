@@ -13,7 +13,7 @@ import {DhsArticle} from "./DhsArticle"
 import {ArticlesList} from "./ArticlesList"
 console.log("ROOOOOOUUUUTING, basename is: ", process.env.PUBLIC_URL)
 
-
+const Route404 = ({})=><div>THIS IS A DEFAULT ROUTE</div>
 export default function Routing() {
   console.log("doin' the routin', basename is: ", process.env.PUBLIC_URL)
   return (
@@ -25,7 +25,7 @@ export default function Routing() {
           <Route path="/:language" element={<ArticlesList />}/>
           <Route path="/:language/articles" element={<ArticlesList />}/>
           <Route exact path="/" element={<Navigate to="/fr" />} />
-          <Route path='*' element={"HOLA HOLA HOW YOU DOIN?"} />
+          <Route path='*' element={<Route404/>} />
       </Routes>
     </Router>
     </>
