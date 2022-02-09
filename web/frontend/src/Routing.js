@@ -19,13 +19,13 @@ export default function Routing() {
   return (
     <Router basename={process.env.PUBLIC_URL}>
       HOLLA HOWDY
-      <Switch>
+      <Routes>
           <Route path="/:language/articles/:dhsId" element={<DhsArticle />}/>
           <Route path="/:language" element={<ArticlesList />}/>
           <Route path="/:language/articles" element={<ArticlesList />}/>
           <Route exact path="/" element={<Navigate to="/fr" />} />
           <Route path='*' element={"HOLA HOLA HOW YOU DOIN?"} />
-      </Switch>
+      </Routes>
     </Router>
   );
 }
