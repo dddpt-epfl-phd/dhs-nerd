@@ -58,7 +58,8 @@ function TextBlock({tag="p", textLinks = [], children="", language="de"}){
 
 export function DhsArticleContent({
     article = {},
-    language="de"
+    language="de",
+    baseurl=""
 }) {    
     //"wikidata_url": "http://www.wikidata.org/entity/Q121410",
     //"wikipedia_page_title": "District d'Aarau",
@@ -77,10 +78,10 @@ export function DhsArticleContent({
             const logoSize = "20px" 
             const wikipediaUrl = article.wikipedia_page_title? getWikipediaUrlFromPageId(language, article.wikipedia_page_title):false
             const wikidataUrl = article.wikidata_url? article.wikidata_url:false
-            const wikipediaLink = wikipediaUrl? <WikipediaTextLink key="wk-tl" url={wikipediaUrl}><img src="/wikipedia.png" width={logoSize} height={logoSize} /></WikipediaTextLink>:""
-            const wikidataLink = wikidataUrl? <WikidataTextLink key="wdt-l" url={wikidataUrl}><img src="/wikidata.svg" width={logoSize} height={logoSize} /></WikidataTextLink>: ""
+            const wikipediaLink = wikipediaUrl? <WikipediaTextLink key="wk-tl" url={wikipediaUrl}><img src={baseurl+"/wikipedia.png"} width={logoSize} height={logoSize} /></WikipediaTextLink>:""
+            const wikidataLink = wikidataUrl? <WikidataTextLink key="wdt-l" url={wikidataUrl}><img src={baseurl+"/wikidata.svg"} width={logoSize} height={logoSize} /></WikidataTextLink>: ""
             externalLinks = <span>
-                <RealDhsArticleLink key="r-dhs-tl" dhsId={article.id} language={language}> <img src="/hds.png" className="real-dhs-article-external-link" width={logoSize} height={logoSize} /></RealDhsArticleLink>
+                <RealDhsArticleLink key="r-dhs-tl" dhsId={article.id} language={language}> <img src={baseurl+"/hds.png"} className="real-dhs-article-external-link" width={logoSize} height={logoSize} /></RealDhsArticleLink>
                 {wikipediaLink}
                 {wikidataLink}
             </span>
@@ -129,7 +130,7 @@ export function DhsArticle({baseurl=""}) {
             <a className={wikipediaLinkClass}>Les liens verts</a> pointent vers Wikipedia.<br/>
             <a className={dhsLinkClass+" "+originalDhsLinkClass}>Les liens bleus souligné en traitillé</a> sont des liens provenant du DHS original.<br/>
         </Alert>
-        <DhsArticleContent article={article} language={language}/>
+        <DhsArticleContent article={article} language={language} baseurl={baseurl}/>
     </CenteredLayout>
   );
 }
