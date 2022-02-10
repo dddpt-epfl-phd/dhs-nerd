@@ -63,6 +63,7 @@ export function DhsArticleContent({
 }) {    
     //"wikidata_url": "http://www.wikidata.org/entity/Q121410",
     //"wikipedia_page_title": "District d'Aarau",
+    console.log("DhsArticleContent baseurl:", baseurl)
 
     // hack: use the search_result_name to have a nice title
     if(article.text_blocks && article.text_blocks.length>0){
