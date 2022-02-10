@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && mv ../../docs/data ../../docs-data && rm -r ../../docs && mv build ../../docs  && mv ../../docs-data ../../docs/data",
+    "build": "react-scripts build && mv ../../docs/data ../../docs-data && rm -r ../../docs && mv build ../../docs  && mv ../../docs-data ../../docs/data  && rm -r ../../../dhs-nerd-test/dhs-nerd && cp -r ../../docs ../../../dhs-nerd-test/dhs-nerd",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
