@@ -99,7 +99,6 @@ export function DhsArticleContent({
 
 
 export function DhsArticle({baseurl=""}) {
-    console.log("DhsArticle DhsArticle DhsArticle DhsArticle")
 
   const { language, dhsId } = useParams();
 

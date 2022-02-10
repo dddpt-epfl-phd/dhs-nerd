@@ -178,7 +178,6 @@ export function TextLink({
     }
     const wikidataUrl = getLinkWikidataUrl(textLink)
     if(wikidataUrl){
-        console.log("TextLink WIKIDATA! wikidataUrl=", wikidataUrl, " text:", children)
         return <WikidataTextLink url={wikidataUrl}>{children}</WikidataTextLink>
     }
     return <NoTextLink>{children}</NoTextLink>

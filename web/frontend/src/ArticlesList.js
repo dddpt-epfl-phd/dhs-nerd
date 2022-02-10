@@ -28,15 +28,8 @@ export function searchInIndex(completeIndex, searchTerm){
 
 
 export function ArticlesList({baseurl=""}) {
-  // DEBUG START
-  console.log("ArticlesList ArticlesList ArticlesList ArticlesList")
-  const location = useLocation();
-  console.log("ArticlesList location.pathname: ", location.pathname); // path is /contact
-  // /DEBUG FIN
-
   const { language } = useParams();
   console.log("ArticlesList.js language", language)
-
   
   const indexJsonUrl = baseurl+"/data/indices/"+language+".json"
 

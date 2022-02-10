@@ -11,13 +11,9 @@ import {
 
 import {DhsArticle} from "./DhsArticle"
 import {ArticlesList} from "./ArticlesList"
-console.log("ROOOOOOUUUUTING, basename is: ", process.env.PUBLIC_URL)
 
 const Route404 = ({tadu="DEFAULT"})=><div>THIS IS A {tadu} ROUTE</div>
 export default function Routing() {
-  console.log("doin' the routin', basename is: ", process.env.PUBLIC_URL)
-  //const location = useLocation();
-  console.log("ROOUTING window.location.hash: ", window.location.hash);
   return (
     <>
     <Router>
