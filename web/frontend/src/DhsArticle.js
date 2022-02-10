@@ -140,8 +140,10 @@ export function MissingDhsArticle({lastArticle={}}) {
 
   return (
     <CenteredLayout>
-        <h1>Erreur 404: Article pas encore traité</h1>
-        <p>Cet article n'a pas encore été linké par entity-fishing. La moulinette tourne, revenez plus tard.</p>
+        <h1>Error 404: Article not found</h1>
+        <p>
+            Oops, it seems this article is missing. Are you sure the article id is correct?<br/>
+        </p>
         <p>
             <a href="#" onClick={()=>window.history.back()}>Revenir en arrière {lastArticle.title? "("+lastArticle.title+")":""}</a>
         </p>
