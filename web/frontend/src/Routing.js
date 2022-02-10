@@ -20,13 +20,11 @@ export default function Routing() {
   console.log("ROOUTING window.location.hash: ", window.location.hash);
   return (
     <>
-    HOLLA HOWDYYAB
-    <Route404 tadu="TEST"/>
     <Router>
       <Routes basename={process.env.PUBLIC_URL}>
-          <Route path="/:language/articles/:dhsId" element={<DhsArticle />}/>
-          <Route path="/:language" element={<ArticlesList />}/>
-          <Route path="/:language/articles" element={<ArticlesList />}/>
+          <Route path="/:language/articles/:dhsId" element={<DhsArticle baseurl={process.env.PUBLIC_URL}/>}/>
+          <Route path="/:language" element={<ArticlesList  baseurl={process.env.PUBLIC_URL}/>}/>
+          <Route path="/:language/articles" element={<ArticlesList  baseurl={process.env.PUBLIC_URL}/>}/>
           <Route exact path="/" element={<Navigate to="/fr" />} />
           <Route path='*' element={<Route404/>} />
       </Routes>

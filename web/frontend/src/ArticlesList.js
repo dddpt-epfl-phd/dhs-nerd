@@ -27,7 +27,7 @@ export function searchInIndex(completeIndex, searchTerm){
 }
 
 
-export function ArticlesList({}) {
+export function ArticlesList({baseurl=""}) {
   // DEBUG START
   console.log("ArticlesList ArticlesList ArticlesList ArticlesList")
   const location = useLocation();
@@ -37,7 +37,8 @@ export function ArticlesList({}) {
   const { language } = useParams();
   console.log("ArticlesList.js language", language)
 
-  const indexJsonUrl = "/data/indices/"+language+".json"
+  
+  const indexJsonUrl = baseurl+"/data/indices/"+language+".json"
 
   const [index, setIndex] = useState([])
   const [completeIndex, setCompleteIndex] = useState([])

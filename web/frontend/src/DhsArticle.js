@@ -98,12 +98,12 @@ export function DhsArticleContent({
 
 
 
-export function DhsArticle({}) {
+export function DhsArticle({baseurl=""}) {
     console.log("DhsArticle DhsArticle DhsArticle DhsArticle")
 
   const { language, dhsId } = useParams();
 
-  const articleJsonUrl = "/data/"+language+"/"+dhsId+".json"
+  const articleJsonUrl = baseurl+"/data/"+language+"/"+dhsId+".json"
 
   const [article, setArticle] = useState({id:true})
 
