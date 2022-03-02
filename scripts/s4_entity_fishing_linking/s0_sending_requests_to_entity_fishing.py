@@ -13,19 +13,13 @@ from data_file_paths import S0_JSONL_ALL_ARTICLES_FILE, S4_JSONL_ALL_ARTICLES_LI
 # %%
 """
 This scripts load all the DhsArticles in S0_JSONL_ALL_ARTICLES_FILE, links them with entity-fishing and streams them back into a json in S4_JSONL_ALL_ARTICLES_LINKED_FILE
+You need to have a running entity-fishing instance on localhost:8090 for this script to work.
 
 usage from this folder:
 ```
 python s0_sending_requests_to_entity_fishing.py >> ../../data/entity-fishing-linking/logs/linking-LNG-DATE 2>> ../../data/entity-fishing-linking/logs/linking-LNG-DATE-stderr
 ```
 
-
-Todo
-1) DONE re-integration of doc.annotations in dhs_article.text_links
-2) DONE test & ensure DhsA to jsonl works correctly with both text_content and text_links
-3) DONE write code for whole of step 1) DhsA through EF
-4) create mDhsA data-structure
-5) write code for step 2) Unify DhsAs into mDhsAs
 """
 
 # LINKING AND STREAMING LINKED ARTICLES TO JSONL
