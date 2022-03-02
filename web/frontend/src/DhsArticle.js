@@ -6,7 +6,7 @@ import {Alert} from "react-bootstrap"
 
 import {TextLink, WikidataTextLink, WikipediaTextLink, realDhsLink, RealDhsArticleLink, getWikipediaUrlFromPageId, dhsLinkClass, wikipediaLinkClass, originalDhsLinkClass} from "./TextLink"
 import {CenteredLayout} from "./Layout"
-
+import {CopyrightFooter} from "./CopyrightFooter"
 
 
 
@@ -70,29 +70,30 @@ export function DhsArticleContent({
         article.text_blocks[0][1] = article.search_result_name
     }
 
+
+    // externalLinks to DHS, WK, WD for the first text block, the article title
+    const logoSize = "20px" 
+    const wikipediaUrl = article.wikipedia_page_title? getWikipediaUrlFromPageId(language, article.wikipedia_page_title):false
+    const wikidataUrl = article.wikidata_url? article.wikidata_url:false
+    const wikipediaLink = wikipediaUrl? <WikipediaTextLink key="wk-tl" url={wikipediaUrl}><img src={baseurl+"/wikipedia.png"} width={logoSize} height={logoSize} /></WikipediaTextLink>:""
+    const wikidataLink = wikidataUrl? <WikidataTextLink key="wdt-l" url={wikidataUrl}><img src={baseurl+"/wikidata.svg"} width={logoSize} height={logoSize} /></WikidataTextLink>: ""
+    const externalLinks = <span>
+        <RealDhsArticleLink key="r-dhs-tl" dhsId={article.id} language={language}> <img src={baseurl+"/hds.png"} className="real-dhs-article-external-link" width={logoSize} height={logoSize} /></RealDhsArticleLink>
+        {wikipediaLink}
+        {wikidataLink}
+    </span>
+    
     const textBlocks = article.text_blocks? article.text_blocks.map((tb,i)=>{
         const [tag, text] = tb
-
-        // adding links to DHS, WK, WD to first block, the title
-        let externalLinks=""
-        if(i==0){
-            const logoSize = "20px" 
-            const wikipediaUrl = article.wikipedia_page_title? getWikipediaUrlFromPageId(language, article.wikipedia_page_title):false
-            const wikidataUrl = article.wikidata_url? article.wikidata_url:false
-            const wikipediaLink = wikipediaUrl? <WikipediaTextLink key="wk-tl" url={wikipediaUrl}><img src={baseurl+"/wikipedia.png"} width={logoSize} height={logoSize} /></WikipediaTextLink>:""
-            const wikidataLink = wikidataUrl? <WikidataTextLink key="wdt-l" url={wikidataUrl}><img src={baseurl+"/wikidata.svg"} width={logoSize} height={logoSize} /></WikidataTextLink>: ""
-            externalLinks = <span>
-                <RealDhsArticleLink key="r-dhs-tl" dhsId={article.id} language={language}> <img src={baseurl+"/hds.png"} className="real-dhs-article-external-link" width={logoSize} height={logoSize} /></RealDhsArticleLink>
-                {wikipediaLink}
-                {wikidataLink}
-            </span>
-        }
-        return <TextBlock tag={tag} key={i} textLinks={article.text_links[i]} language={language}>{[text," ",externalLinks]}</TextBlock>
+        return <TextBlock tag={tag} key={i} textLinks={article.text_links[i]} language={language}>{[text," ", i==0? externalLinks: ""]}</TextBlock>
     }) : "Loading..."
+
+    originalPageLink = (<RealDhsArticleLink dhsId={article.id}>Original article</RealDhsArticleLink>)
 
     return (
         <div className="dhs-article">
             {textBlocks}
+            <CopyrightFooter originalPageLink={originalPageLink}/>
         </div>
     );
 }
@@ -127,9 +128,9 @@ export function DhsArticle({baseurl=""}) {
   return (
     <CenteredLayout>
         <Alert className="dhs-article-info" variant="info">
-            <a className={dhsLinkClass}>Les liens bleus</a> pointent vers d'autres articles du DHS.<br/>
-            <a className={wikipediaLinkClass}>Les liens verts</a> pointent vers Wikipedia.<br/>
-            <a className={dhsLinkClass+" "+originalDhsLinkClass}>Les liens bleus souligné en traitillé</a> sont des liens provenant du DHS original.<br/>
+            <a className={dhsLinkClass}>Blue links</a> point to other HDS articles.<br/>
+            <a className={wikipediaLinkClass}>Green links</a> point to Wikipedia articles.<br/>
+            <a className={dhsLinkClass+" "+originalDhsLinkClass}>Underdashed blue links</a> are links coming from the original HDS.<br/>
         </Alert>
         <DhsArticleContent article={article} language={language} baseurl={baseurl}/>
     </CenteredLayout>
@@ -147,11 +148,11 @@ export function MissingDhsArticle({lastArticle={}}) {
             Oops, it seems this article is missing. Are you sure the article id is correct?<br/>
         </p>
         <p>
-            <a href="#" onClick={()=>window.history.back()}>Revenir en arrière {lastArticle.title? "("+lastArticle.title+")":""}</a>
+            <a href="#" onClick={()=>window.history.back()}>Go back {lastArticle.title? "("+lastArticle.title+")":""}</a>
         </p>
         {dhsId?
         <p>
-            <RealDhsArticleLink dhsId={dhsId} language={language}>Visiter l'article du DHS original</RealDhsArticleLink>
+            <RealDhsArticleLink dhsId={dhsId} language={language}>Visit the original HDS article</RealDhsArticleLink>
         </p>: ""}
         
     </CenteredLayout>

@@ -24,6 +24,11 @@
     height: 0.4em;
 }
 
+.dhs-article#copyright-footer{
+    font-size: small;
+    color: grey;
+}
+
 // TEXT LINKS
 
 
@@ -45,4 +50,10 @@
 }
 .dhs-wikidata-link{
     color: red
+}
+
+// about page
+
+#report-abstract{
+    font-style: italic;
 }
