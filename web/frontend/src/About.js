@@ -2,7 +2,7 @@ import React from "react";
 import {CenteredLayout} from "./Layout"
 import {CopyrightFooter} from "./CopyrightFooter"
 
-export const AboutPage = (originalPageLink="")=> {
+export const AboutPage = ()=> {
     return (
         <CenteredLayout>
 

@@ -1,6 +1,7 @@
 import React from "react";
 
 export const CopyrightFooter = (originalPageLink="")=> {
+    console.log("CopyrightFooter originalPageLink: ", originalPageLink)
     return (
         <div id="copyright-footer">
             The content of all HDS articles presented on this website are the work of their respective author from the original HDS. {[originalPageLink]} <br/>
