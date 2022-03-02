@@ -88,12 +88,13 @@ export function DhsArticleContent({
         return <TextBlock tag={tag} key={i} textLinks={article.text_links[i]} language={language}>{[text," ", i==0? externalLinks: ""]}</TextBlock>
     }) : "Loading..."
 
-    const originalPageLink = (<RealDhsArticleLink dhsId={article.id}>Original article</RealDhsArticleLink>)
 
     return (
         <div className="dhs-article">
             {textBlocks}
-            <CopyrightFooter originalPageLink={originalPageLink}/>
+            <CopyrightFooter>
+                <RealDhsArticleLink dhsId={article.id}>Original article</RealDhsArticleLink>
+            </CopyrightFooter>
         </div>
     );
 }
