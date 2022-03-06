@@ -95,8 +95,8 @@ export function DhsArticleContent({
             {textBlocks}
             <hr/>
             <CopyrightFooter>
-                <RealDhsArticleLink dhsId={article.id}>Original article</RealDhsArticleLink>
-                <br/>
+                <RealDhsArticleLink dhsId={article.id}>Original article available here.</RealDhsArticleLink>
+                <span></span>
             </CopyrightFooter>
         </div>
     );
