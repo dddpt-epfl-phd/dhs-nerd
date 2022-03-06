@@ -11,7 +11,7 @@ const LanguageChooser = ({}) => {
     const { language } = useParams();
 
     const links = possibleLanguages.filter(l=>l!= language).map(l=>{
-            const urlToLng = (window.location+"").replace(language,l)
+            const urlToLng = (window.location+"").split("#")[1].replace(language,l)
             return  <LinkContainer key={l} to={urlToLng}>
                         <NavDropdown.Item>{l.toUpperCase()}</NavDropdown.Item>
                     </LinkContainer>
