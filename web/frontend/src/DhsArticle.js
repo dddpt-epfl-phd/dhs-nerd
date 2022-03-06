@@ -38,6 +38,7 @@ function TextWithLinks({text, textLinks=[], language="de"}){
 
 function TextBlock({tag="p", textLinks = [], children="", language="de"}){
     const text = children[0]
+    console.log("TextBlock children: ", children)
 
     //const textWithLinks = []
     switch(tag) {

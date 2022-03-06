@@ -1,6 +1,6 @@
 import React from "react";
 
-export const CopyrightFooter = (children=[])=> {
+export const CopyrightFooter = ({children=[]})=> {
     console.log("CopyrightFooter children: ", children)
     return (
         <div id="copyright-footer">
