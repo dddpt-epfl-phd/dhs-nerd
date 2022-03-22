@@ -1,0 +1,10 @@
+
+
+Putting the search in the NavBar
+===============================================
+
+steps:
+- DONE minimal Article Search working component
+- search goes in url parameters
+    -> handled by Routes
+- move searchbar in navbar

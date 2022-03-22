@@ -8,6 +8,7 @@ import {Form, Button} from "react-bootstrap"
 
 
 import {CenteredLayout} from "./Layout"
+import {ArticleSearch} from "./ArticleSearch"
 
 
 const NB_MAX_DISPLAYED_ARTICLES = 100
@@ -43,25 +44,11 @@ export function ArticlesList({baseurl=""}) {
     })
   }, [indexJsonUrl])
 
-  const onSearchFormSubmit = (event)=>{
-    const searchTerm = document.getElementById('dhs-article-text-search').value
-    setIndex(searchInIndex(completeIndex, searchTerm))
-    event.preventDefault()
-    event.stopPropagation()
-  }
-
   //console.log("ArticlesList indexJsonUrl: ", indexJsonUrl, " index:", index)
 
   return (
     <CenteredLayout>
-      <Form id="dhs-article-search" onSubmit={onSearchFormSubmit}>
-        <Form.Group className="mb-3" controlId="dhs-article-text-search">
-          <Form.Control type="text" placeholder="Search in articles' titles..." />
-        </Form.Group>
-        <Button variant="primary" type="submit">
-          Search
-        </Button>
-      </Form>
+      <ArticleSearch setSearchTerm={st=> setIndex(searchInIndex(completeIndex, st))}/>
       {index.filter((a,i)=>i<NB_MAX_DISPLAYED_ARTICLES).map((item,i)=> <ArticlesListItem key={i} dhsId={item[0]} articleTitle={item[1]}/>)}
     </CenteredLayout>
   );
