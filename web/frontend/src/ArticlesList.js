@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, createRef, useCallback } from "reac
 import {DhsArticleLink} from "./TextLink"
 import {
   useParams,
-  useLocation
+  useSearchParams
 } from "react-router-dom";
 import {Form, Button} from "react-bootstrap"
 
@@ -37,6 +37,19 @@ export function ArticlesList({baseurl=""}) {
   const [index, setIndex] = useState([])
   const [completeIndex, setCompleteIndex] = useState([])
 
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get("q")
+  console.log("AL searchParams query", query)
+
+  // filter index based on URL get parameter ?q=XX
+  useEffect(()=>{
+    if(query){
+      console.log("ArticlesList filtering based on query:", query)
+      setIndex(searchInIndex(completeIndex, query))
+    }
+  }, [query, completeIndex])
+
+  // fetch index json
   useEffect(()=>{
     fetch(indexJsonUrl).then(x=>x.json()).then(index=>{
       setCompleteIndex(index)
@@ -48,7 +61,7 @@ export function ArticlesList({baseurl=""}) {
 
   return (
     <CenteredLayout>
-      <ArticleSearch setSearchTerm={st=> setIndex(searchInIndex(completeIndex, st))}/>
+      <ArticleSearch/>
       {index.filter((a,i)=>i<NB_MAX_DISPLAYED_ARTICLES).map((item,i)=> <ArticlesListItem key={i} dhsId={item[0]} articleTitle={item[1]}/>)}
     </CenteredLayout>
   );
