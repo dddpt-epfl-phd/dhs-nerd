@@ -35,16 +35,14 @@ export function ArticleSearch({setSearchTerm=()=>{}}){
   }
 
   return (
-      <>
-        <Form id="dhs-article-search"  onSubmit={onSearchFormSubmit}>
-          <Form.Group className="mb-3" controlId="dhs-article-text-search">
-            <Form.Control type="text" placeholder="Search in articles' titles..." name="q"/>
-          </Form.Group>
-          <Button variant="primary" type="submit">
-            Search
-          </Button>
-        </Form>
-      </>
+    <Form id="dhs-article-search"  onSubmit={onSearchFormSubmit}>
+      <Form.Group className="mb-3" controlId="dhs-article-text-search">
+        <Form.Control type="text" placeholder="Search in articles' titles..." name="q"/>
+      </Form.Group>
+      <Button variant="primary" type="submit">
+        Search
+      </Button>
+    </Form>
   );
 }
 
