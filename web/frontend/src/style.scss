@@ -53,6 +53,9 @@
 }
 
 // about page
+#about-content{
+    padding-top: 1em;
+}
 
 #report-abstract{
     font-style: italic;
@@ -67,5 +70,10 @@
 
     input{
         margin-right: 0.5em;
+        max-width: 500px;
     }
+}
+
+#ldhs-navbar{
+    width:100%;
 }

@@ -31,12 +31,17 @@ const NavBarHeader = () => {
         <Navbar bg="light" expand="lg">
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="mr-auto">
+                <Nav id="ldhs-navbar" className="justify-content-center">
                     <LinkContainer to={"/"+language+"/articles"}>
-                        <Nav.Link>Articles</Nav.Link>
+                        <Nav.Link>Home</Nav.Link>
+                  </LinkContainer>
+                  <div id="search-wrapper">
+                    <ArticleSearch/>
+                  </div>
+                    <LinkContainer to={"/"+language+"/about"}>
+                        <Nav.Link>About</Nav.Link>
                   </LinkContainer>
                   <LanguageChooser/>
-                  <ArticleSearch/>
                 </Nav>
             </Navbar.Collapse>
         </Navbar>

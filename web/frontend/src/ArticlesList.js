@@ -4,6 +4,7 @@ import {
   useParams,
   useSearchParams
 } from "react-router-dom";
+import {Alert} from "react-bootstrap"
 
 
 import {CenteredLayout} from "./Layout"
@@ -59,6 +60,10 @@ export function ArticlesList({baseurl=""}) {
 
   return (
     <CenteredLayout>
+      <Alert className="dhs-article-info" variant="info">
+          Using the search bar above you can search for articles.<br/>
+          Search is only performed on articles' titles (exact match).<br/>
+      </Alert>
       {index.filter((a,i)=>i<NB_MAX_DISPLAYED_ARTICLES).map((item,i)=> <ArticlesListItem key={i} dhsId={item[0]} articleTitle={item[1]}/>)}
     </CenteredLayout>
   );

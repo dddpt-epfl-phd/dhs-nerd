@@ -8,19 +8,12 @@ import {
 import {Form, Button} from "react-bootstrap"
 
 
-
-export function searchInIndex(completeIndex, searchTerm){
-  const lowerCaseSearchTerm = searchTerm.toLowerCase()
-  return completeIndex.filter(aid => aid[1].toLowerCase().indexOf(lowerCaseSearchTerm)!=-1)
-}
-
-
 export function ArticleSearch(){
 
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q"));
-  const { language } = useParams();
+  const {language} = useParams();
 
   // set searchTerm on form submit
   const onSearchFormSubmit = (event)=>{
@@ -41,7 +34,7 @@ export function ArticleSearch(){
 
   return (
     <Form id="dhs-article-search" onSubmit={onSearchFormSubmit}>
-      <Form.Control id='dhs-article-text-search' type="text" placeholder="Search in articles' titles..." defaultValue={searchTerm} name="q"/>
+      <Form.Control id='dhs-article-text-search' type="text" defaultValue={searchTerm} name="q"/>
       <Button variant="primary" type="submit">
         Search
       </Button>

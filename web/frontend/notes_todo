@@ -6,4 +6,5 @@ Putting the search in the NavBar
 steps:
 - DONE minimal Article Search working component
 - DONE search goes in url parameters
-- move searchbar in navbar
+- DONE move searchbar in navbar
+- add alrt box with info on how to search (and only search in articles titles!)
