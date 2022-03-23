@@ -15,27 +15,33 @@ export function searchInIndex(completeIndex, searchTerm){
 }
 
 
-export function ArticleSearch({setSearchTerm=()=>{}}){
+export function ArticleSearch(){
 
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("q"));
   const { language } = useParams();
 
+  // set searchTerm on form submit
   const onSearchFormSubmit = (event)=>{
     event.preventDefault()
     event.stopPropagation()
-    const searchTerm = document.getElementById('dhs-article-text-search').value
-    // go to root of given language
-    navigate("/"+language)
+    setSearchTerm(document.getElementById('dhs-article-text-search').value)
+  }
+
+  // if search term changed -> go to search apge
+  useEffect(()=>{
     if(searchTerm){
+      // go to articles list page in given language
+      navigate("/"+language)
       // set URL get parameters ?q=XXX
       setSearchParams({"q": searchTerm})
     }
-  }
+  }, [searchTerm])
 
   return (
-    <Form id="dhs-article-search"  onSubmit={onSearchFormSubmit}>
-      <Form.Control type="text" placeholder="Search in articles' titles..." name="q"/>
+    <Form id="dhs-article-search" onSubmit={onSearchFormSubmit}>
+      <Form.Control id='dhs-article-text-search' type="text" placeholder="Search in articles' titles..." defaultValue={searchTerm} name="q"/>
       <Button variant="primary" type="submit">
         Search
       </Button>
@@ -43,8 +49,4 @@ export function ArticleSearch({setSearchTerm=()=>{}}){
   );
 }
 
-/*<Form.Group className="mb-3" controlId="dhs-article-text-search">
-<Form.Control type="text" placeholder="Search in articles' titles..." name="q"/>
-</Form.Group>
-*/
 export default ArticleSearch;
