@@ -6,6 +6,8 @@ import {
     useParams
 } from "react-router-dom";
 
+import {ArticleSearch} from "./ArticleSearch"
+
 const LanguageChooser = ({}) => {
     const possibleLanguages = ["de", "fr", "it"]
     const { language } = useParams();
@@ -34,6 +36,7 @@ const NavBarHeader = () => {
                         <Nav.Link>Articles</Nav.Link>
                   </LinkContainer>
                   <LanguageChooser/>
+                  <ArticleSearch/>
                 </Nav>
             </Navbar.Collapse>
         </Navbar>

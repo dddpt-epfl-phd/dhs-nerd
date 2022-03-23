@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, createRef, useCallback } from "react";
 import {DhsArticleLink} from "./TextLink"
 import {
-  useLocation,
   useSearchParams,
   useParams,
   useNavigate
@@ -36,9 +35,7 @@ export function ArticleSearch({setSearchTerm=()=>{}}){
 
   return (
     <Form id="dhs-article-search"  onSubmit={onSearchFormSubmit}>
-      <Form.Group className="mb-3" controlId="dhs-article-text-search">
-        <Form.Control type="text" placeholder="Search in articles' titles..." name="q"/>
-      </Form.Group>
+      <Form.Control type="text" placeholder="Search in articles' titles..." name="q"/>
       <Button variant="primary" type="submit">
         Search
       </Button>
@@ -46,4 +43,8 @@ export function ArticleSearch({setSearchTerm=()=>{}}){
   );
 }
 
+/*<Form.Group className="mb-3" controlId="dhs-article-text-search">
+<Form.Control type="text" placeholder="Search in articles' titles..." name="q"/>
+</Form.Group>
+*/
 export default ArticleSearch;

@@ -4,11 +4,9 @@ import {
   useParams,
   useSearchParams
 } from "react-router-dom";
-import {Form, Button} from "react-bootstrap"
 
 
 import {CenteredLayout} from "./Layout"
-import {ArticleSearch} from "./ArticleSearch"
 
 
 const NB_MAX_DISPLAYED_ARTICLES = 100
@@ -61,7 +59,6 @@ export function ArticlesList({baseurl=""}) {
 
   return (
     <CenteredLayout>
-      <ArticleSearch/>
       {index.filter((a,i)=>i<NB_MAX_DISPLAYED_ARTICLES).map((item,i)=> <ArticlesListItem key={i} dhsId={item[0]} articleTitle={item[1]}/>)}
     </CenteredLayout>
   );
