@@ -28,22 +28,23 @@ const NavBarHeader = () => {
     const { language, dhsId } = useParams();
     //console.log("NavBarHeader, language: ", language, ", dhsId: ", dhsId, "window.location.pathname=",window.location.pathname)
     return (
-        <Navbar bg="light" expand="lg">
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
-                <Nav id="ldhs-navbar" className="justify-content-center">
+        <Navbar id="ldhs-navbar" expand="md" className="justify-content-center">
+            <Navbar.Toggle aria-controls="ldhs-collapsible-navbar" />
+            <Navbar.Collapse id="ldhs-collapsible-navbar">
+                <Nav className="justify-content-center">
                     <LinkContainer to={"/"+language+"/articles"}>
                         <Nav.Link>Home</Nav.Link>
                   </LinkContainer>
-                  <div id="search-wrapper">
-                    <ArticleSearch/>
-                  </div>
                     <LinkContainer to={"/"+language+"/about"}>
                         <Nav.Link>About</Nav.Link>
                   </LinkContainer>
                   <LanguageChooser/>
                 </Nav>
             </Navbar.Collapse>
+
+            <div id="search-wrapper">
+                <ArticleSearch/>
+            </div>
         </Navbar>
     )
 }

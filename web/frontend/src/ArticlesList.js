@@ -29,7 +29,7 @@ export function searchInIndex(completeIndex, searchTerm){
 
 export function ArticlesList({baseurl=""}) {
   const { language } = useParams();
-  console.log("ArticlesList.js language", language)
+  console.log("ArticlesList.js language", language, "----------------------------------")
   
   const indexJsonUrl = baseurl+"/data/indices/"+language+".json"
 
@@ -45,14 +45,16 @@ export function ArticlesList({baseurl=""}) {
     if(query){
       console.log("ArticlesList filtering based on query:", query)
       setIndex(searchInIndex(completeIndex, query))
+    }else{
+      setIndex(completeIndex)  
     }
   }, [query, completeIndex])
 
   // fetch index json
   useEffect(()=>{
-    fetch(indexJsonUrl).then(x=>x.json()).then(index=>{
-      setCompleteIndex(index)
-      setIndex(index)
+    fetch(indexJsonUrl).then(x=>x.json()).then(loadedIndex=>{
+      setCompleteIndex(loadedIndex)
+      setIndex(loadedIndex)
     })
   }, [indexJsonUrl])
 
@@ -64,7 +66,13 @@ export function ArticlesList({baseurl=""}) {
           Using the search bar above you can search for articles.<br/>
           Search is only performed on articles' titles (exact match).<br/>
       </Alert>
-      {index.filter((a,i)=>i<NB_MAX_DISPLAYED_ARTICLES).map((item,i)=> <ArticlesListItem key={i} dhsId={item[0]} articleTitle={item[1]}/>)}
+      {
+        completeIndex.length===0? "Loading articles index..." : (
+          index.length>0 ?
+            index.filter((a,i)=>i<NB_MAX_DISPLAYED_ARTICLES).map((item,i)=> <ArticlesListItem key={i} dhsId={item[0]} articleTitle={item[1]}/>) :
+            "No matching articles found."
+        )
+      }
     </CenteredLayout>
   );
 }

@@ -3,7 +3,8 @@ import {DhsArticleLink} from "./TextLink"
 import {
   useSearchParams,
   useParams,
-  useNavigate
+  useNavigate,
+  createSearchParams
 } from "react-router-dom";
 import {Form, Button} from "react-bootstrap"
 
@@ -25,10 +26,8 @@ export function ArticleSearch(){
   // if search term changed -> go to search apge
   useEffect(()=>{
     if(searchTerm){
-      // go to articles list page in given language
-      navigate("/"+language)
-      // set URL get parameters ?q=XXX
-      setSearchParams({"q": searchTerm})
+      // go to articles list page in given language + set search ?q parameter
+      navigate({pathname: "/"+language, "search": "?"+createSearchParams({q: searchTerm})})
     }
   }, [searchTerm])
 

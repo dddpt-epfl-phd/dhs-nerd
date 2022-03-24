@@ -66,14 +66,21 @@
 #dhs-article-search{
     margin: 0 1em 0 1em;
     display: flex;
-    flex-direction: row;
+    //flex-direction: row;
 
     input{
         margin-right: 0.5em;
-        max-width: 500px;
     }
 }
 
-#ldhs-navbar{
-    width:100%;
+#search-wrapper{
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 100px;
+    max-width: 600px;
+}
+
+#ldhs-collapsible-navbar{
+    flex-grow: 0;
+    //width:100%;
 }
