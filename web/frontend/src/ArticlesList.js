@@ -70,7 +70,7 @@ export function ArticlesList({baseurl=""}) {
         completeIndex.length===0? "Loading articles index..." : (
           index.length>0 ?
             index.filter((a,i)=>i<NB_MAX_DISPLAYED_ARTICLES).map((item,i)=> <ArticlesListItem key={i} dhsId={item[0]} articleTitle={item[1]}/>) :
-            "No matching articles found."
+            'No articles with title matching "'+query+'".'
         )
       }
     </CenteredLayout>
