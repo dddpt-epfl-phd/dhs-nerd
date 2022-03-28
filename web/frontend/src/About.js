@@ -9,7 +9,7 @@ export const AboutPage = ()=> {
             <div id="about-content">
                 <h1>About this project</h1>
                 <p>
-                    This website is a demonstration interface for a linked Historical Dictionary of Switserland (HDS). It was made in the context of my PhD in Digital Humanities at EPFL where I will focus on extracting structured data from the HDS and making it available in interactive interfaces. If you're interested, drop me an email, contact information <a href="https://people.epfl.ch/didier.dupertuis">here</a>.
+                    This website is a demonstration interface for a linked Historical Dictionary of zwitZerland (HDS). It was made in the context of my PhD in Digital Humanities at EPFL where I will focus on extracting structured data from the HDS and making it available in interactive interfaces. If you're interested, drop me an email, contact information <a href="https://people.epfl.ch/didier.dupertuis">here</a>.
                     </p>
                 <p>                    
                     <a href="https://github.com/dddpt-epfl-phd/dhs-nerd/raw/master/reports/HDS%20Named%20Entity%20Linking%20Report.pdf">A full report for the project is available here.</a> Here is the abstract:
