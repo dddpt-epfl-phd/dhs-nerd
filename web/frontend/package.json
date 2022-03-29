@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && mv ../../docs/data ../../docs-data && rm -r ../../docs && mv build ../../docs  && mv ../../docs-data ../../docs/data",
+    "build": "react-scripts build",
     "build-gh-pages": "react-scripts build && ./build-gh-pages.sh",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

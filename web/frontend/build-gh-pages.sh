@@ -1,3 +1,13 @@
+# Custom script to move the linked-dhs github pages website build correctly
+# DO NOT RUN ALONE, is run as part of the "npm run-script build-gh-pages" npm command
+# 
+# What it does:
+# - copy-pastes the react build into the gh-pages branch docs/ folder
+# - ...while carefully preserving the gh-pages branch docs/data/ folder
+# - git stages the changes to the gh-pages branch
+# 
+# At the end of the process, you end up on the gh-pages branch, ready to commit and push to github.
+# 
 
 fail_msg="build-gh-pages FAIL"
 done_msg="[build-gh-pages.sh] DONE...\n"
