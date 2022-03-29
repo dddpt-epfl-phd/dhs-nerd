@@ -7,8 +7,8 @@ import requests as r
 import sys
 
 from requests.api import request
-sys.path.append("../../src")
-sys.path.append("../../scripts")
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
 
 from inception_fishing import entity_fishing, dhs_article, wikipedia
 from dhs_scraper import DhsArticle, stream_to_jsonl

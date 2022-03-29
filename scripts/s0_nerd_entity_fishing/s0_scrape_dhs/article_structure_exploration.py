@@ -7,8 +7,8 @@ from lxml.etree import iselement
 from webbrowser import open as op
 
 import sys
-sys.path.append("../../src")
-sys.path.append("../../scripts")
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
 
 from dhs_scraper import DhsArticle
 from data_file_paths import localize, S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES

@@ -2,11 +2,11 @@ from os import path
 
 """
 This file centralizes paths to data files/folders for the whole project.
-Paths are always relative to two folders down from root (-> scripts are run in their respective ./scripts/<step>/ folder)
+Paths are always relative to three folders down from root (-> scripts are run in their respective ./scripts/<step>/ folder)
 """
 
 # scripts are always assumed to be two directories down from root
-ROOT_FOLDER = "../.."
+ROOT_FOLDER = "../../.."
 
 DATA_FOLDER = path.join(ROOT_FOLDER, "data")
 REPORTS_FOLDER = path.join(ROOT_FOLDER, "reports")

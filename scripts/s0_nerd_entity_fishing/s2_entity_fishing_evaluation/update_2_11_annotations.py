@@ -2,8 +2,8 @@
 from webbrowser import open
 
 import sys
-sys.path.append("../../src")
-sys.path.append("../../scripts")
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
 
 from inception_fishing import Document, inception, dhs_article
 from data_file_paths import S2_INCEPTION_REIMPORT_2_11_FOLDER

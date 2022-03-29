@@ -7,9 +7,9 @@ import requests as r
 import spacy
 
 import sys
-sys.path.append("../../src")
-sys.path.append("../../scripts")
-sys.path.append("../../src/CLEF-HIPE-2020-scorer")
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
+sys.path.append("../../../src/CLEF-HIPE-2020-scorer")
 
 from inception_fishing import entity_fishing, dhs_article, wikipedia, inception, Corpus, Document, clef_hipe_scorer, ANNOTATION_ORIGIN_DHS_ARTICLE_TITLE
 from dhs_scraper import DhsArticle

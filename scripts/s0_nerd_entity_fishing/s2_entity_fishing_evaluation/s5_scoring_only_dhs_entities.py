@@ -6,8 +6,8 @@ from csv import DictReader
 import spacy
 
 import sys
-sys.path.append("../../src")
-sys.path.append("../../scripts")
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
 
 from inception_fishing import Corpus, clef_hipe_scorer
 from s2_entity_fishing_evaluation.s2_from_entity_fishing_to_inception import predicted_corpora_by_lng

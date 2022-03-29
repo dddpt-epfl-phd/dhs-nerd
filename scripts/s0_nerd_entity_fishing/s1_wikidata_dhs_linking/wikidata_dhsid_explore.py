@@ -7,8 +7,8 @@ import matplotlib
 import pandas as pd
 
 import sys
-sys.path.append("../../src")
-sys.path.append("../../scripts")
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
 
 from data_file_paths import S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, S1_WIKIDATA_DE_LABELS
 

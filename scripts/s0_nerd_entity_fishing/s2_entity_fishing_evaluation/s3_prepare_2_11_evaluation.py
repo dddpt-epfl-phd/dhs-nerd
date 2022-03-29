@@ -5,8 +5,8 @@ from lxml import etree
 import spacy
 
 import sys
-sys.path.append("../../src")
-sys.path.append("../../scripts")
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
 
 from inception_fishing import Corpus, wikipedia, inception, clef_hipe_scorer, entity_fishing, grobid_ner
 from utils import spacy_models_by_lng

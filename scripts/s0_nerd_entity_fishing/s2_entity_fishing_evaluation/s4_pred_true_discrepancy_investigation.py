@@ -3,8 +3,8 @@ import spacy
 import pandas as pd
 
 import sys
-sys.path.append("../../src")
-sys.path.append("../../scripts")
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
 
 from inception_fishing import Corpus, spacy as if_spacy
 

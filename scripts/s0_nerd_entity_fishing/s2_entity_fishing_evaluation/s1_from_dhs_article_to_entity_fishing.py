@@ -9,8 +9,8 @@ from random import randint, seed
 import requests as r
 
 import sys
-sys.path.append("../../src")
-sys.path.append("../../scripts")
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
 
 from dhs_scraper import DhsArticle
 from inception_fishing import *

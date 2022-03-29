@@ -8,8 +8,8 @@ from random import randint, seed
 import requests as r
 
 import sys
-sys.path.append("../../src")
-sys.path.append("../../scripts")
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
 
 from dhs_scraper import DhsArticle, TOTAL_NB_DHS_ARTICLES, stream_to_jsonl
 from data_file_paths import S0_JSONL_ALL_ARTICLES_NO_PAGE_FILE, S0_JSONL_ALL_ARTICLES_FILE, S2_INCEPTION_SAMPLED_ARTICLES_IDS, S2_ENTITY_FISHING_CORPUS_RAWTEXT_FOLDER, S2_INCEPTION_SAMPLED_ARTICLES, localize

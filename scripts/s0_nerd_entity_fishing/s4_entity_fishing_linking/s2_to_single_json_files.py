@@ -4,8 +4,8 @@ import json
 from os import path
 import sys
 
-sys.path.append("../../src")
-sys.path.append("../../scripts")
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
 
 from inception_fishing import dhs_article
 from dhs_scraper import DhsArticle, stream_to_jsonl

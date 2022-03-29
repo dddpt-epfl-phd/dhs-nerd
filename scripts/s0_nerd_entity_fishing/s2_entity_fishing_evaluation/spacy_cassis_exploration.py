@@ -4,8 +4,8 @@ from os import path
 from cassis import *
  
 import sys
-sys.path.append("../../src")
-sys.path.append("../../scripts")
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
 
 from data_file_paths import S2_INCEPTION_ANNOTATIONS_2_11_FOLDER
 from inception_fishing import clef_hipe_scorer
