@@ -12,7 +12,7 @@ export const AboutPage = ()=> {
                     This website is a demonstration interface for a linked Historical Dictionary of Switzerland (HDS). It was made in the context of my PhD in Digital Humanities at EPFL where I will focus on extracting structured data from the HDS and making it available in interactive interfaces. If you're interested, drop me an email, contact information <a href="https://people.epfl.ch/didier.dupertuis">here</a>.
                     </p>
                 <p>                    
-                    <a href="https://github.com/dddpt-epfl-phd/dhs-nerd/raw/master/reports/HDS%20Named%20Entity%20Linking%20Report.pdf">A full report for the project is available here.</a> Here is the abstract:
+                <a href="https://github.com/dddpt-epfl-phd/dhs-nerd/">The code for the project and website is available here.</a>. <a href="https://github.com/dddpt-epfl-phd/dhs-nerd/raw/master/reports/HDS%20Named%20Entity%20Linking%20Report.pdf">The full report for the project is available here</a>. Here is the abstract:
                 </p>
                 <p id="report-abstract">
                     In this work, our aim is to create a cross-linked version of the <a href="https://hls-dhs-dss.ch" rel="nofollow">the Historical Dictionary of Switzerland (HDS)</a>, a trilingual online encyclopedia on the history of Switzerland in French, German and Italian.
