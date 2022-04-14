@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
 
-    <title>Tree Example</title>
+    <title>HDS Thematic indexation</title>
 
     <style>
 	
@@ -48,6 +48,21 @@ function recursiveHideChildren(d){
 	d.children=null
 }
 
+function recursiveStatistics(d){
+	const children = d._children || d.children
+	let recursiveStats = []
+	if(children && children.length>0){
+		recursiveStats = children.map(recursiveStatistics)
+	}
+	d.statistics = [
+		d.articles_ids? d.articles_ids.length:0
+	]
+	recursiveStats.forEach(stats=>{
+		d.statistics = d.statistics.map((s,i)=>s+stats[i])
+	})
+	return d.statistics
+}
+
 // ************** Generate the tree diagram	 *****************
 var margin = {top: 20, right: 120, bottom: 20, left: 120},
 	width = 960 - margin.right - margin.left,
@@ -69,10 +84,12 @@ var svg = d3.select("body").append("svg")
   .append("g")
 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-const treeDataJsonUrl = "./tag_tree_with_ids.json"
+const treeDataJsonUrl = "./tag_tree_with_ids_all.json"
 
 
-
+const nodeColorChildrenVisible = "#ffffff"
+const nodeColorChildrenHidden = "lightsteelblue"
+const nodeColorLeaf = "#4682b4"
 
 function update(source) {
 
@@ -94,8 +111,8 @@ function update(source) {
 	  .on("click", click);
 
 	function circleColor(d){
-		return d.children ? "lightsteelblue" : (
-			d._children && d._children.length>0 ? "#fff": "#ffcccb"
+		return d.children ? nodeColorChildrenHidden : (
+			d._children && d._children.length>0 ? nodeColorChildrenVisible: nodeColorLeaf
 		)
 	}
 
@@ -118,7 +135,6 @@ function update(source) {
   nodeUpdate.select("circle")
 	  .attr("r", 10)
 	  .style("fill", circleColor);
-	console.log("LGLG LR")
 
   nodeUpdate.select("text")
 	  .style("fill-opacity", 1);
@@ -181,7 +197,7 @@ function click(d) {
 }
 
 fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
-	console.log("fetchyfetch")
+	console.log("fetchyfetch", treeData)
 	root = treeData
 	root.x0 = height / 2;
 	root.y0 = 0;
