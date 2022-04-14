@@ -13,7 +13,7 @@ sys.path.append("../../../src")
 sys.path.append("../../../scripts")
 
 from dhs_scraper import DhsArticle, DhsTag
-from data_file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ALL_ARTICLES_PARSED_FILE, S0_DHS_CATEGORIES, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, s0_png_articles_lengths_by_category_figure, s0_png_percent_articles_in_wd_by_category, localize, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS
+from data_file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ALL_ARTICLES_PARSED_FILE, S0_DHS_CATEGORIES, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, s0_png_articles_lengths_by_category_figure, s0_png_percent_articles_in_wd_by_category, localize, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, s2_s0_tag_tree_with_ids_web, s2_s0_tag_tree_with_ids
 from plot_styles import *
 
 # %matplotlib inline
@@ -137,13 +137,17 @@ with open( "dhsids_per_tag.json", "w") as f:
 
 # %%
 
+def json_dump_tag_tree(tag_tree, name):
+    for tag_tree_json in [s2_s0_tag_tree_with_ids, s2_s0_tag_tree_with_ids_web]:
+        with open( tag_tree_json.replace("<CASE>", name), "w") as f:
+            json.dump(tag_tree, f, ensure_ascii=False)
+
 
 tag_tree = DhsTag.build_tag_tree(utags)
 DhsTag.add_articles_ids_to_tag_tree(tag_tree, articles_per_tag=articles_per_tag)
 # %%
 
-with open( "tag_tree_with_ids.json", "w") as f:
-    json.dump(tag_tree, f, ensure_ascii=False)
+json_dump_tag_tree(tag_tree, "all")
 
 # %%
 
@@ -164,6 +168,10 @@ spatial_utags = set(t for t in tags)
 spatial_tag_tree = DhsTag.build_tag_tree(spatial_utags)
 DhsTag.add_articles_ids_to_tag_tree(spatial_tag_tree, spatial_articles)
 
-with open( "tag_tree_with_ids.json", "w") as f:
-    json.dump(spatial_tag_tree, f, ensure_ascii=False)
+json_dump_tag_tree(spatial_tag_tree, "spatial")
+
+# %%
+
+# %%
+
 # %%

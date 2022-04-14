@@ -14,6 +14,18 @@ REPORTS_FOLDER = path.join(ROOT_FOLDER, "reports")
 FIGURES_FOLDER = path.join(REPORTS_FOLDER, "figures")
 
 
+# website
+#####################
+
+WEB_FOLDER= path.join(ROOT_FOLDER, "web")
+
+S5_WEBSITE_DATA_FOLDER = path.join(DATA_FOLDER, "website")
+
+website_hds_thematic_indexation = path.join(WEB_FOLDER, "hds_thematic_indexation")
+
+S5_WEBSITE_SINGLE_ARTICLES_FOLDER = path.join(S5_WEBSITE_DATA_FOLDER, "single-dhs-articles")
+S5_WEBSITE_SINGLE_ARTICLES_LOCALIZED_FOLDER = path.join(S5_WEBSITE_SINGLE_ARTICLES_FOLDER, "<LANGUAGE>")
+
 # s0_scrape_dhs
 #####################
 
@@ -37,12 +49,12 @@ S0_JSONL_ARTICLES_BY_CATEGORIES_FILES = {
     for category in S0_DHS_CATEGORIES
 }
 
-# s0_scrape_dhs/s1_dhs_stats.py
+# s0 s0_scrape_dhs/s1_dhs_stats.py
 s0_png_articles_lengths_by_category_figure = path.join(FIGURES_FOLDER, "s0_articles_lengths_by_category.png")
 s0_png_percent_articles_in_wd_by_category = path.join(FIGURES_FOLDER, "s0_percent_articles_in_wd_by_category.png")
 
 
-# s1_wikidata_dhs_linking
+# s1 s1_wikidata_dhs_linking
 #####################
 
 S1_DATA_FOLDER = path.join(DATA_FOLDER, "wikidata_dhs_linking")
@@ -50,7 +62,7 @@ S1_DATA_FOLDER = path.join(DATA_FOLDER, "wikidata_dhs_linking")
 S1_WIKIDATA_DHS_WIKIPEDIA_LINKS = path.join(S1_DATA_FOLDER, "wikidata_dhs_wikipedia_articles_gndid_instanceof.csv")
 S1_WIKIDATA_DE_LABELS = path.join(S1_DATA_FOLDER, "wikidata_de_labels.csv")
 
-# s2_entity_fishing evaluation
+# s1 s2_entity_fishing evaluation
 #####################
 S2_INCEPTION_DATA_FOLDER = path.join(DATA_FOLDER, "inception")
 S2_ENTITY_FISHING_DATA_FOLDER = path.join(DATA_FOLDER, "entity-fishing")
@@ -85,7 +97,7 @@ S2_CLEF_HIPE_TRUE_FILE_16_12 = path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDE
 S2_CLEF_HIPE_TAGGED_FILE = path.join(S2_ENTITY_FISHING_EVALUATION_DATA_FOLDER,f"dhs-<TAG>-<LANGUAGE>-<PREDTRUE>"+S2_CLEF_HIPE_FILE_SUFFIX)
 
 
-# s4 entity_fishing-linking:
+# s1 s4 entity_fishing-linking:
 #####################
 
 S4_ENTITY_FISHING_LINKING_DATA_FOLDER = path.join(DATA_FOLDER, "entity-fishing-linking")
@@ -109,13 +121,14 @@ s4_hds_ef_nb_linking_to_article_distribution_by_category_breakdown_figure = path
 s4_hds_ef_links_to_categories_distribution = path.join(FIGURES_FOLDER, "s4_hds_ef_links_to_categories_distribution.png")
 
 
-# website
+# s2 s0_spatial_articles
 #####################
 
-S5_WEBSITE_DATA_FOLDER = path.join(DATA_FOLDER, "website")
+s2_hds_thematic_indexation_folder = path.join(DATA_FOLDER, "hds_thematic_indexation")
 
-S5_WEBSITE_SINGLE_ARTICLES_FOLDER = path.join(S5_WEBSITE_DATA_FOLDER, "single-dhs-articles")
-S5_WEBSITE_SINGLE_ARTICLES_LOCALIZED_FOLDER = path.join(S5_WEBSITE_SINGLE_ARTICLES_FOLDER, "<LANGUAGE>")
+tag_tree_with_ids_filename = "tag_tree_with_ids_<CASE>.json"
+s2_s0_tag_tree_with_ids = path.join(s2_hds_thematic_indexation_folder,tag_tree_with_ids_filename)
+s2_s0_tag_tree_with_ids_web = path.join(website_hds_thematic_indexation,tag_tree_with_ids_filename)
 
 
 
