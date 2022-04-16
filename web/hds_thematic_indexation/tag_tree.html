@@ -48,19 +48,30 @@ function recursiveHideChildren(d){
 	d.children=null
 }
 
-function recursiveStatistics(d){
-	const children = d._children || d.children
-	let recursiveStats = []
-	if(children && children.length>0){
-		recursiveStats = children.map(recursiveStatistics)
-	}
-	d.statistics = [
+function computeNodeStatistics(d){
+	return [
 		d.articles_ids? d.articles_ids.length:0
 	]
-	recursiveStats.forEach(stats=>{
-		d.statistics = d.statistics.map((s,i)=>s+stats[i])
+}
+function combineNumericalArrayStatistics(ownStats, childrenStats){
+	totalStatistics = ownStats.map(x=>x)
+	console.log("combineNumericalArrayStatistics ownStats copy:", totalStatistics)
+	childrenStats.forEach(stats=>{
+		totalStatistics = totalStatistics.map((s,i)=>s+stats[i])
 	})
-	return d.statistics
+	console.log("combineNumericalArrayStatistics totalStatistics:", totalStatistics)
+	return totalStatistics
+}
+
+function recursiveStatistics(d, computeNodeStatistics, combineStatistics){
+	const children = d._children || d.children
+	d.childrenStatistics = []
+	if(children && children.length>0){
+		d.childrenStatistics = children.map(c=>recursiveStatistics(c, computeNodeStatistics, combineStatistics))
+	}
+	d.statistics = computeNodeStatistics(d)
+	d.totalStatistics = combineStatistics(d.statistics, d.childrenStatistics)
+	return d.totalStatistics
 }
 
 // ************** Generate the tree diagram	 *****************
@@ -186,14 +197,15 @@ function update(source) {
 
 // Toggle children on click.
 function click(d) {
-  if (d._children) {
-	d.children = d._children;
-	d._children = null;
-  } else {
-	d._children = d.children;
-	d.children = null;
-  }
-  update(d);
+	console.log("statistics for ", d.name, ", own: ", d.statistics, ", with children: ", d.totalStatistics)
+	if (d._children) {
+		d.children = d._children;
+		d._children = null;
+	} else {
+		d._children = d.children;
+		d.children = null;
+	}
+	update(d);
 }
 
 fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
@@ -202,6 +214,7 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 	root.x0 = height / 2;
 	root.y0 = 0;
 	
+	recursiveStatistics(root, computeNodeStatistics, combineNumericalArrayStatistics)
 	root.children.forEach(recursiveHideChildren)
 	update(root);
 
