@@ -41,18 +41,11 @@
 
 
 // recursively hide children of the node
-function recursiveHideChildren(d){
-	console.log("recursiveHideChildren")
-	d.children? d.children.forEach(recursiveHideChildren) : ""
+function hideChildren(d){
 	d._children = d.children
 	d.children=null
 }
 
-function computeNodeStatistics(d){
-	return [
-		d.articles_ids? d.articles_ids.length:0
-	]
-}
 function combineNumericalArrayStatistics(ownStats, childrenStats){
 	totalStatistics = ownStats.map(x=>x)
 	console.log("combineNumericalArrayStatistics ownStats copy:", totalStatistics)
@@ -62,16 +55,28 @@ function combineNumericalArrayStatistics(ownStats, childrenStats){
 	console.log("combineNumericalArrayStatistics totalStatistics:", totalStatistics)
 	return totalStatistics
 }
-
-function recursiveStatistics(d, computeNodeStatistics, combineStatistics){
-	const children = d._children || d.children
-	d.childrenStatistics = []
-	if(children && children.length>0){
-		d.childrenStatistics = children.map(c=>recursiveStatistics(c, computeNodeStatistics, combineStatistics))
-	}
-	d.statistics = computeNodeStatistics(d)
-	d.totalStatistics = combineStatistics(d.statistics, d.childrenStatistics)
+function computeNodeStatistics(d, childrenStatistics){
+	d.childrenStatistics = childrenStatistics
+	d.statistics = [
+		d.articles_ids? d.articles_ids.length:0
+	]
+	d.totalStatistics =  combineNumericalArrayStatistics(d.statistics, d.childrenStatistics)
 	return d.totalStatistics
+}
+
+/** recursiveFunctionCall: applies recursiveFunc on d's children.
+ * 
+ * recursiveFunc should take two arguments:
+ * - a node n
+ * - childrenResults: an array, containing the return result of recursiveFunc on n's children (0-length array for leaves)
+ */
+function recursiveFunctionCall(d, recursiveFunc){
+	const children = d._children || d.children
+	let childrenResult = []
+	if(children && children.length>0){
+		childrenResult = children.map(c=>recursiveFunctionCall(c, recursiveFunc))
+	}
+	return recursiveFunc(d, childrenResult)
 }
 
 // ************** Generate the tree diagram	 *****************
@@ -214,8 +219,8 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 	root.x0 = height / 2;
 	root.y0 = 0;
 	
-	recursiveStatistics(root, computeNodeStatistics, combineNumericalArrayStatistics)
-	root.children.forEach(recursiveHideChildren)
+	recursiveFunctionCall(root, computeNodeStatistics)
+	root.children.forEach(c=> recursiveFunctionCall(c, hideChildren))
 	update(root);
 
 	d3.select(self.frameElement).style("height", "500px");
