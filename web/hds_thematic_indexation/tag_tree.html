@@ -116,7 +116,7 @@ const nodeColorChildrenHidden = "lightsteelblue"
 const nodeColorLeaf = "#4682b4"
 
 function update(source) {
-
+  console.log("update source:", source)
   // Compute the new tree layout.
   let nodes = d3.hierarchy(root, function(d) {
     return d.children;
@@ -126,11 +126,11 @@ function update(source) {
   console.log("NODES.descendants():", nodes.descendants())
 
   // Normalize for fixed-depth.
-  //nodes.forEach(function(d) { d.y = d.depth * 180; });
+  nodes.each(function(d) { d.y = d.depth * 180; });
 
   // Update the nodes…
   var node = svg.selectAll("g.node")
-	  .data(nodes.descendants());
+	  .data(nodes.descendants(), function(d) { return d.data.id || (d.data.id = ++i)});
 
   // Enter any new nodes at the parent's previous position.
   var nodeEnter = node.enter().append("g")
@@ -139,8 +139,8 @@ function update(source) {
 	  .on("click", click);
 
 	function circleColor(d){
-		return d.children ? nodeColorChildrenHidden : (
-			d._children && d._children.length>0 ? nodeColorChildrenVisible: nodeColorLeaf
+		return d.data.children ? nodeColorChildrenHidden : (
+			d.data._children && d.data._children.length>0 ? nodeColorChildrenVisible: nodeColorLeaf
 		)
 	}
 
@@ -149,9 +149,9 @@ function update(source) {
 	  .style("fill", circleColor);
 
  	nodeEnter.append("text")
-	  .attr("x", function(d) { console.log("nodenter text for d:", d);return d._children || d.children ? -13 : 13; })
+	  .attr("x", function(d) { console.log("nodenter text for d:", d);return d.data._children || d.data.children ? -13 : 13; })
 	  .attr("dy", ".35em")
-	  .attr("text-anchor", function(d) { return d._children || d.children ? "end" : "start"; })
+	  .attr("text-anchor", function(d) { return d.data._children || d.data.children ? "end" : "start"; })
 	  .text(function(d) { return d.data.name; })
 	  .style("fill-opacity", 1)
 	
@@ -185,15 +185,19 @@ function update(source) {
 
   // Update the links…
   var link = svg.selectAll("path.link")
-	  .data(nodes.descendants().slice(1));
+	  .data(nodes.descendants().slice(1), function(d) { return d.data.id+"--"+d.parent.data.id});
 
   // Enter any new links at the parent's previous position.
   link.enter().insert("path", "g")
 	  .attr("class", "link")
 	  .attr("d", function(d) {
+		console.log("link enter for d:", d)
 		var o = {x: source.x0, y: source.y0};
-		return diagonal({source: o, target: o});
-	  });
+		return diagonal(o);
+	  })
+	  .transition()
+	  .duration(duration)
+	  .attr("d", diagonal);
 
   // Transition links to their new position.
   link.transition()
@@ -205,26 +209,26 @@ function update(source) {
 	  .duration(duration)
 	  .attr("d", function(d) {
 		var o = {x: source.x, y: source.y};
-		return diagonal({source: o, target: o});
+		return diagonal(o);
 	  })
 	  .remove();
 
   // Stash the old positions for transition.
-  /*nodes.forEach(function(d) {
+  nodes.each(function(d) {
 	d.x0 = d.x;
 	d.y0 = d.y;
-  });*/
+  });
 }
 
 // Toggle children on click.
-function click(d) {
-	console.log("statistics for ", d.name, ", own: ", d.statistics, ", with children: ", d.totalStatistics, ", d.data:", d.data)
-	if (d._children) {
-		d.children = d._children;
-		d._children = null;
+function click(target, d) {
+	console.log("statistics for ", d.name, ", own: ", d.statistics, ", with children: ", d.totalStatistics, ", d.data:", d.data, "target:",target)
+	if (d.data._children) {
+		d.data.children = d.data._children;
+		d.data._children = null;
 	} else {
-		d._children = d.children;
-		d.children = null;
+		d.data._children = d.data.children;
+		d.data.children = null;
 	}
 	update(d);
 }
