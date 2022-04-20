@@ -34,15 +34,10 @@
 
   <body>
 
-<!-- load the d3.js library --
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script-->
-	
+<!-- load the d3.js library -->	
 <script src="https://d3js.org/d3.v7.min.js"></script>
+
 <script>
-console.log("USING V77777777777777777777777777777777777")
-console.log("USING V77777777777777777777777777777777777")
-console.log("USING V77777777777777777777777777777777777")
-console.log("USING V77777777777777777777777777777777777")
 
 // recursively hide children of the node
 function hideChildren(d){
@@ -116,14 +111,11 @@ const nodeColorChildrenHidden = "lightsteelblue"
 const nodeColorLeaf = "#4682b4"
 
 function update(source) {
-  console.log("update source:", source)
   // Compute the new tree layout.
   let nodes = d3.hierarchy(root, function(d) {
     return d.children;
   });
   nodes = tree(nodes);
-  console.log("NODES:", nodes)
-  console.log("NODES.descendants():", nodes.descendants())
 
   // Normalize for fixed-depth.
   nodes.each(function(d) { d.y = d.depth * 180; });
@@ -135,34 +127,38 @@ function update(source) {
   // Enter any new nodes at the parent's previous position.
   var nodeEnter = node.enter().append("g")
 	  .attr("class", "node")
-	  .attr("transform", function(d) { console.log("nodenter g for d:", d);return "translate(" + source.y0 + "," + source.x0 + ")"; })
+	  .attr("transform", d => "translate(" + source.y0 + "," + source.x0 + ")")
 	  .on("click", click);
 
 	function circleColor(d){
-		return d.data.children ? nodeColorChildrenHidden : (
+		return d.data.children && d.data.children.length>0  ? nodeColorChildrenHidden : (
 			d.data._children && d.data._children.length>0 ? nodeColorChildrenVisible: nodeColorLeaf
 		)
 	}
 
   	nodeEnter.append("circle")
-	  .attr("r", d=>{console.log("nodenter circle for d:", d);return 10})
+	  .attr("r", 1)
 	  .style("fill", circleColor);
 
  	nodeEnter.append("text")
-	  .attr("x", function(d) { console.log("nodenter text for d:", d);return d.data._children || d.data.children ? -13 : 13; })
+	  .attr("x", d => d.data._children || d.data.children ? -13 : 13)
 	  .attr("dy", ".35em")
-	  .attr("text-anchor", function(d) { return d.data._children || d.data.children ? "end" : "start"; })
+	  .attr("text-anchor", d => d.data._children || d.data.children ? "end" : "start")
 	  .text(function(d) { return d.data.name; })
 	  .style("fill-opacity", 1)
 	
 	nodeEnter.transition()
 	  .duration(duration)
-	  .attr("transform", function(d) { console.log("nodeupdate text for d:", d);return "translate(" + d.y + "," + d.x + ")"; });
+	  .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
+	
+	nodeEnter.select("circle").transition()
+	  .duration(duration)
+	  .attr("r", 10)
 
   // Transition nodes to their new position.
   var nodeUpdate = node.transition()
 	  .duration(duration)
-	  .attr("transform", function(d) { console.log("nodeupdate text for d:", d);return "translate(" + d.y + "," + d.x + ")"; });
+	  .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
 
   nodeUpdate.select("circle")
 	  .attr("r", 10)
@@ -174,7 +170,7 @@ function update(source) {
   // Transition exiting nodes to the parent's new position.
   var nodeExit = node.exit().transition()
 	  .duration(duration)
-	  .attr("transform", function(d) { console.log("EXIT EXIT EXIT \nEXIT EXIT EXIT \nEXIT EXIT EXIT \nfor d:", d);return "translate(" + source.y + "," + source.x + ")"; })
+	  .attr("transform", d => "translate(" + source.y + "," + source.x + ")")
 	  .remove();
 
   nodeExit.select("circle")
@@ -185,16 +181,12 @@ function update(source) {
 
   // Update the links…
   var link = svg.selectAll("path.link")
-	  .data(nodes.descendants().slice(1), function(d) { return d.data.id+"--"+d.parent.data.id});
+	  .data(nodes.descendants().slice(1), d => d.data.id+"--"+d.parent.data.id);
 
   // Enter any new links at the parent's previous position.
   link.enter().insert("path", "g")
 	  .attr("class", "link")
-	  .attr("d", function(d) {
-		console.log("link enter for d:", d)
-		var o = {x: source.x0, y: source.y0};
-		return diagonal(o);
-	  })
+	  .attr("d", d => diagonal({x: source.x0, y: source.y0}))
 	  .transition()
 	  .duration(duration)
 	  .attr("d", diagonal);
@@ -207,10 +199,7 @@ function update(source) {
   // Transition exiting nodes to the parent's new position.
   link.exit().transition()
 	  .duration(duration)
-	  .attr("d", function(d) {
-		var o = {x: source.x, y: source.y};
-		return diagonal(o);
-	  })
+	  .attr("d", d => diagonal({x: source.x, y: source.y}))
 	  .remove();
 
   // Stash the old positions for transition.
@@ -222,7 +211,7 @@ function update(source) {
 
 // Toggle children on click.
 function click(target, d) {
-	console.log("statistics for ", d.name, ", own: ", d.statistics, ", with children: ", d.totalStatistics, ", d.data:", d.data, "target:",target)
+	console.log("statistics for ", d.data.name, ", own: ", d.data.statistics, ", with children: ", d.data.totalStatistics)
 	if (d.data._children) {
 		d.data.children = d.data._children;
 		d.data._children = null;
