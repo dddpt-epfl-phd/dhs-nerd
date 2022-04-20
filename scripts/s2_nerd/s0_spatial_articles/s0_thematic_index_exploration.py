@@ -12,7 +12,7 @@ import sys
 sys.path.append("../../../src")
 sys.path.append("../../../scripts")
 
-from dhs_scraper import DhsArticle, DhsTag
+from dhs_scraper import DhsArticle, DhsTag, tag_tree
 from data_file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ALL_ARTICLES_PARSED_FILE, S0_DHS_CATEGORIES, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, s0_png_articles_lengths_by_category_figure, s0_png_percent_articles_in_wd_by_category, localize, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, s2_s0_tag_tree_with_ids_web, s2_s0_tag_tree_with_ids
 from plot_styles import *
 
@@ -137,17 +137,19 @@ with open( "dhsids_per_tag.json", "w") as f:
 
 # %%
 
-def json_dump_tag_tree(tag_tree, name):
+def json_dump_tag_tree(tag_tree_root, name, article_to_json_func=lambda a: (a.title, a.id)):
+    article_revert_json_func = tag_tree.modify_articles(tag_tree_root, article_to_json_func)
     for tag_tree_json in [s2_s0_tag_tree_with_ids, s2_s0_tag_tree_with_ids_web]:
         with open( tag_tree_json.replace("<CASE>", name), "w") as f:
-            json.dump(tag_tree, f, ensure_ascii=False)
+            json.dump(tag_tree_root, f, ensure_ascii=False)
+    article_revert_json_func()
 
 
-tag_tree = DhsTag.build_tag_tree(utags)
-DhsTag.add_articles_ids_to_tag_tree(tag_tree, articles_per_tag=articles_per_tag)
+tag_tree_all = DhsTag.build_tag_tree(utags)
+tag_tree.add_articles_to_tag_tree(tag_tree_all, articles_per_tag=articles_per_tag)
 # %%
 
-json_dump_tag_tree(tag_tree, "all")
+json_dump_tag_tree(tag_tree_all, "all")
 
 # %%
 
@@ -166,9 +168,12 @@ spatial_tags = [t for a in spatial_articles for t in a.tags if not t.url.startsw
 spatial_utags = set(t for t in tags)
 
 spatial_tag_tree = DhsTag.build_tag_tree(spatial_utags)
-DhsTag.add_articles_ids_to_tag_tree(spatial_tag_tree, spatial_articles)
+tag_tree.add_articles_to_tag_tree(spatial_tag_tree, spatial_articles)
 
 json_dump_tag_tree(spatial_tag_tree, "spatial")
+
+# %%
+
 
 # %%
 
