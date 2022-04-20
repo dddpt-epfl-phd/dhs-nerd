@@ -45,22 +45,6 @@ function hideChildren(d){
 	d.children=null
 }
 
-function combineNumericalArrayStatistics(ownStats, childrenStats){
-	totalStatistics = ownStats.map(x=>x)
-	childrenStats.forEach(stats=>{
-		totalStatistics = totalStatistics.map((s,i)=>s+stats[i])
-	})
-	return totalStatistics
-}
-function computeNodeStatistics(d, childrenStatistics){
-	d.childrenStatistics = childrenStatistics
-	d.statistics = [
-		d.articles_ids? d.articles_ids.length:0
-	]
-	d.totalStatistics =  combineNumericalArrayStatistics(d.statistics, d.childrenStatistics)
-	return d.totalStatistics
-}
-
 /** recursiveFunctionCall: applies recursiveFunc on d's children.
  * 
  * recursiveFunc should take two arguments:
@@ -211,7 +195,7 @@ function update(source) {
 
 // Toggle children on click.
 function click(target, d) {
-	console.log("statistics for ", d.data.name, ", own: ", d.data.statistics, ", with children: ", d.data.totalStatistics)
+	console.log("statistics for ", d.data.name, ", own: ", d.data.statistics, ", with children: ", d.data.total_statistics)
 	if (d.data._children) {
 		d.data.children = d.data._children;
 		d.data._children = null;
@@ -228,7 +212,7 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 	root.x0 = height / 2;
 	root.y0 = 0;
 	
-	recursiveFunctionCall(root, computeNodeStatistics)
+	//recursiveFunctionCall(root, computeNodeStatistics)
 	root.children.forEach(c=> recursiveFunctionCall(c, hideChildren))
 	update(root);
 
