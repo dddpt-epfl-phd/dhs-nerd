@@ -51,9 +51,7 @@
 
 // toggle show/hide children of the node
 function toggleChildrenVisible(d){
-	console.log("toggleChildrenVisible for ", d.name, "d.childrenVisible=",d.childrenVisible)
 	setChildrenVisible(d, !d.childrenVisible)
-	console.log("   -> done d.childrenVisible=",d.childrenVisible)
 }
 function setChildrenVisible(d, value){
 	d.childrenVisible = value
@@ -138,12 +136,19 @@ function update(source) {
   	nodeEnter.append("circle")
 	  .attr("r", 1)
 
- 	nodeEnter.append("text")
-	  .attr("x", d => d.data.children ? -13 : 13)
-	  .attr("dy", ".35em")
-	  .attr("text-anchor", d => d.data.children ? "end" : "start")
-	  .text(function(d) { return d.data.name; })
-	  .style("fill-opacity", 1)
+	nodeEnter.append("text")
+		.attr("x", d => d.data.children && d.data.children.length>0? -13 : 13)
+		.attr("dy", ".35em")
+		.attr("text-anchor", d => d.data.children && d.data.children.length>0? "end" : "start")
+		.text(function(d) { return d.data.name; })
+		.style("fill-opacity", 1)
+
+	nodeEnter.append("rect")
+		.attr("x", d => d.data.children && d.data.children.length>0? -113 : 13)
+		.attr("y", "0.5em")
+		.attr("width", 100)
+		.attr("height", 6)
+		.style("fill", "orange")
 	
 	nodeEnter.transition()
 	  .duration(duration)
@@ -209,7 +214,7 @@ function update(source) {
 
 // Toggle children on click.
 function click(target, d) {
-	console.log("statistics for ", d.data.name, ", own: ", d.data.statistics, ", total:",d.data.total_statistics,", children: ", d.data.children_statistics)
+	console.log("statistics for ", d.data.name, ", own: ", d.data.statistics, ", total:",d.data.total_statistics,", childrenStat: ", d.data.children_statistics, " d.data.children:", d.data.children)
 	toggleChildrenVisible(d.data)
 	update(d);
 }
