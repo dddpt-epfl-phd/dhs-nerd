@@ -146,25 +146,27 @@ def json_dump_tag_tree(tag_tree_root, name, article_to_json_func=lambda a: (a.ti
 
 # %%
 
-#stats_articles_by_category_proportions = tag_tree.stats_articles_by_category_proportions_curry(articles_by_category, DHS_ARTICLE_CATEGORIES)
+empty_articles_by_category = {c:set(DhsArticle.load_articles_from_jsonl(localize(f, language))) for c,f in S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items()}
+articles_ids_by_category = {c:set(a.id for a in abc) for c,abc in empty_articles_by_category.items()}
+articles_by_category = {
+    c:set([a for a in articles if a.id in abyc])
+    for c,abyc in articles_ids_by_category.items()
+}
+spatial_articles = articles_by_category["spatial"]
+
+# %%
+
+stats_articles_by_category_proportions = tag_tree.stats_articles_by_category_proportions_curry(articles_ids_by_category, DHS_ARTICLE_CATEGORIES)
+# %%
 
 tag_tree_all = DhsTag.build_tag_tree(utags)
 tag_tree.add_articles_to_tag_tree(tag_tree_all, articles_per_tag=articles_per_tag)
-tag_tree.traverse_depth_first(tag_tree_all, tag_tree.recursive_node_statistics)
-
+tag_tree.compute_nodes_statistics(tag_tree_all, stat_func=stats_articles_by_category_proportions)
+ 
 # %%
 
 json_dump_tag_tree(tag_tree_all, "all")
 
-# %%
-
-empty_articles_by_category = {c:set(DhsArticle.load_articles_from_jsonl(localize(f, language))) for c,f in S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items()}
-articles_ids_by_category = {c:set(a.id for a in abc) for c,abc in empty_articles_by_category.items()}
-articles_by_category = {
-    c:[a for a in articles if a.id in abyc]
-    for c,abyc in articles_ids_by_category.items()
-}
-spatial_articles = articles_by_category["spatial"]
 
 # %%
 

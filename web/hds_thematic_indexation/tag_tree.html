@@ -61,15 +61,17 @@ function recursiveFunctionCall(d, recursiveFunc){
 }
 
 // ************** Generate the tree diagram	 *****************
-var margin = {top: 20, right: 120, bottom: 20, left: 120},
+const margin = {top: 20, right: 120, bottom: 20, left: 120},
 	width = 960 - margin.right - margin.left,
 	height = 1000 - margin.top - margin.bottom;
+
+
 	
-var i = 0,
+let i = 0,
 	duration = 750,
 	root;
 
-var tree = d3.tree()
+const tree = d3.tree()
 	.size([height, width]);
 
 //var diagonal = d3.svg.diagonal().projection(function(d) { return [d.y, d.x]; });
@@ -195,7 +197,7 @@ function update(source) {
 
 // Toggle children on click.
 function click(target, d) {
-	console.log("statistics for ", d.data.name, ", own: ", d.data.statistics, ", with children: ", d.data.total_statistics)
+	console.log("statistics for ", d.data.name, ", own: ", d.data.statistics, ", total:",d.data.total_statistics,", children: ", d.data.children_statistics)
 	if (d.data._children) {
 		d.data.children = d.data._children;
 		d.data._children = null;
