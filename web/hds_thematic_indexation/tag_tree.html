@@ -37,15 +37,46 @@
 	.node-children-visible circle{
 		fill: lightsteelblue;
 	}
+
+	#container{
+		display: flex;
+		flex-direction: row;
+	}
+
+	#hds-thematic-tree{
+		display:block;
+	}
+
+	#articles-list{
+		width: 300px;
+
+		display: flex;
+		flex-direction: column;
+
+		/*background-color: pink;*/
+	}
+
+	
+	#articles-list a:link{
+		color: black;
+	}
+	#articles-list a:hover{
+		color: blue;
+	}
 	
     </style>
 
+	<!-- load the d3.js library -->	
+	<script src="https://d3js.org/d3.v7.min.js"></script>
   </head>
 
   <body>
-
-<!-- load the d3.js library -->	
-<script src="https://d3js.org/d3.v7.min.js"></script>
+	<div id="container">
+		<svg id="hds-thematic-tree">
+		</svg>  
+		<div id="articles-list">
+		</div>
+	</div>
 
 <script>
 
@@ -94,18 +125,37 @@ function diagonal(d) {
 		+ " " + parent.y + "," + parent.x;
 }
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#hds-thematic-tree")
 	.attr("width", width + margin.right + margin.left)
 	.attr("height", height + margin.top + margin.bottom)
   .append("g")
 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-const treeDataJsonUrl = "./tag_tree_with_ids_all.json"
+const treeDataJsonUrl = "./tag_tree_with_ids_all.json" // "tag_tree_with_ids_spatial.json" //
 
+categories = [
+	{name:"themes", color: "#76b7b2"},
+    {name:"people", color: "#59a14f"},
+    {name:"families", color: "#f28e2c"},
+    {name:"spatial", color: "#af7aa1"},
+]
 
 const nodeColorChildrenVisible = "#ffffff"
 const nodeColorChildrenHidden = "lightsteelblue"
 const nodeColorLeaf = "#4682b4"
+
+function setArticlesList(d){
+	console.log("setArticlesList for d=",d)
+	const articlesList = document.getElementById("articles-list")
+	articlesList.innerHTML='<h3>Articles for "'+d.data.name+'"</h3>'
+	d.data.articles.forEach(a=>{
+		console.log("\ta=",a)
+		articlesList.innerHTML+='<div class="dhs-article">' +
+			'<a class="dhs-dhs-link " href="https://dddpt-epfl-phd.github.io/dhs-nerd/#/fr/articles/'+a[1]+'" target="_blank">'+a[0]+' ('+a[1]+')</a>' +
+			'<a class="dhs-real-dhs-link" href="https://hls-dhs-dss.ch/fr/articles/'+a[1]+'" target="_blank"> <img src="./hds.png" width="15px" height="15px"></a>' +
+			'</div>'
+	})
+}
 
 function update(source) {
 	// Compute the new tree layout.
@@ -143,12 +193,44 @@ function update(source) {
 		.text(function(d) { return d.data.name; })
 		.style("fill-opacity", 1)
 
-	nodeEnter.append("rect")
-		.attr("x", d => d.data.children && d.data.children.length>0? -113 : 13)
-		.attr("y", "0.5em")
-		.attr("width", 100)
-		.attr("height", 6)
-		.style("fill", "orange")
+	const gStackedBarChart = nodeEnter.append("g")
+		.attr("transform", d => "translate("+ (d.data.children && d.data.children.length>0? -113 : 13)+", 5)")
+
+
+	function getTotalStatisticAbsolute(category,d, normalize=360){
+		return d.data.total_statistics[category]/normalize // absolute value
+	}
+	function getTotalStatisticProportion(category,d){
+		//return d.data.total_statistics[category]/360 // absolute value
+		let total = categories.map(c=>d.data.total_statistics[c.name]).reduce((a,b)=>a+b,0)
+		return d.data.total_statistics[category]/total*100
+	}
+	function getTotalStatisticAsProportionFromParent(category,d){
+		//return d.data.total_statistics[category]/360 // absolute value
+		const par = d.parent? d.parent : d
+		let total = categories.map(c=>par.data.total_statistics[c.name]).reduce((a,b)=>a+b,0)
+		return d.data.total_statistics[category]/total*100
+	}
+	valueFunc=getTotalStatisticAsProportionFromParent//(a,b) => getTotalStatisticAbsolute(a,b,60)
+	function getStackedBarChartOffset(category,d, valueFunc){
+		let accu = 0
+		for(c of categories){
+			if(c.name==category){
+				return accu
+			}
+			accu += valueFunc(c.name,d)
+		}
+	}
+	for(c of categories){
+		gStackedBarChart.append("rect")
+			.attr("x",d=>getStackedBarChartOffset(c.name,d, valueFunc))
+			.attr("width", d=>{
+				//d.data.name=="root"? console.log("gStackedBarChart for ", d.data.name, ", own: ", d.data.statistics, ", total:",d.data.total_statistics,", childrenStat: ", d.data.children_statistics, " d.data.children:", d.data.children,"getStackedBarChartOffset(category,d)=",getStackedBarChartOffset(category,d), "getStackedBarChartValue(category,d)=",getStackedBarChartValue(category,d)) :""
+				return valueFunc(c.name,d)
+			})
+			.attr("height", 6)
+			.style("fill", c.color)
+	}
 	
 	nodeEnter.transition()
 	  .duration(duration)
@@ -214,9 +296,10 @@ function update(source) {
 
 // Toggle children on click.
 function click(target, d) {
-	console.log("statistics for ", d.data.name, ", own: ", d.data.statistics, ", total:",d.data.total_statistics,", childrenStat: ", d.data.children_statistics, " d.data.children:", d.data.children)
+	console.log("statistics for ", d.data.name, ", own: ", d.data.statistics, ", total:",d.data.total_statistics,", childrenStat: ", d.data.children_statistics, " d.data.children:", d.data.children, "d.data.articles", d.data.articles, "d", d)
 	toggleChildrenVisible(d.data)
 	update(d);
+	setArticlesList(d)
 }
 
 fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
@@ -225,6 +308,27 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 	root.x0 = height / 2;
 	root.y0 = 0;
 	
+	categoriesLegend = d3.select("svg").append("g")
+		.attr("class","categories-legend")
+			.attr("transform","translate(10,10)")
+
+	categories.forEach( (c, i) =>{
+		
+		const g = categoriesLegend.append("g")
+			.attr("class","categories-legend-"+c.name)
+			.attr("transform","translate(0,"+(15*i)+")")
+		g.append("rect")
+			.attr("width",10)
+			.attr("height",10)
+			.attr("fill",c.color)
+		g.append("text")
+			.text(c.name)
+			.attr("dy", "10px")
+			.attr("dx", "15px")
+
+	})
+
+
 	//recursiveFunctionCall(root, computeNodeStatistics)
 	setChildrenVisible(root, true)
 	root.children.forEach(c=> recursiveFunctionCall(c, c=>setChildrenVisible(c,false)))
@@ -234,6 +338,5 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 })
 
 </script>
-	
   </body>
 </html>

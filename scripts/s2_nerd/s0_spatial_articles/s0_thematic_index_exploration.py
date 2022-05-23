@@ -12,6 +12,10 @@ import sys
 sys.path.append("../../../src")
 sys.path.append("../../../scripts")
 
+import os
+print("cwd:")
+print(os.getcwd())
+
 from dhs_scraper import DhsArticle, DhsTag, tag_tree, DHS_ARTICLE_CATEGORIES
 from data_file_paths import S0_JSONL_ALL_ARTICLES_FILE, S0_JSONL_ALL_ARTICLES_PARSED_FILE, S0_DHS_CATEGORIES, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, s0_png_articles_lengths_by_category_figure, s0_png_percent_articles_in_wd_by_category, localize, S1_WIKIDATA_DHS_WIKIPEDIA_LINKS, s2_s0_tag_tree_with_ids_web, s2_s0_tag_tree_with_ids
 from plot_styles import *
@@ -47,6 +51,8 @@ if len(zve_bug)>0:
 
 # %%
 tags = [t for a in articles for t in a.tags]
+# remove error tag ArticleMetadataSheet from HeidiDeneys article: https://hls-dhs-dss.ch/fr/articles/058046/2019-06-12/
+tags = [t for t in tags if "ArticleMetadataSheet" not in t.tag]
 
 tags_start = set(t.url[0:10] for t in tags)
 tags_start
@@ -59,6 +65,8 @@ false_tags = [t for t in tags if t.url.startswith("/articles")]
 tags = [t for t in tags if not t.url.startswith("/articles")]
 for a in articles:
     a.tags = [t for t in a.tags if not t.url.startswith("/articles")]
+    # remove error tag ArticleMetadataSheet from HeidiDeneys article: https://hls-dhs-dss.ch/fr/articles/058046/2019-06-12/
+    a.tags = [t for t in a.tags if "ArticleMetadataSheet" not in t.tag]
 
 # %%
 
@@ -137,12 +145,35 @@ with open( "dhsids_per_tag.json", "w") as f:
 
 # %%
 
-def json_dump_tag_tree(tag_tree_root, name, article_to_json_func=lambda a: (a.title, a.id)):
-    article_revert_json_func = tag_tree.modify_articles(tag_tree_root, article_to_json_func)
+article_to_title_id = lambda a: (a.title, a.id)
+
+articles_by_category_proportions_to_len = lambda stats: {
+    k: len(stats[k])
+    for k in ['themes', 'people', 'families', 'spatial']
+}
+children_articles_by_category_proportions_to_len = lambda children_stats: [
+    articles_by_category_proportions_to_len(cstat) for cstat in children_stats
+]
+
+class CustomJsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        if isinstance(obj, DhsArticle):
+            return article_to_title_id(obj)
+        return json.JSONEncoder.default(self, obj)
+
+def json_dump_tag_tree(tag_tree_root, name):
+    if "total_statistics" in tag_tree_root:
+        total_stat_revert_json_func = tag_tree.modify_node_property(tag_tree_root, "total_statistics", articles_by_category_proportions_to_len)
+        children_stat_revert_json_func = tag_tree.modify_node_property(tag_tree_root, "children_statistics", children_articles_by_category_proportions_to_len)
     for tag_tree_json in [s2_s0_tag_tree_with_ids, s2_s0_tag_tree_with_ids_web]:
         with open( tag_tree_json.replace("<CASE>", name), "w") as f:
-            json.dump(tag_tree_root, f, ensure_ascii=False)
-    article_revert_json_func()
+            json.dump(tag_tree_root, f, ensure_ascii=False, cls=CustomJsonEncoder)
+    if "total_statistics" in tag_tree_root:
+        total_stat_revert_json_func()
+        children_stat_revert_json_func()
+
 
 # %%
 
@@ -161,7 +192,7 @@ stats_articles_by_category_proportions = tag_tree.stats_articles_by_category_pro
 
 tag_tree_all = DhsTag.build_tag_tree(utags)
 tag_tree.add_articles_to_tag_tree(tag_tree_all, articles_per_tag=articles_per_tag)
-tag_tree.compute_nodes_statistics(tag_tree_all, stat_func=stats_articles_by_category_proportions)
+tag_tree.compute_nodes_statistics(tag_tree_all, stat_func=stats_articles_by_category_proportions, stat_aggregator_func=tag_tree.stats_aggregator_articles_by_category_proportions)
  
 # %%
 
@@ -176,6 +207,7 @@ spatial_utags = set(t for t in tags)
 
 spatial_tag_tree = DhsTag.build_tag_tree(spatial_utags)
 tag_tree.add_articles_to_tag_tree(spatial_tag_tree, spatial_articles)
+tag_tree.compute_nodes_statistics(spatial_tag_tree, stat_func=stats_articles_by_category_proportions, stat_aggregator_func=tag_tree.stats_aggregator_articles_by_category_proportions)
 
 json_dump_tag_tree(spatial_tag_tree, "spatial")
 
