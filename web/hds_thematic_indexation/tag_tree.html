@@ -144,17 +144,22 @@ const nodeColorChildrenVisible = "#ffffff"
 const nodeColorChildrenHidden = "lightsteelblue"
 const nodeColorLeaf = "#4682b4"
 
+let currentArticlesList = null
 function setArticlesList(d){
-	console.log("setArticlesList for d=",d)
-	const articlesList = document.getElementById("articles-list")
-	articlesList.innerHTML='<h3>Articles for "'+d.data.name+'"</h3>'
-	d.data.articles.forEach(a=>{
-		console.log("\ta=",a)
-		articlesList.innerHTML+='<div class="dhs-article">' +
-			'<a class="dhs-dhs-link " href="https://dddpt-epfl-phd.github.io/dhs-nerd/#/fr/articles/'+a[1]+'" target="_blank">'+a[0]+' ('+a[1]+')</a>' +
-			'<a class="dhs-real-dhs-link" href="https://hls-dhs-dss.ch/fr/articles/'+a[1]+'" target="_blank"> <img src="./hds.png" width="15px" height="15px"></a>' +
-			'</div>'
-	})
+	if(currentArticlesList!=d.data.name){
+		console.log("setArticlesList for d=",d)
+		const articlesList = document.getElementById("articles-list")
+		let newHTML ='<h3>Articles for "'+d.data.name+'"</h3>'
+		d.data.articles.forEach(a=>{ 
+			console.log("\ta=",a)
+			newHTML+='<div class="dhs-article">' +
+				'<a class="dhs-dhs-link " href="https://dddpt-epfl-phd.github.io/dhs-nerd/#/fr/articles/'+a[1]+'" target="_blank">'+a[0]+' ('+a[1]+')</a>' +
+				'<a class="dhs-real-dhs-link" href="https://hls-dhs-dss.ch/fr/articles/'+a[1]+'" target="_blank"> <img src="./hds.png" width="15px" height="15px"></a>' +
+				'</div>'
+		})
+		articlesList.innerHTML = newHTML
+		currentArticlesList = d.data.name
+	}
 }
 
 function update(source) {
