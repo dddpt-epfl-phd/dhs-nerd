@@ -47,6 +47,28 @@
 		display:block;
 	}
 
+	#hds-thematic-tree-legend{
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		width:130px;
+	}
+
+	.categories-legend.inactive{
+		color:gray
+	}
+	.categories-legend-square{
+		display: inline-block;
+		position: relative;
+		top: 2px;
+		/*width:15px;
+		height:15px;*/
+		border: solid;
+		border-width: 7px;
+		border-radius: 7px;
+		margin-right: 1px;
+	}
+
 	#articles-list{
 		width: 300px;
 
@@ -74,6 +96,8 @@
 	<div id="container">
 		<svg id="hds-thematic-tree">
 		</svg>  
+		<div id="hds-thematic-tree-legend">
+		</div>
 		<div id="articles-list">
 		</div>
 	</div>
@@ -131,13 +155,13 @@ var svg = d3.select("#hds-thematic-tree")
   .append("g")
 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-const treeDataJsonUrl = "./tag_tree_with_ids_spatial.json" // "./tag_tree_with_ids_all.json" // 
+const treeDataJsonUrl = "./tag_tree_with_ids_all.json" // "./tag_tree_with_ids_spatial.json" // 
 
 categories = [
-	{name:"themes", color: "#76b7b2"},
-    {name:"people", color: "#59a14f"},
-    {name:"families", color: "#f28e2c"},
-    {name:"spatial", color: "#af7aa1"},
+	{name:"themes", color: "#76b7b2", active:false},
+    {name:"people", color: "#59a14f", active:false},
+    {name:"families", color: "#f28e2c", active:false},
+    {name:"spatial", color: "#af7aa1", active:true},
 ]
 
 const nodeColorChildrenVisible = "#ffffff"
@@ -159,6 +183,29 @@ function setArticlesList(d){
 		})
 		articlesList.innerHTML = newHTML
 		currentArticlesList = d.data.name
+	}
+}
+function getTotalStatisticAbsolute(category,d, normalize=360){
+	return d.data.total_statistics[category]/normalize // absolute value
+}
+function getTotalStatisticProportion(category,d){
+	//return d.data.total_statistics[category]/360 // absolute value
+	let total = categories.map(c=>d.data.total_statistics[c.name]).reduce((a,b)=>a+b,0)
+	return d.data.total_statistics[category]/total*100
+}
+function getTotalStatisticAsProportionFromParent(category,d){
+	//return d.data.total_statistics[category]/360 // absolute value
+	const par = d.parent? d.parent : d
+	let total = categories.map(c=>par.data.total_statistics[c.name]).reduce((a,b)=>a+b,0)
+	return d.data.total_statistics[category]/total*100
+}
+function getStackedBarChartOffset(category,d, valueFunc){
+	let accu = 0
+	for(c of categories){
+		if(c.name==category){
+			return accu
+		}
+		accu += valueFunc(c.name,d)
 	}
 }
 
@@ -202,36 +249,15 @@ function update(source) {
 		.attr("transform", d => "translate("+ (d.data.children && d.data.children.length>0? -113 : 13)+", 5)")
 
 
-	function getTotalStatisticAbsolute(category,d, normalize=360){
-		return d.data.total_statistics[category]/normalize // absolute value
-	}
-	function getTotalStatisticProportion(category,d){
-		//return d.data.total_statistics[category]/360 // absolute value
-		let total = categories.map(c=>d.data.total_statistics[c.name]).reduce((a,b)=>a+b,0)
-		return d.data.total_statistics[category]/total*100
-	}
-	function getTotalStatisticAsProportionFromParent(category,d){
-		//return d.data.total_statistics[category]/360 // absolute value
-		const par = d.parent? d.parent : d
-		let total = categories.map(c=>par.data.total_statistics[c.name]).reduce((a,b)=>a+b,0)
-		return d.data.total_statistics[category]/total*100
-	}
 	valueFunc=getTotalStatisticAsProportionFromParent//(a,b) => getTotalStatisticAbsolute(a,b,60)
-	function getStackedBarChartOffset(category,d, valueFunc){
-		let accu = 0
-		for(c of categories){
-			if(c.name==category){
-				return accu
-			}
-			accu += valueFunc(c.name,d)
-		}
-	}
+	
 	for(c of categories){
 		gStackedBarChart.append("rect")
+			.attr("class", "stacked-bar-"+c.name)
 			.attr("x",d=>getStackedBarChartOffset(c.name,d, valueFunc))
 			.attr("width", d=>{
 				//d.data.name=="root"? console.log("gStackedBarChart for ", d.data.name, ", own: ", d.data.statistics, ", total:",d.data.total_statistics,", childrenStat: ", d.data.children_statistics, " d.data.children:", d.data.children,"getStackedBarChartOffset(category,d)=",getStackedBarChartOffset(category,d), "getStackedBarChartValue(category,d)=",getStackedBarChartValue(category,d)) :""
-				return valueFunc(c.name,d)
+				return c.active? valueFunc(c.name,d) : 0
 			})
 			.attr("height", 6)
 			.style("fill", c.color)
@@ -250,12 +276,20 @@ function update(source) {
 	  .attr("class", d => nodeClass(d, "node"))
 	  .duration(duration)
 	  .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
-
+	  
   	nodeUpdate.select("circle")
 	  .attr("r", 10)
 
   	nodeUpdate.select("text")
 	  .style("fill-opacity", 1);
+
+	for(c of categories){
+		gStackedBarChart.select(".stacked-bar-"+c.name)
+			.attr("width", d=>{
+				//d.data.name=="root"? console.log("gStackedBarChart for ", d.data.name, ", own: ", d.data.statistics, ", total:",d.data.total_statistics,", childrenStat: ", d.data.children_statistics, " d.data.children:", d.data.children,"getStackedBarChartOffset(category,d)=",getStackedBarChartOffset(category,d), "getStackedBarChartValue(category,d)=",getStackedBarChartValue(category,d)) :""
+				return c.active? valueFunc(c.name,d) : 0
+			})
+	}
 
 	// Transition exiting nodes to the parent's new position.
 	var nodeExit = node.exit().transition()
@@ -313,24 +347,30 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 	root.x0 = height / 2;
 	root.y0 = 0;
 	
-	categoriesLegend = d3.select("svg").append("g")
-		.attr("class","categories-legend")
-			.attr("transform","translate(10,10)")
-
+	// showing categories color legend
+	categoriesLegend = d3.select("#hds-thematic-tree-legend")
 	categories.forEach( (c, i) =>{
 		
-		const g = categoriesLegend.append("g")
-			.attr("class","categories-legend-"+c.name)
-			.attr("transform","translate(0,"+(20*i)+")")
-		g.append("rect")
-			.attr("width",10)
-			.attr("height",10)
-			.attr("fill",c.color)
-		g.append("text")
-			.text(c.name)
-			.attr("dy", "10px")
-			.attr("dx", "15px")
+		const categoryDiv = categoriesLegend.append("div")
+			.attr("class","categories-legend categories-legend-"+c.name+" "+ (c.active?"":"inactive"))
+		const categoryCheckbox = categoryDiv.append("input")
+			.attr("type", "checkbox")
+			.attr("id", "checkbox-"+c.name)
+			.attr("value", c.name)
+			.attr("checked", c.active)
+		const categoryLabel = categoryDiv.append("label")
+			.attr("for", "checkbox-"+c.name)
+		categoryLabel.append("span")
+			.attr("class","categories-legend-square")
+			.style("border-color",c.color)
+		categoryLabel.append("span").text(c.name)
 
+		categoryCheckbox.on("change", e=>{
+			console.log("category change", "target val", e.target.value, "checked", e.target.checked)
+			c.active = e.target.checked
+			categoryDiv.classed("inactive",!c.active)
+			update(root)
+		})
 	})
 
 
@@ -338,7 +378,6 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 	setChildrenVisible(root, true)
 	root.children.forEach(c=> recursiveFunctionCall(c, c=>setChildrenVisible(c,false)))
 	recursiveFunctionCall(root, n=>{
-		console.log(n.total_statistics.spatial)
 		n.children=n.children.filter(c=>c.total_statistics.spatial+c.total_statistics.themes+c.total_statistics.people+c.total_statistics.families>0)
 	})
 	update(root);
