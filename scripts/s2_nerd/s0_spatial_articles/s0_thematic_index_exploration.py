@@ -44,7 +44,7 @@ Questions to answer:
 
 
 # Links from "en bref" section wrongly caught as a tag
-zve_bug = [a for a in articles if DhsTag("Zwyer von Evibach", "") in a.tags]
+zve_bug = [a for a in articles if DhsTag("Zwyer von Evibach", "Z=vE") in a.tags]
 if len(zve_bug)>0:
     print(f"zve_bug.id: {zve_bug[0].id}")
 
@@ -190,7 +190,7 @@ spatial_articles = articles_by_category["spatial"]
 stats_articles_by_category_proportions = tag_tree.stats_articles_by_category_proportions_curry(articles_ids_by_category, DHS_ARTICLE_CATEGORIES)
 # %%
 
-tag_tree_all = DhsTag.build_tag_tree(utags)
+tag_tree_all = tag_tree.build_tag_tree(utags)
 tag_tree.add_articles_to_tag_tree(tag_tree_all, articles_per_tag=articles_per_tag)
 tag_tree.compute_nodes_statistics(tag_tree_all, stat_func=stats_articles_by_category_proportions, stat_aggregator_func=tag_tree.stats_aggregator_articles_by_category_proportions)
  
@@ -205,7 +205,7 @@ json_dump_tag_tree(tag_tree_all, "all")
 spatial_tags = [t for a in spatial_articles for t in a.tags if not t.url.startswith("/articles")]
 spatial_utags = set(t for t in tags)
 
-spatial_tag_tree = DhsTag.build_tag_tree(spatial_utags)
+spatial_tag_tree = tag_tree.build_tag_tree(spatial_utags)
 tag_tree.add_articles_to_tag_tree(spatial_tag_tree, spatial_articles)
 tag_tree.compute_nodes_statistics(spatial_tag_tree, stat_func=stats_articles_by_category_proportions, stat_aggregator_func=tag_tree.stats_aggregator_articles_by_category_proportions)
 
@@ -214,8 +214,71 @@ json_dump_tag_tree(spatial_tag_tree, "spatial")
 # %%
 
 
+# %% =================== tags co-occurence ===============================
+
+
+tag = DhsTag('Entités politiques / Ville, commune, localité (étranger)', '/fr/search/category?f_hls.lexicofacet_string=2/006800.006900.009000.')
+list(spatial_articles)[0].tags
+
+def get_companion_tags_statistic(articles, tag):
+    articles_with_tag = [a for a in articles if tag in a.tags]
+    companion_tags = set([t for a in articles_with_tag for t in a.tags])
+    return pd.DataFrame({
+        "tag": [t.tag for t in companion_tags],
+        "nb": [len([a for a in articles_with_tag if t in a.tags]) for t in companion_tags],
+        "prop": [len([a for a in articles_with_tag if t in a.tags])/len(articles_with_tag) for t in companion_tags],
+        "articles": [[a.id for a in articles_with_tag if t in a.tags] for t in companion_tags]
+    }).sort_values("nb", ascending=False)
+
+companions_foreign_city = get_companion_tags_statistic(spatial_articles, tag)
+companions_foreign_city
 # %%
 
+relevant_tags_names = [
+    "Entités politiques / Seigneurie",
+    'Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré',
+    "Entités politiques / Bailliage, châtellenie",
+    #"Entités politiques / Comté, landgraviat",
+    "Entités politiques / District",
+    "Entités politiques / Ancienne commune",
+    "Entités politiques / Commune",
+    "Habitat infracommunal / Village, hameau, fraction, localité, ferme",
+    "Entités politiques / Ville médiévale"
+]
+
+relevant_tags = [[t for t in utags if t.tag ==tname][0] for tname in relevant_tags_names]
+
+companions_relevant_tags = [get_companion_tags_statistic(spatial_articles, t) for t in relevant_tags]
+
+
 # %%
+
+companions_relevant_tags
+"""
+Commune (2000+)
+-> a few ville médiévale (133) and other entities (~20-30 each)
+
+Ancienne commune
+-> mostly unique
+
+Abbaye, couvent, monastère, prieuré (179)
+-> mostly unique
+
+Seigneurie (252)
+-> mixed up with Bailliage, châtellenie
+	-> chateau fort (91)
+
+Bailliage, châtellenie (203)
+-> mixed up with district (62), seigneurie (74)
+
+District
+-> mixed up with baillage (62), seigneurie(24)
+
+Ville médiévale
+-> mostly commune
+
+"""
+
+companions_relevant_tags[0]
 
 # %%

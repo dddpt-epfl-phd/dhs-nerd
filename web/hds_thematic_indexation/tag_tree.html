@@ -131,7 +131,7 @@ var svg = d3.select("#hds-thematic-tree")
   .append("g")
 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-const treeDataJsonUrl = "./tag_tree_with_ids_all.json" // "tag_tree_with_ids_spatial.json" //
+const treeDataJsonUrl = "./tag_tree_with_ids_spatial.json" // "./tag_tree_with_ids_all.json" // 
 
 categories = [
 	{name:"themes", color: "#76b7b2"},
@@ -321,7 +321,7 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 		
 		const g = categoriesLegend.append("g")
 			.attr("class","categories-legend-"+c.name)
-			.attr("transform","translate(0,"+(15*i)+")")
+			.attr("transform","translate(0,"+(20*i)+")")
 		g.append("rect")
 			.attr("width",10)
 			.attr("height",10)
@@ -337,6 +337,10 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 	//recursiveFunctionCall(root, computeNodeStatistics)
 	setChildrenVisible(root, true)
 	root.children.forEach(c=> recursiveFunctionCall(c, c=>setChildrenVisible(c,false)))
+	recursiveFunctionCall(root, n=>{
+		console.log(n.total_statistics.spatial)
+		n.children=n.children.filter(c=>c.total_statistics.spatial+c.total_statistics.themes+c.total_statistics.people+c.total_statistics.families>0)
+	})
 	update(root);
 
 	d3.select(self.frameElement).style("height", "500px");
