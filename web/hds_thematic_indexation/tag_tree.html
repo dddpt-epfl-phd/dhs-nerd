@@ -223,20 +223,6 @@ function getStackedBarChartOffset(category,d, valueFunc){
 }
 
 function update(source) {
-	/* source translate problem
-	when source is known:
-	-> entering nodes are children of source
-		-> new nodes starting at source's x0 y0
-	-> exiting nodes children of source
-		-> exiting nodes finishing at source's x y (which astonishingly is position of source at start of transition ->?)
-
-	when source is unkown
-	-> entering nodes
-		-> should start at their parents' x0 y0
-	-> exiting nodes
-		-> should end at their parents x, y
-
-	*/
 	const getSource = (d) => source? source : d.parent
 	// Compute the new tree layout.
 	let nodes = d3.hierarchy(root, d=> d.childrenVisible? d.children.filter(d=>computeNbVisibleArticles(d)>0) : null)

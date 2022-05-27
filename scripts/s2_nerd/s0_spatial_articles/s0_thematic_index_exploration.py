@@ -193,7 +193,7 @@ stats_articles_by_category_proportions = tag_tree.stats_articles_by_category_pro
 tag_tree_all = tag_tree.build_tag_tree(utags)
 tag_tree.add_articles_to_tag_tree(tag_tree_all, articles_per_tag=articles_per_tag)
 tag_tree.compute_nodes_statistics(tag_tree_all, stat_func=stats_articles_by_category_proportions, stat_aggregator_func=tag_tree.stats_aggregator_articles_by_category_proportions)
- 
+""
 # %%
 
 json_dump_tag_tree(tag_tree_all, "all")
@@ -280,5 +280,16 @@ Ville médiévale
 """
 
 companions_relevant_tags[0]
+
+# %%
+
+[(t.tag, t.facet, len(t.get_levels())- len(t.get_facet_levels())) for t in list(utags)[0:20]]
+
+# %%
+set([ len(t.get_levels())- len(t.get_facet_levels()) for t in list(utags)])
+
+# %%
+
+len([(t.tag, t.facet, len(t.get_levels())- len(t.get_facet_levels())) for t in list(utags) if (len(t.get_levels())- len(t.get_facet_levels()))==0])
 
 # %%
