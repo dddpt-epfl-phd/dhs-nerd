@@ -112,6 +112,16 @@ function setChildrenVisible(d, value){
 	d.childrenVisible = value
 }
 
+// toggle show/hide category statistics
+function computeCategoriesVisibleStatistics(d){
+	d.visibleStatistics={}
+	d.visibleTotalStatistics={}
+	categories.forEach(c=>{
+		d.visibleStatistics[c.name] = c.active? d.statistics[c.name] : 0
+		d.visibleTotalStatistics[c.name] = c.active? d.total_statistics[c.name] : 0
+	})
+}
+
 /** recursiveFunctionCall: applies recursiveFunc on d's children.
  * 
  * recursiveFunc should take two arguments:
@@ -160,7 +170,7 @@ const treeDataJsonUrl = "./tag_tree_with_ids_all.json" // "./tag_tree_with_ids_s
 categories = [
 	{name:"themes", color: "#76b7b2", active:false},
     {name:"people", color: "#59a14f", active:false},
-    {name:"families", color: "#f28e2c", active:false},
+    {name:"families", color: "#f28e2c", active:true},
     {name:"spatial", color: "#af7aa1", active:true},
 ]
 
@@ -186,18 +196,18 @@ function setArticlesList(d){
 	}
 }
 function getTotalStatisticAbsolute(category,d, normalize=360){
-	return d.data.total_statistics[category]/normalize // absolute value
+	return d.data.visibleTotalStatistics[category]/normalize // absolute value
 }
 function getTotalStatisticProportion(category,d){
-	//return d.data.total_statistics[category]/360 // absolute value
-	let total = categories.map(c=>d.data.total_statistics[c.name]).reduce((a,b)=>a+b,0)
-	return d.data.total_statistics[category]/total*100
+	//return d.data.visibleTotalStatistics[category]/360 // absolute value
+	let total = categories.map(c=>d.data.visibleTotalStatistics[c.name]).reduce((a,b)=>a+b,0)
+	return d.data.visibleTotalStatistics[category]/total*100
 }
 function getTotalStatisticAsProportionFromParent(category,d){
-	//return d.data.total_statistics[category]/360 // absolute value
+	//return d.data.visibleTotalStatistics[category]/360 // absolute value
 	const par = d.parent? d.parent : d
-	let total = categories.map(c=>par.data.total_statistics[c.name]).reduce((a,b)=>a+b,0)
-	return d.data.total_statistics[category]/total*100
+	let total = categories.map(c=>par.data.visibleTotalStatistics[c.name]).reduce((a,b)=>a+b,0)
+	return d.data.visibleTotalStatistics[category]/total*100
 }
 function getStackedBarChartOffset(category,d, valueFunc){
 	let accu = 0
@@ -231,7 +241,7 @@ function update(source) {
 	var nodeEnter = node.enter().append("g")
 	  .attr("class", d => nodeClass(d, "node"))
 	  .attr("transform", d => "translate(" + source.y0 + "," + source.x0 + ")")
-	  .on("click", click);
+	  .on("click", nodeClick);
 
 
 
@@ -245,18 +255,19 @@ function update(source) {
 		.text(function(d) { return d.data.name; })
 		.style("fill-opacity", 1)
 
-	const gStackedBarChart = nodeEnter.append("g")
+	const gStackedBarChartEnter = nodeEnter.append("g")
+		.classed("node-stacked-bar-chart",true)
 		.attr("transform", d => "translate("+ (d.data.children && d.data.children.length>0? -113 : 13)+", 5)")
 
 
 	valueFunc=getTotalStatisticAsProportionFromParent//(a,b) => getTotalStatisticAbsolute(a,b,60)
 	
 	for(c of categories){
-		gStackedBarChart.append("rect")
+		gStackedBarChartEnter.append("rect")
 			.attr("class", "stacked-bar-"+c.name)
 			.attr("x",d=>getStackedBarChartOffset(c.name,d, valueFunc))
 			.attr("width", d=>{
-				//d.data.name=="root"? console.log("gStackedBarChart for ", d.data.name, ", own: ", d.data.statistics, ", total:",d.data.total_statistics,", childrenStat: ", d.data.children_statistics, " d.data.children:", d.data.children,"getStackedBarChartOffset(category,d)=",getStackedBarChartOffset(category,d), "getStackedBarChartValue(category,d)=",getStackedBarChartValue(category,d)) :""
+				//d.data.name=="root"? console.log("gStackedBarChartEnter for ", d.data.name, ", own: ", d.data.statistics, ", total:",d.data.total_statistics,", childrenStat: ", d.data.children_statistics, " d.data.children:", d.data.children,"getStackedBarChartOffset(category,d)=",getStackedBarChartOffset(category,d), "getStackedBarChartValue(category,d)=",getStackedBarChartValue(category,d)) :""
 				return c.active? valueFunc(c.name,d) : 0
 			})
 			.attr("height", 6)
@@ -283,8 +294,10 @@ function update(source) {
   	nodeUpdate.select("text")
 	  .style("fill-opacity", 1);
 
+	const gStackedBarChartUpdate = nodeUpdate.select(".node-stacked-bar-chart")
 	for(c of categories){
-		gStackedBarChart.select(".stacked-bar-"+c.name)
+		gStackedBarChartUpdate.select(".stacked-bar-"+c.name)
+			.attr("x",d=>getStackedBarChartOffset(c.name,d, valueFunc))
 			.attr("width", d=>{
 				//d.data.name=="root"? console.log("gStackedBarChart for ", d.data.name, ", own: ", d.data.statistics, ", total:",d.data.total_statistics,", childrenStat: ", d.data.children_statistics, " d.data.children:", d.data.children,"getStackedBarChartOffset(category,d)=",getStackedBarChartOffset(category,d), "getStackedBarChartValue(category,d)=",getStackedBarChartValue(category,d)) :""
 				return c.active? valueFunc(c.name,d) : 0
@@ -334,7 +347,7 @@ function update(source) {
 }
 
 // Toggle children on click.
-function click(target, d) {
+function nodeClick(target, d) {
 	console.log("statistics for ", d.data.name, ", own: ", d.data.statistics, ", total:",d.data.total_statistics,", childrenStat: ", d.data.children_statistics, " d.data.children:", d.data.children, "d.data.articles", d.data.articles, "d", d)
 	toggleChildrenVisible(d.data)
 	update(d);
@@ -357,7 +370,9 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 			.attr("type", "checkbox")
 			.attr("id", "checkbox-"+c.name)
 			.attr("value", c.name)
-			.attr("checked", c.active)
+		if(c.active){
+			categoryCheckbox.attr("checked", c.active)
+		}
 		const categoryLabel = categoryDiv.append("label")
 			.attr("for", "checkbox-"+c.name)
 		categoryLabel.append("span")
@@ -369,6 +384,7 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 			console.log("category change", "target val", e.target.value, "checked", e.target.checked)
 			c.active = e.target.checked
 			categoryDiv.classed("inactive",!c.active)
+			recursiveFunctionCall(root, computeCategoriesVisibleStatistics)
 			update(root)
 		})
 	})
@@ -380,6 +396,7 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 	recursiveFunctionCall(root, n=>{
 		n.children=n.children.filter(c=>c.total_statistics.spatial+c.total_statistics.themes+c.total_statistics.people+c.total_statistics.families>0)
 	})
+	recursiveFunctionCall(root, computeCategoriesVisibleStatistics)
 	update(root);
 
 	d3.select(self.frameElement).style("height", "500px");
