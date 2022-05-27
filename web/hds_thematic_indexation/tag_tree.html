@@ -122,6 +122,10 @@ function computeCategoriesVisibleStatistics(d){
 	})
 }
 
+function computeNbVisibleArticles(d){
+	return categories.map(c => d.visibleTotalStatistics[c.name]).reduce((a,b)=>a+b,0)
+}
+
 /** recursiveFunctionCall: applies recursiveFunc on d's children.
  * 
  * recursiveFunc should take two arguments:
@@ -170,7 +174,7 @@ const treeDataJsonUrl = "./tag_tree_with_ids_all.json" // "./tag_tree_with_ids_s
 categories = [
 	{name:"themes", color: "#76b7b2", active:false},
     {name:"people", color: "#59a14f", active:false},
-    {name:"families", color: "#f28e2c", active:true},
+    {name:"families", color: "#f28e2c", active:false},
     {name:"spatial", color: "#af7aa1", active:true},
 ]
 
@@ -185,7 +189,6 @@ function setArticlesList(d){
 		const articlesList = document.getElementById("articles-list")
 		let newHTML ='<h3>Articles for "'+d.data.name+'"</h3>'
 		d.data.articles.forEach(a=>{ 
-			console.log("\ta=",a)
 			newHTML+='<div class="dhs-article">' +
 				'<a class="dhs-dhs-link " href="https://dddpt-epfl-phd.github.io/dhs-nerd/#/fr/articles/'+a[1]+'" target="_blank">'+a[0]+' ('+a[1]+')</a>' +
 				'<a class="dhs-real-dhs-link" href="https://hls-dhs-dss.ch/fr/articles/'+a[1]+'" target="_blank"> <img src="./hds.png" width="15px" height="15px"></a>' +
@@ -220,8 +223,23 @@ function getStackedBarChartOffset(category,d, valueFunc){
 }
 
 function update(source) {
+	/* source translate problem
+	when source is known:
+	-> entering nodes are children of source
+		-> new nodes starting at source's x0 y0
+	-> exiting nodes children of source
+		-> exiting nodes finishing at source's x y (which astonishingly is position of source at start of transition ->?)
+
+	when source is unkown
+	-> entering nodes
+		-> should start at their parents' x0 y0
+	-> exiting nodes
+		-> should end at their parents x, y
+
+	*/
+	const getSource = (d) => source? source : d.parent
 	// Compute the new tree layout.
-	let nodes = d3.hierarchy(root, d=> d.childrenVisible? d.children : null)
+	let nodes = d3.hierarchy(root, d=> d.childrenVisible? d.children.filter(d=>computeNbVisibleArticles(d)>0) : null)
 	nodes = tree(nodes);
 
   	// Normalize for fixed-depth.
@@ -240,7 +258,7 @@ function update(source) {
 	// Enter any new nodes at the parent's previous position.
 	var nodeEnter = node.enter().append("g")
 	  .attr("class", d => nodeClass(d, "node"))
-	  .attr("transform", d => "translate(" + source.y0 + "," + source.x0 + ")")
+	  .attr("transform", d =>  "translate(" + getSource(d).data.y0 + "," + getSource(d).data.x0 + ")")
 	  .on("click", nodeClick);
 
 
@@ -307,7 +325,7 @@ function update(source) {
 	// Transition exiting nodes to the parent's new position.
 	var nodeExit = node.exit().transition()
 	  .duration(duration)
-	  .attr("transform", d => "translate(" + source.y + "," + source.x + ")")
+	  .attr("transform", d => "translate(" + getSource(d).y + "," + getSource(d).x + ")")
 	  .remove();
 
   	nodeExit.select("circle")
@@ -323,7 +341,7 @@ function update(source) {
 	// Enter any new links at the parent's previous position.
 	link.enter().insert("path", "g")
 	  .attr("class", "link")
-	  .attr("d", d => diagonal({x: source.x0, y: source.y0}))
+	  .attr("d", d => diagonal({x: getSource(d).data.x0, y: getSource(d).data.y0}))
 	  .transition()
 	  .duration(duration)
 	  .attr("d", diagonal);
@@ -336,13 +354,13 @@ function update(source) {
 	// Transition exiting nodes to the parent's new position.
 	link.exit().transition()
 	  .duration(duration)
-	  .attr("d", d => diagonal({x: source.x, y: source.y}))
+	  .attr("d", d => diagonal({x: getSource(d).x, y: getSource(d).y}))
 	  .remove();
 
 	// Stash the old positions for transition.
 	nodes.each(function(d) {
-		d.x0 = d.x;
-		d.y0 = d.y;
+		d.data.x0 = d.x;
+		d.data.y0 = d.y;
   });
 }
 
@@ -357,9 +375,13 @@ function nodeClick(target, d) {
 fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 	console.log("fetchyfetch", treeData)
 	root = treeData
-	root.x0 = height / 2;
-	root.y0 = 0;
-	
+	const startingSource = {
+		data:{
+			x0: height / 2,
+			y0: 0
+		}
+	}
+
 	// showing categories color legend
 	categoriesLegend = d3.select("#hds-thematic-tree-legend")
 	categories.forEach( (c, i) =>{
@@ -381,23 +403,22 @@ fetch(treeDataJsonUrl).then(resp=> resp.json()).then(treeData=>{
 		categoryLabel.append("span").text(c.name)
 
 		categoryCheckbox.on("change", e=>{
-			console.log("category change", "target val", e.target.value, "checked", e.target.checked)
 			c.active = e.target.checked
 			categoryDiv.classed("inactive",!c.active)
 			recursiveFunctionCall(root, computeCategoriesVisibleStatistics)
-			update(root)
+			update()
 		})
 	})
 
 
 	//recursiveFunctionCall(root, computeNodeStatistics)
+	recursiveFunctionCall(root, computeCategoriesVisibleStatistics)
 	setChildrenVisible(root, true)
 	root.children.forEach(c=> recursiveFunctionCall(c, c=>setChildrenVisible(c,false)))
 	recursiveFunctionCall(root, n=>{
 		n.children=n.children.filter(c=>c.total_statistics.spatial+c.total_statistics.themes+c.total_statistics.people+c.total_statistics.families>0)
 	})
-	recursiveFunctionCall(root, computeCategoriesVisibleStatistics)
-	update(root);
+	update(startingSource);
 
 	d3.select(self.frameElement).style("height", "500px");
 })
