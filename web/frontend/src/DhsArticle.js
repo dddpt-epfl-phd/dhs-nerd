@@ -94,6 +94,8 @@ export function DhsArticleContent({
         <div className="dhs-article">
             {textBlocks}
             <hr/>
+            <ThematicIndexation tags={article.tags}/>
+            <hr/>
             <CopyrightFooter>
                 Original article available <RealDhsArticleLink dhsId={article.id}>here</RealDhsArticleLink>. 
                 <span></span>
@@ -103,7 +105,20 @@ export function DhsArticleContent({
 }
 //{}
 
+export function ThematicIndexation({tags=[]}){
+    return (
+        <div className="article-thematic-indexation">
+            <h4>Thematic indexation</h4>
+                {tags.map(t=>
+                    <div className="article-thematic-indexation-element"><a href={"https://hls-dhs-dss.ch"+t.url} target="_blank">{t.tag}</a></div>
+                )}
+        </div>
+    )
+}
+/*
 
+        
+*/
 
 export function DhsArticle({baseurl=""}) {
 
