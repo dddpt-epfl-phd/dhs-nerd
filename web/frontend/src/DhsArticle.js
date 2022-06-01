@@ -110,7 +110,7 @@ export function ThematicIndexation({tags=[]}){
         <div className="article-thematic-indexation">
             <h4>Thematic indexation</h4>
                 {tags.map(t=>
-                    <div className="article-thematic-indexation-element"><a href={"https://hls-dhs-dss.ch"+t.url} target="_blank">{t.tag}</a></div>
+                    <div className="article-thematic-indexation-element" key={t.url} ><a href={"https://hls-dhs-dss.ch"+t.url} target="_blank">{t.tag}</a></div>
                 )}
         </div>
     )
