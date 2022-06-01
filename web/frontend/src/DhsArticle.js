@@ -139,6 +139,11 @@ export function DhsArticle({baseurl=""}) {
     })
   }, [articleJsonUrl])
 
+  useEffect(() => {
+        document.title = (article && article.search_result_name)? article.search_result_name : "The Linked HDS"
+  }, [article]);
+ 
+
   console.log("DhsArticle.js language", language, "dhsId:", dhsId, ", article:", article)
   if(!article.id){
       return <MissingDhsArticle lastArticle={article.lastArticle}/>

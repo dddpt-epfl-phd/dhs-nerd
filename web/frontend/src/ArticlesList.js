@@ -40,6 +40,10 @@ export function ArticlesList({baseurl=""}) {
   const query = searchParams.get("q")
   console.log("AL searchParams query", query)
 
+  useEffect(() => {
+    document.title = "The Linked HDS"
+  }, []);
+
   // filter index based on URL get parameter ?q=XX
   useEffect(()=>{
     if(query){

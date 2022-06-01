@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
+
 import {CenteredLayout} from "./Layout"
 import {CopyrightFooter} from "./CopyrightFooter"
 
 export const AboutPage = ()=> {
+
+    useEffect(() => {
+        document.title = "The Linked HDS - About"
+    }, []);
     return (
         <CenteredLayout>
 
