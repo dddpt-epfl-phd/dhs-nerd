@@ -85,6 +85,14 @@
 	#articles-list a:hover{
 		color: blue;
 	}
+	.hds-thematic-title{
+		margin-bottom: 0;
+	}
+	.hds-thematic-metadata{
+		font-size: small;
+		color: grey;
+		margin-bottom: 1em;
+	}
 	
     </style>
 
@@ -187,7 +195,11 @@ function setArticlesList(d){
 	if(currentArticlesList!=d.data.name){
 		console.log("setArticlesList for d=",d)
 		const articlesList = document.getElementById("articles-list")
-		let newHTML ='<h3>Articles for "'+d.data.name+'"</h3>'
+		let newHTML ='<h3 class="hds-thematic-title">Articles for "'+d.data.name+'"</h3>'+
+			'<div class="hds-thematic-metadata">'+
+				'<span>facet: '+d.data.facet+'</span><br/>'+
+				(d.data.full_name?'<span>full name: '+d.data.full_name+'</span>':'')+
+			'</div>'
 		d.data.articles.forEach(a=>{ 
 			newHTML+='<div class="dhs-article">' +
 				'<a class="dhs-dhs-link " href="https://dddpt-epfl-phd.github.io/dhs-nerd/#/fr/articles/'+a[1]+'" target="_blank">'+a[0]+' ('+a[1]+')</a>' +
