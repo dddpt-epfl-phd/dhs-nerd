@@ -243,7 +243,9 @@ relevant_tags_names = [
     "Entités politiques / Ancienne commune",
     "Entités politiques / Commune",
     "Habitat infracommunal / Village, hameau, fraction, localité, ferme",
-    "Entités politiques / Ville médiévale"
+    "Entités politiques / Ville médiévale",
+    "Transports / Hospice",
+    "Etat, pouvoir, politique / Territoires, circonscriptions / Peuples et états avec territoires suisses"
 ]
 
 relevant_tags = [[t for t in utags if t.tag ==tname][0] for tname in relevant_tags_names]
@@ -279,7 +281,7 @@ Ville médiévale
 
 """
 
-companions_relevant_tags[0]
+companions_relevant_tags[9]
 
 # %%
 

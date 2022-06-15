@@ -1,0 +1,161 @@
+depth,name,facet,nb_articles,polities_extraction_rule,discussion,notes
+0,root,,,-,-,-
+1,"Culture, savoir, religion",78500,,-,-,-
+2,Idéologies et mentalités,78500.0913,,-,-,-
+3,"Culture, savoir, religion / Idéologies et mentalités / Lieux de mémoire et symboles nationaux",078500.091300.092500,1,-,,
+,,,,,,
+1,"Environnement, espace, habitat",96900,,-,-,-
+2,Espace,96900.0979,,-,-,-
+3,"Environnement, espace, habitat / Espace / Aménagement du territoire",096900.097900.098900,2,-,,
+3,"Environnement, espace, habitat / Espace / Ensembles géographiques",096900.097900.098100,4,-,,
+2,"Climat, environnement",96900.097,,-,-,-
+3,"Environnement, espace, habitat / Climat, environnement / Catastrophes naturelles",096900.097000.097400,3,-,,
+,,,,,,
+,,,,,,
+1,"Etat, pouvoir, politique",17000,,-,-,-
+2,Relations internationales (dès 1800),17000.0236,,-,-,-
+3,"Etat, pouvoir, politique / Relations internationales (dès 1800) / Conflits et théâtres de conflits",017000.023600.024100,1,-,,
+3,"Etat, pouvoir, politique / Relations internationales (dès 1800) / Partenaires",017000.023600.024000,12,-,,
+2,"Territoires, circonscriptions",17000.0171,,-,-,-
+3,"Etat, pouvoir, politique / Territoires, circonscriptions / Peuples et états avec territoires suisses",017000.017100.017600,30,-,semblent largement couvert par d’autre types de tag acceptés comme polities,
+,,,,,,
+1,Economie,52200,,-,-,-
+2,Tourisme,52200.0743,,-,-,-
+3,Economie / Tourisme / Facteurs d'attraction,052200.074300.074700,1,-,-,
+2,Energie et matières premières,52200.056,,-,-,-
+3,Economie / Energie et matières premières / Production d'énergie,052200.056000.056300,1,-,-,
+,,,,,,
+,,,,,,
+1,Patrimoine,12100,,-,-,-
+2,Patrimoine / Monument,12100.0137,1,-,,
+2,Patrimoine / Synagogue,12100.0141,1,-,,
+2,Patrimoine / Hospice,12100.0131,5,-,identique à Entités ecclésiastiques / Hospice,
+2,Patrimoine / Maison de maître,12100.0136,8,-,,
+2,Patrimoine / Architecture militaire,12100.0122,6,-,,
+2,Patrimoine / Bains,12100.0123,22,-,,
+2,Patrimoine / Prison,12100.014,4,-,,
+2,"Patrimoine / Château fort, tour, siège baillival",12100.0126,279,-,,
+2,Patrimoine / Cathédrale,12100.0125,2,-,,
+2,"Patrimoine / Lieu historique, lieu mythique, utopie",12100.0135,13,-,,
+2,"Patrimoine / Eglise, chapelle, cimetière",12100.0127,78,-,,
+2,Patrimoine / Hôtel,12100.0132,3,-,,
+2,"Patrimoine / Hôpital, maladrerie",12100.013,4,-,,
+2,Patrimoine / Musée,12100.0139,1,-,,
+,,,,,,
+,,,,,,
+1,"Société, population, genres de vie",36400,,-,-,-
+2,Formes de société,36400.0412,,-,-,-
+3,"Société, population, genres de vie / Formes de société / Préhistoire, époque romaine et haut Moyen Age",036400.041200.041500,2,-,,
+,,,,,,
+,,,,,,
+1,Epoques,100200,,-,-,-
+2,Etat fédéral (dès 1900),100200.1091,,-,-,-
+3,Epoques / Etat fédéral (dès 1900) / Guerres et crises,100200.109100.109500,1,-,,
+2,Haut Moyen Age et Moyen Age classique,100200.1025,,-,-,-
+3,Epoques / Haut Moyen Age et Moyen Age classique / Entités étatiques,100200.102500.102700,4,-,couvert par d’autres tags pertinents comme polities,
+3,Epoques / Haut Moyen Age et Moyen Age classique / Articles principaux,100200.102500.102600,1,-,,
+2,Epoque romaine et invasions barbares,100200.1015,,-,-,-
+3,Epoques / Epoque romaine et invasions barbares / Articles principaux,100200.101500.101600,1,-,,
+3,Epoques / Epoque romaine et invasions barbares / Antiquité tardive,100200.101500.101800,1,-,,
+2,Epoque des révolutions (1750-1850),100200.1066,,-,-,-
+3,Epoques / Epoque des révolutions (1750-1850) / Réorganisation de l'Europe,100200.106600.107300,2,-,,
+2,Bas Moyen Age,100200.1036,,-,-,-
+3,Epoques / Bas Moyen Age / Saint Empire,100200.103600.104600,1,-,,
+2,Etat fédéral (jusque vers 1900),100200.1078,,-,-,-
+3,Epoques / Etat fédéral (jusque vers 1900) / Politique commerciale et monétaire,100200.107800.108700,1,-,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+1,"Ressources, énergie, industrie",16500,,-,-,-
+2,"Ressources, énergie, industrie / Site (proto-) industriel",16500.0168,15,-,,
+2,"Ressources, énergie, industrie / Barrage",16500.0166,8,-,,
+,,,,,,
+,,,,,,
+,,,,,,
+1,Archéologie,14300,,-,-,-
+2,Archéologie / Site du haut Moyen Age,14300.0151,31,-,,
+2,Archéologie / Site de l'âge du Bronze,14300.0147,97,-,,
+2,Archéologie / Site du Paléolithique,14300.0144,21,-,,
+2,Archéologie / Site de La Tène,14300.0149,56,-,,
+2,Archéologie / Site de l'époque romaine,14300.015,97,-,,
+2,Archéologie / Site du Néolithique,14300.0146,96,-,,
+2,Archéologie / Site du Mésolithique,14300.0145,17,-,,
+2,Archéologie / Site de Hallstatt,14300.0148,49,-,,
+,,,,,,
+,,,,,,
+1,Environnement,10800,,-,-,-
+2,"Environnement / Montagne, massif",10800.0118,38,-,,
+2,Environnement / Alpage,10800.0109,9,-,,
+2,Environnement / Cours d'eau,10800.0111,48,-,,
+2,Environnement / Vallée,10800.012,87,-,,
+2,Environnement / Glacier,10800.0113,2,-,,
+2,Environnement / Réserve naturelle,10800.0119,4,-,,
+2,Environnement / Forêt,10800.0112,7,-,,
+2,Environnement / Grotte,10800.0114,11,-,,
+2,"Environnement / Cascade, chute d'eau",10800.011,1,-,,
+2,Environnement / Lac,10800.0117,37,-,,
+2,"Environnement / Île, presqu'île",10800.0115,10,-,,
+,,,,,,
+,,,,,,
+1,Entités politiques,6900,,-,-,-
+2,Entités politiques / Ancien district,6900.0071,40,oui,,
+2,Entités politiques / District,6900.008,111,oui,,
+2,Entités politiques / Etat historique disparu,6900.0082,41,oui,,
+2,Entités politiques / Administration romaine,6900.007,35,-,plus pertinent pour la période considérée,
+2,Entités politiques / Ville (statistique),6900.0088,162,-,doublon avec les communes,
+2,Entités politiques / Munizipalgemeinde (TG),6900.0084,63,futur,"Thurgau: compliqué, à gérer de manière spécifique",
+2,Entités politiques / Canton,6900.0074,29,oui,,
+2,"Entités politiques / Bailliage, châtellenie",6900.0073,203,oui,,
+2,"Entités politiques / Ville, commune, localité (étranger)",6900.009,173,oui,,
+2,"Entités politiques / Canton, Département, République (1790-1813)",6900.0075,29,oui,,
+2,Entités politiques / Ville médiévale,6900.0089,160,discutable,doublon avec les communes. Eventuellement à inclure si une ville médiéval n’a pas d’autres tags,
+2,Entités politiques / Ortsgemeinde (TG),6900.0085,204,futur,"Thurgau: compliqué, à gérer de manière spécifique",
+2,Entités politiques / Ancienne commune,6900.0072,1083,oui,,
+2,"Entités politiques / Comté, landgraviat",6900.0079,37,oui,,
+2,"Entités politiques / Etat (étranger); continent, partie de continent",6900.0081,169,discutable,"liste non-exhaustive, non-homogène d’états/continents: peut pertinent",
+2,Entités politiques / Commune,6900.0078,2167,oui,,
+2,"Entités politiques / Communauté, collectivité",6900.0077,7,discutable,entités subcommunales/pas vraiment territoriale. À voir.,
+2,Entités politiques / Juridiction,6900.0083,43,-,"Représente des entités juridiques, non politiques",
+2,Entités politiques / Territoire (étranger),6900.0087,34,discutable,,
+2,Entités politiques / Seigneurie,6900.0086,252,oui,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+1,"Sciences de l'histoire, formation de l'identité",110300,,-,-,-
+2,"Nation, identité, mythes",110300.1121,,-,-,-
+3,"Sciences de l'histoire, formation de l'identité / Nation, identité, mythes / Mémoire historique",110300.112100.112400,3,-,,
+,,,,,,
+,,,,,,
+1,Transports,15200,,-,-,-
+2,Transports / Canal,15200.0155,3,-,,
+2,Transports / Port,15200.0162,2,-,,
+2,Transports / Aéroport,15200.0153,5,-,,
+2,Transports / Col,15200.0156,97,-,,
+2,Transports / Ligne de chemin de fer,15200.016,1,-,,
+2,"Transports / Pont, gué",15200.0161,12,-,,
+2,Transports / Route historique,15200.0164,10,-,,
+2,Transports / Hospice,15200.0159,5,-,identique à Entités ecclésiastiques / Hospice,
+,,,,,,
+1,Entités ecclésiastiques,9500,,-,-,-
+2,Entités ecclésiastiques / Commanderie,9500.01,20,oui,,
+2,Entités ecclésiastiques / Chapitre cathédral,9500.0098,8,oui,,
+2,"Entités ecclésiastiques / Décanat, paroisse, pieve",9500.0101,24,-,"représente principalement une paroisse, a un autre tag si entité politique pertinente",
+2,"Entités ecclésiastiques / Evêché, diocèse",9500.0102,18,oui,,
+2,"Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré",9500.0096,179,oui,,
+2,Entités ecclésiastiques / Hospice,9500.0103,5,oui,,
+2,Entités ecclésiastiques / Archidiocèse,9500.0097,7,oui,,
+2,Entités ecclésiastiques / Chapitre collégial,9500.0099,22,discutable,"C’est ambigu. Bischofszell chapitre (012008) possédait une seigneurie. Muralto (002115)  n’a pas de raison d’être une polity, Saint-Léger (012236) non plus",
+,,,,,,
+1,Habitat infracommunal,9100,,-,-,-
+2,Habitat infracommunal / Habitat abandonné,9100.0092,30,-,,
+2,Habitat infracommunal / Quartier,9100.0093,29,-,,
+2,"Habitat infracommunal / Village, hameau, fraction, localité, ferme",9100.0094,423,-,,
+,,,,,,
+,,,,,,
+,,,,,,
+1,Régions,10400,,-,-,-
+2,"Régions / Région, paysage",10400.0107,115,-,,
+2,Régions / Région transfrontalière,10400.0106,1,-,,

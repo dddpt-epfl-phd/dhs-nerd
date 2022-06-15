@@ -130,6 +130,9 @@ tag_tree_with_ids_filename = "tag_tree_with_ids_<CASE>.json"
 s2_s0_tag_tree_with_ids = path.join(s2_hds_thematic_indexation_folder,tag_tree_with_ids_filename)
 s2_s0_tag_tree_with_ids_web = path.join(website_hds_thematic_indexation,tag_tree_with_ids_filename)
 
+s2_polities_to_extract_folder = path.join(DATA_FOLDER, "polities_to_extract")
+s2_s1_polities_tags_extraction_rules = path.join(s2_polities_to_extract_folder,"polities_tags_extraction_rules.csv")
+s2_s1_polities_tags_extraction_rules_hand_filled = path.join(s2_polities_to_extract_folder,"polities_tags_extraction_rules_hand_filled.csv")
 
 
 def localize(path, language):
