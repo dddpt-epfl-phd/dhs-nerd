@@ -201,6 +201,7 @@ information for each tag:
 
 empty_node_line = {
         "depth": "",
+        "short_name": "",
         "name": "",
         "facet": "",
         "nb_articles": "",
@@ -209,15 +210,20 @@ empty_node_line = {
         "notes": ""
 }
 basis_line_returns=2
+def name_to_short_name(n):
+    return n.split("/")[-1].strip()
+
 def tag_tree_node_to_polities_to_extract_json_template(node, children_json):
     lvl = len(node["facet"].split(".")) if node["facet"] is not None else 0
     print("\n\nnode name")
     print(node["full_name"] if node["full_name"] is not None else node["name"])
     print("(basis_line_returns-lvl):")
     print((basis_line_returns-lvl))
+    name = node["full_name"] if node["full_name"] is not None else node["name"]
     node_line = {
         "depth": lvl,
-        "name": node["full_name"] if node["full_name"] is not None else node["name"],
+        "short_name": name_to_short_name(name),
+        "name": name,
         "facet": node["facet"],
         "nb_articles": len(node["articles"]) if len(node["articles"])>0 else "",
         "polities_extraction_rule": "" if len(node["articles"])>0 else "-",
@@ -238,15 +244,22 @@ polities_to_extract.to_csv(s2_s1_polities_tags_extraction_rules, index=False)
 polities_to_extract
 # %%
 pd.set_option('display.max_rows', None)
-polities_to_extract_filled = pd.read_csv(s2_s1_polities_tags_extraction_rules_hand_filled)
-polities_to_extract_filled = polities_to_extract_filled.loc[~polities_to_extract_filled.depth.isna()]
-polities_to_extract_filled.nb_articles[polities_to_extract_filled.nb_articles.isna()] = 0
-polities_to_extract_filled["dhstag"] = polities_to_extract_filled.name.apply(lambda n: DhsTag(n))
-polities_to_extract_filled
+tags_to_extract = pd.read_csv(s2_s1_polities_tags_extraction_rules_hand_filled)
+tags_to_extract = tags_to_extract.loc[~tags_to_extract.depth.isna()]
+tags_to_extract.nb_articles[tags_to_extract.nb_articles.isna()] = 0
+tags_to_extract["dhstag"] = tags_to_extract.name.apply(lambda n: DhsTag(n))
+tags_to_extract["short_name"] = tags_to_extract.name.apply(name_to_short_name)
+tags_to_extract_reordered_columns = set(["depth", "name", "short_name"])
+tags_to_extract = tags_to_extract[["depth", "short_name"] + [c for c in tags_to_extract.columns if c not in tags_to_extract_reordered_columns] +["name"]]
+tags_to_extract
+
+selected_tags_dtf = tags_to_extract.loc[tags_to_extract["polities_extraction_rule"]=="oui"]
+selected_tags_dtf = selected_tags_dtf.sort_values(["level","nb_articles"],ascending=False)
+
 
 # %%
 
-selected_tags = set(polities_to_extract_filled["dhstag"].loc[polities_to_extract_filled["polities_extraction_rule"]=="oui"])
+selected_tags = set(selected_tags_dtf["dhstag"])
 selected_tags
 for t in selected_tags:
     print(t.tag)
@@ -265,7 +278,7 @@ selected_articles_dtf = pd.DataFrame([
 
 # %%
 spatial_utags
-selected_articles_tags = [(
+selected_articles_per_tag = [(
         t,
         t in selected_tags,
         [a for a in tag_articles if a in selected_articles_dict],
@@ -274,28 +287,123 @@ selected_articles_tags = [(
     ) for t, tag_articles in  articles_per_tag
     if t in spatial_utags
 ]
-selected_articles_tags_dtf = pd.DataFrame(selected_articles_tags,  columns = ["tag", "is_tag_selected", "selected_articles", "refused_articles", "all_tag_articles"])
-selected_articles_tags_dtf["selected_articles"] = selected_articles_tags_dtf.selected_articles.apply(len)
-selected_articles_tags_dtf["refused_articles"] = selected_articles_tags_dtf.refused_articles.apply(len)
-selected_articles_tags_dtf["all_tag_articles"] = selected_articles_tags_dtf.all_tag_articles.apply(len)
-selected_articles_tags_dtf["coverage"] = selected_articles_tags_dtf.selected_articles / selected_articles_tags_dtf.all_tag_articles
-selected_articles_tags_dtf["nb_resulting_entities"] = selected_articles_tags_dtf.is_tag_selected * selected_articles_tags_dtf.selected_articles
-selected_articles_tags_dtf.head()
+selected_articles_per_tag_dtf = pd.DataFrame(selected_articles_per_tag,  columns = ["tag", "is_tag_selected", "selected_articles", "refused_articles", "all_tag_articles"])
+selected_articles_per_tag_dtf["selected_articles"] = selected_articles_per_tag_dtf.selected_articles.apply(len)
+selected_articles_per_tag_dtf["refused_articles"] = selected_articles_per_tag_dtf.refused_articles.apply(len)
+selected_articles_per_tag_dtf["all_tag_articles"] = selected_articles_per_tag_dtf.all_tag_articles.apply(len)
+selected_articles_per_tag_dtf["coverage"] = selected_articles_per_tag_dtf.selected_articles / selected_articles_per_tag_dtf.all_tag_articles
+selected_articles_per_tag_dtf["nb_resulting_entities"] = selected_articles_per_tag_dtf.is_tag_selected * selected_articles_per_tag_dtf.selected_articles
+selected_articles_per_tag_dtf.head()
 
-selected_articles_tags_dtf.coverage.describe()
+selected_articles_per_tag_dtf.coverage.describe()
 
 # %%
 
 print("total nb of entities:")
-print(selected_articles_tags_dtf.nb_resulting_entities.sum())
+print(selected_articles_dtf.shape[0])
 print("representing articles:")
-print(len(selected_articles))
+print(len(selected_articles_dtf.hds_id.unique()))
 # %%
 
+# investingating whether villes médiévales deserve to be included?
 ville_med = DhsTag("Entités politiques / Ville médiévale")
-selected_articles_tags_dtf.loc[selected_articles_tags_dtf.tag==ville_med]
-vmtag = [t for t in selected_articles_tags if t[0]==ville_med][0]
+selected_articles_per_tag_dtf.loc[selected_articles_per_tag_dtf.tag==ville_med]
+vmtag = [t for t in selected_articles_per_tag if t[0]==ville_med][0]
 ville_med = vmtag[0]
 [(a.id,a.title) for a in vmtag[3]]
+# -> there are 4 destroyed villes médiévales
+# -> interesting historically, but not exploitable GIS wise, ok to exclude them
+
+# %%
+
+
+selected_tags_by_lvl = selected_tags_dtf.groupby(selected_tags_dtf.level).aggregate("sum")[["nb_articles"]]
+selected_tags_by_lvl
+# %%
+
+selected_tags_dtf[["short_name","level","nb_articles"]]
+
+# %%
+
+relationship_nb_estimation_low = [
+    (10, 3),
+    (20, 3),
+    (30, 3),
+    (40, 2),
+]
+
+relationship_nb_estimation_mid = [
+    (10, 5),
+    (20, 3),
+    (30, 3),
+    (40, 2),
+]
+
+relationship_nb_estimation_high = [
+    (10, 6),
+    (20, 5),
+    (30, 4),
+    (40, 3),
+]
+
+relationship_nb_estimations = [
+    ("nb_rel_low", relationship_nb_estimation_low),
+    ("nb_rel_mid", relationship_nb_estimation_mid),
+    ("nb_rel_high", relationship_nb_estimation_high)
+]
+
+# Estimation rules for relationships
+def relationship_nb_estimator(lvl, relationship_nb_estimation):
+    for threshold, nb_relationships in relationship_nb_estimation:
+        if lvl<=threshold:
+            return nb_relationships
+
+def add_nb_rel_estimation_to_dtf(dtf, col_name, relationship_nb_estimation):
+    dtf[col_name] = [r[1].nb_articles * relationship_nb_estimator(r[0], relationship_nb_estimation)  for r in dtf.iterrows()]
+def add_nb_rel_estimations_to_dtf(dtf, estimations):
+    for col_name, estimation in estimations:
+        add_nb_rel_estimation_to_dtf(dtf, col_name, estimation)
+    
+add_nb_rel_estimations_to_dtf(selected_tags_by_lvl, relationship_nb_estimations)
+selected_tags_by_lvl
+# %%
+nb_things_to_extract = selected_tags_by_lvl.aggregate(sum).to_frame("nb_things")
+# -> ~20k relations to extract, gargl...
+nb_things_to_extract
+# %%
+
+"""
+Now let's go to time-estimations:
+"""
+
+minutes_per_entity ={
+    "low": 5,
+    "mid": 10,
+    "high": 20
+}
+minutes_per_relation ={
+    "low": 5,
+    "mid": 10,
+    "high": 20
+}
+
+def add_time_estimation(dtf, est_lvl_ent, est_lvl_rel):
+    colname_basis = "rel"+est_lvl_rel+"_ent"+est_lvl_ent
+    colname_h = colname_basis+"_h"
+    colname_d = colname_basis+"_d"
+    colname_wy = colname_basis+"_wy"
+    dtf[colname_h] = minutes_per_relation[est_lvl_rel]*dtf.nb_things / 60
+    dtf[colname_h][0] = dtf.nb_things[0] * minutes_per_entity[est_lvl_ent] / 60
+    dtf[colname_h][1:] +=dtf[colname_h][0]
+    dtf[colname_d] = dtf[colname_h] / 8
+    dtf[colname_wy] = dtf[colname_d] / 200
+    dtf = dtf.round(1)
+    return dtf
+
+nb_things_to_extract = add_time_estimation(nb_things_to_extract,"low","low")
+nb_things_to_extract = add_time_estimation(nb_things_to_extract,"mid","mid")
+nb_things_to_extract = add_time_estimation(nb_things_to_extract,"high","high")
+
+nb_things_to_extract
 
 # %%
