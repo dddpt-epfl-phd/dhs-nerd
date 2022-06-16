@@ -23,3 +23,8 @@ RUN echo "server { \n\
   } \n\
   include /etc/nginx/extra-conf.d/*.conf; \n\
 }" > /etc/nginx/conf.d/default.conf
+
+
+# build and run using:
+# docker build -f 'Dockerfile' -t dhs-nerd-frontend .
+# docker run -it --rm -v "${PWD}/../../data/website/single-dhs-articles":/app/public/data -p 3001:80 dhs-nerd-frontend
