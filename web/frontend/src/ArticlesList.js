@@ -29,7 +29,6 @@ export function searchInIndex(completeIndex, searchTerm){
 
 export function ArticlesList({baseurl=""}) {
   const { language } = useParams();
-  console.log("ArticlesList.js language", language, "----------------------------------")
   
   const indexJsonUrl = baseurl+"/data/indices/"+language+".json"
 
@@ -38,7 +37,7 @@ export function ArticlesList({baseurl=""}) {
 
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q")
-  console.log("AL searchParams query", query)
+  console.log("------ ArticlesList.js language", language, " cIndex.l", completeIndex.length, " index.l", index.length, " ?q=", query, " ------")
 
   useEffect(() => {
     document.title = "The Linked HDS"
@@ -58,7 +57,6 @@ export function ArticlesList({baseurl=""}) {
   useEffect(()=>{
     fetch(indexJsonUrl).then(x=>x.json()).then(loadedIndex=>{
       setCompleteIndex(loadedIndex)
-      setIndex(loadedIndex)
     })
   }, [indexJsonUrl])
 

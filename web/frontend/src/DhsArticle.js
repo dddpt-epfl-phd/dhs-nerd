@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, createRef, useCallback } from "react";
 import {
-  useParams
+  useParams, useNavigate, createSearchParams
 } from "react-router-dom";
 import {Alert} from "react-bootstrap"
 
@@ -165,6 +165,15 @@ export function MissingDhsArticle({lastArticle={}}) {
   const { language, dhsId } = useParams();
   //console.log("MissingDhsArticle.js language", language, "dhsId:", dhsId, "lastArticle.id: ", lastArticle.id)
 
+  const navigate = useNavigate()
+  const doSearch = useCallback(event=>{
+    event.preventDefault()
+    event.stopPropagation()
+    if(language && dhsId){
+        navigate({"pathname": "/"+language, "search": "?"+createSearchParams({"q": dhsId})})
+    }
+  }, [language, dhsId])
+
   return (
     <CenteredLayout>
         <h1>Error 404: Article not found</h1>
@@ -175,9 +184,14 @@ export function MissingDhsArticle({lastArticle={}}) {
             <a href="#" onClick={()=>window.history.back()}>Go back {lastArticle.title? "("+lastArticle.title+")":""}</a>
         </p>
         {dhsId?
-        <p>
-            <RealDhsArticleLink dhsId={dhsId} language={language}>Visit the original HDS article</RealDhsArticleLink>
-        </p>: ""}
+        <>
+            <p>
+                <a href="#" onClick={doSearch}>Search for "{dhsId}"</a>
+            </p>
+            <p>
+                <RealDhsArticleLink dhsId={dhsId} language={language}>Visit the original HDS article</RealDhsArticleLink>
+            </p>
+        </>: ""}
         
     </CenteredLayout>
   );
