@@ -58,3 +58,8 @@ https://www.mediawiki.org/wiki/API:Main_page
 To evaluate run: `./gradlew evaluation -Pcorpus=dhs-training-fr`
 
 Note: the actual code for evaluation is in `entity-fishing/src/main/java/com/scienceminer/nerd/evaluation/NEDCorpusEvaluation.java`. You first need to hard-code your corpus name in the `corpora` variable there.
+
+# Launch the interactive entity-fishing service
+
+To run the entity-fishing service, run: `./gradlew appRun`.
+This makes the entity-fishing service available at (usually) `http://localhost:8090/`, and interactive JSON queries can be sent to `http://localhost:8090/service/disambiguate`
