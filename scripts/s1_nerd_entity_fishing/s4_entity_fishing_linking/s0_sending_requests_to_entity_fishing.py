@@ -17,7 +17,7 @@ You need to have a running entity-fishing instance on localhost:8090 for this sc
 
 usage from this folder:
 ```
-python s0_sending_requests_to_entity_fishing.py >> ../../data/entity-fishing-linking/logs/linking-LNG-DATE 2>> ../../data/entity-fishing-linking/logs/linking-LNG-DATE-stderr
+python s0_sending_requests_to_entity_fishing.py LNG >> ../../../data/entity-fishing-linking/logs/linking-LNG-DATE 2>> ../../../data/entity-fishing-linking/logs/linking-LNG-DATE-stderr
 ```
 
 """
@@ -33,7 +33,7 @@ if len(sys.argv)>1:
         language = sys.argv[1]
     else:
         raise Exception(f"s0_scrape.py: unrecognized language argument from sys.argv[1]: '{sys.argv[1]}'. Must be one of {possible_languages}")
-
+print(f"entity-fishing linking documents for: {language}")
 
 jsonl_linked_articles_file = localize(S4_JSONL_ALL_ARTICLES_LINKED_FILE, language)
 already_visited_ids = set(DhsArticle.get_articles_ids(jsonl_linked_articles_file))
