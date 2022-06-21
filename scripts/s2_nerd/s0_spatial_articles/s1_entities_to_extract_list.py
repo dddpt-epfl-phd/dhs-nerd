@@ -254,8 +254,25 @@ tags_to_extract = tags_to_extract[["depth", "short_name"] + [c for c in tags_to_
 tags_to_extract
 
 selected_tags_dtf = tags_to_extract.loc[tags_to_extract["polities_extraction_rule"]=="oui"]
-selected_tags_dtf = selected_tags_dtf.sort_values(["level","nb_articles"],ascending=False)
+selected_tags_dtf.rename(columns={"nb_articles": "nb_entities"}, inplace=True)
+selected_tags_dtf = selected_tags_dtf.sort_values(["level","nb_entities"],ascending=False)
+selected_tags_dtf["pct_entities"] = selected_tags_dtf.nb_entities / selected_tags_dtf.nb_entities.sum()*100
 
+# %%
+
+articles_per_tag_distrib = selected_tags_dtf.loc[:,["short_name","pct_entities"]].set_index("short_name").round(2)
+ax = articles_per_tag_distrib.T.plot(kind='bar', stacked=True)
+plt.legend(bbox_to_anchor=(1.1, 1.1), bbox_transform=ax.transAxes)
+
+plt.title('Distribution of selected polities by tags')
+#plt.xticks("% polities",rotation=0, ha='center')
+ax.set_xticks([])
+ax.set_ylabel("% polities")
+
+
+# %%
+
+# Just add a title and rotate the x-axis labels to be horizontal.
 
 # %%
 
@@ -270,11 +287,11 @@ selected_articles = [(a,[t for t in a.tags if t in selected_tags]) for a in spat
 selected_articles = [(*sa,len(sa[1])) for sa in selected_articles if len(sa[1])>0]
 selected_articles_dict = {a: (tags, nbtags) for (a, tags, nbtags) in selected_articles}
 unselected_articles = [(a.id,a.title) for a in spatial_articles if a not in selected_articles_dict]
-selected_articles_dtf = pd.DataFrame([
+selected_entities_dtf = pd.DataFrame([
     (a.id+f"-{i}", a.title, t, nbtags, a.id)
     for a, tags, nbtags in selected_articles
     for i,t in enumerate(sorted(tags, key=lambda t: t.tag))
-], columns=["entity_id", "title", "tag", "nbtags", "hds_id"])
+], columns=["polity_id", "title", "tag", "nbtags", "hds_id"])
 
 # %%
 spatial_utags
@@ -287,123 +304,95 @@ selected_articles_per_tag = [(
     ) for t, tag_articles in  articles_per_tag
     if t in spatial_utags
 ]
-selected_articles_per_tag_dtf = pd.DataFrame(selected_articles_per_tag,  columns = ["tag", "is_tag_selected", "selected_articles", "refused_articles", "all_tag_articles"])
-selected_articles_per_tag_dtf["selected_articles"] = selected_articles_per_tag_dtf.selected_articles.apply(len)
-selected_articles_per_tag_dtf["refused_articles"] = selected_articles_per_tag_dtf.refused_articles.apply(len)
-selected_articles_per_tag_dtf["all_tag_articles"] = selected_articles_per_tag_dtf.all_tag_articles.apply(len)
-selected_articles_per_tag_dtf["coverage"] = selected_articles_per_tag_dtf.selected_articles / selected_articles_per_tag_dtf.all_tag_articles
-selected_articles_per_tag_dtf["nb_resulting_entities"] = selected_articles_per_tag_dtf.is_tag_selected * selected_articles_per_tag_dtf.selected_articles
-selected_articles_per_tag_dtf.head()
+tag_coverage_stats_dtf = pd.DataFrame(selected_articles_per_tag,  columns = ["tag", "is_tag_selected", "selected_articles", "refused_articles", "all_tag_articles"])
+tag_coverage_stats_dtf["selected_articles"] = tag_coverage_stats_dtf.selected_articles.apply(len)
+tag_coverage_stats_dtf["refused_articles"] = tag_coverage_stats_dtf.refused_articles.apply(len)
+tag_coverage_stats_dtf["all_tag_articles"] = tag_coverage_stats_dtf.all_tag_articles.apply(len)
+tag_coverage_stats_dtf["coverage"] = tag_coverage_stats_dtf.selected_articles / tag_coverage_stats_dtf.all_tag_articles
+tag_coverage_stats_dtf["nb_resulting_entities"] = tag_coverage_stats_dtf.is_tag_selected * tag_coverage_stats_dtf.selected_articles
+tag_coverage_stats_dtf.head()
 
-selected_articles_per_tag_dtf.coverage.describe()
+tag_coverage_stats_dtf.coverage.describe()
 
 # %%
 
 print("total nb of entities:")
-print(selected_articles_dtf.shape[0])
+print(selected_entities_dtf.shape[0])
 print("representing articles:")
-print(len(selected_articles_dtf.hds_id.unique()))
+print(len(selected_entities_dtf.hds_id.unique()))
 # %%
 
 # investingating whether villes médiévales deserve to be included?
 ville_med = DhsTag("Entités politiques / Ville médiévale")
-selected_articles_per_tag_dtf.loc[selected_articles_per_tag_dtf.tag==ville_med]
+tag_coverage_stats_dtf.loc[tag_coverage_stats_dtf.tag==ville_med]
 vmtag = [t for t in selected_articles_per_tag if t[0]==ville_med][0]
 ville_med = vmtag[0]
 [(a.id,a.title) for a in vmtag[3]]
 # -> there are 4 destroyed villes médiévales
 # -> interesting historically, but not exploitable GIS wise, ok to exclude them
 
+
 # %%
 
-
-selected_tags_by_lvl = selected_tags_dtf.groupby(selected_tags_dtf.level).aggregate("sum")[["nb_articles"]]
+selected_tags_by_lvl = selected_tags_dtf.groupby(selected_tags_dtf.level).aggregate("sum")[["nb_entities"]]
+selected_tags_by_lvl["pct_entities"] = selected_tags_by_lvl.nb_entities / selected_tags_by_lvl.nb_entities.sum()*100
 selected_tags_by_lvl
-# %%
 
-selected_tags_dtf[["short_name","level","nb_articles"]]
 
 # %%
+selected_tags_dtf[["short_name","level","nb_entities"]]
 
-relationship_nb_estimation_low = [
-    (10, 3),
-    (20, 3),
-    (30, 3),
-    (40, 2),
-]
-
-relationship_nb_estimation_mid = [
-    (10, 5),
-    (20, 3),
-    (30, 3),
-    (40, 2),
-]
-
-relationship_nb_estimation_high = [
-    (10, 6),
-    (20, 5),
-    (30, 4),
-    (40, 3),
-]
-
-relationship_nb_estimations = [
-    ("nb_rel_low", relationship_nb_estimation_low),
-    ("nb_rel_mid", relationship_nb_estimation_mid),
-    ("nb_rel_high", relationship_nb_estimation_high)
-]
-
-# Estimation rules for relationships
-def relationship_nb_estimator(lvl, relationship_nb_estimation):
-    for threshold, nb_relationships in relationship_nb_estimation:
-        if lvl<=threshold:
-            return nb_relationships
-
-def add_nb_rel_estimation_to_dtf(dtf, col_name, relationship_nb_estimation):
-    dtf[col_name] = [r[1].nb_articles * relationship_nb_estimator(r[0], relationship_nb_estimation)  for r in dtf.iterrows()]
-def add_nb_rel_estimations_to_dtf(dtf, estimations):
-    for col_name, estimation in estimations:
-        add_nb_rel_estimation_to_dtf(dtf, col_name, estimation)
-    
-add_nb_rel_estimations_to_dtf(selected_tags_by_lvl, relationship_nb_estimations)
-selected_tags_by_lvl
 # %%
-nb_things_to_extract = selected_tags_by_lvl.aggregate(sum).to_frame("nb_things")
-# -> ~20k relations to extract, gargl...
-nb_things_to_extract
+
 # %%
 
 """
-Now let's go to time-estimations:
+Relevant graphs:
+- distribution of polities into different types
+- duplicated articles: distribution of nb entities per article
+
+Relevant discussion
+- specificities of HDS
+    + 1-3 entities per article
+- lit rev.: existing methods to handle few-shot learning
+    NER:
+        + Self-supervised learning (teacher-student models)
+        + prototypes (classification using embedingg distance to class average)
+        + Noisy Supervised Pre-training: further noisy annotations using simpler/general use model
+        + Prompt based methods: formulate a question either to assign a label to a text token OR assign text tokens to a label
+        + contrastive learning
+    EL:
+        +
+- possible strategies to adress lack of training data
+    - 
 """
 
-minutes_per_entity ={
-    "low": 5,
-    "mid": 10,
-    "high": 20
-}
-minutes_per_relation ={
-    "low": 5,
-    "mid": 10,
-    "high": 20
-}
 
-def add_time_estimation(dtf, est_lvl_ent, est_lvl_rel):
-    colname_basis = "rel"+est_lvl_rel+"_ent"+est_lvl_ent
-    colname_h = colname_basis+"_h"
-    colname_d = colname_basis+"_d"
-    colname_wy = colname_basis+"_wy"
-    dtf[colname_h] = minutes_per_relation[est_lvl_rel]*dtf.nb_things / 60
-    dtf[colname_h][0] = dtf.nb_things[0] * minutes_per_entity[est_lvl_ent] / 60
-    dtf[colname_h][1:] +=dtf[colname_h][0]
-    dtf[colname_d] = dtf[colname_h] / 8
-    dtf[colname_wy] = dtf[colname_d] / 200
-    dtf = dtf.round(1)
-    return dtf
 
-nb_things_to_extract = add_time_estimation(nb_things_to_extract,"low","low")
-nb_things_to_extract = add_time_estimation(nb_things_to_extract,"mid","mid")
-nb_things_to_extract = add_time_estimation(nb_things_to_extract,"high","high")
 
-nb_things_to_extract
+# %%
+
+levels_descriptions = [
+    (40, "Etats historiques disparus"),
+    (30, "Cantons, Comtés, \nevêchés, archidiocèses, ..."),
+    (25, "Cantons, Comtés, \nevêchés, archidiocèses, ..."),
+    (20, "Seigneuries, baillages, \nabbayes, districts, ..."),
+    (15, "Seigneuries, baillages, \nabbayes, districts, ..."),
+    (10, "Communes")
+]
+levels_descriptions_dtf = pd.DataFrame(levels_descriptions, columns=["level", "label"]).set_index("level")
+levels_descriptions_dtf
+# %%
+
+polities_per_main_levels = selected_tags_by_lvl.join(levels_descriptions_dtf).groupby("label").aggregate(sum).sort_values(by="nb_entities", ascending=False)
+
+ax = polities_per_main_levels[["pct_entities"]].T.plot(kind="bar", stacked=True, width=0.2, figsize=(2,5))
+plt.legend(bbox_to_anchor=(0.8, 0.8), bbox_transform=ax.transAxes)
+plt.title('Distribution of polities by main categories')
+#plt.xticks("% polities",rotation=0, ha='center')
+ax.set_xticks([])
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.set_ylabel("% entities")
 
 # %%
