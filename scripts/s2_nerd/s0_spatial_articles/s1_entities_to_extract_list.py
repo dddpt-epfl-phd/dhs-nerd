@@ -291,7 +291,12 @@ selected_entities_dtf = pd.DataFrame([
     (a.id+f"-{i}", a.title, t, nbtags, a.id)
     for a, tags, nbtags in selected_articles
     for i,t in enumerate(sorted(tags, key=lambda t: t.tag))
-], columns=["polity_id", "title", "tag", "nbtags", "hds_id"])
+], columns=["polity_id", "title", "dhstag", "nbtags", "hds_id"])
+# merging in level info
+selected_entities_dtf["name"] = selected_entities_dtf.dhstag.apply(lambda t: t.tag)
+selected_entities_dtf = selected_entities_dtf.merge(selected_tags_dtf[["name","level"]], on="name")
+selected_entities_dtf.drop("name", axis=1, inplace=True)
+
 
 # %%
 spatial_utags
@@ -394,5 +399,64 @@ ax.set_xticks([])
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 ax.set_ylabel("% entities")
+
+# %%
+
+nb_entities_per_lvl_distrib = selected_entities_dtf.hds_id.value_counts().value_counts()
+ax = plt.subplot()
+plt.bar([0.5,1,1.5,2], list(nb_entities_per_lvl_distrib), width=0.3)
+ax.set_xticks([0.5,1,1.5,2])
+ax.set_xticklabels([1,2,3,4])
+
+
+# %%
+
+selected_tags_dtf.head()
+selected_entities_dtf.head()
+
+max_level_per_hds_id_dtf = selected_entities_dtf[["hds_id","level"]].groupby("hds_id").aggregate(max)
+max_level_per_hds_id_dtf.rename({"level": "max_level"}, axis=1, inplace=True)
+if "max_level" not in selected_entities_dtf.columns:
+    selected_entities_dtf = selected_entities_dtf.merge(max_level_per_hds_id_dtf, on="hds_id")
+
+selected_entities_dtf.head()
+
+(selected_entities_dtf.level!=selected_entities_dtf.max_level).sum()
+
+# %%
+
+articles_per_tag_distrib.T
+# %%
+selected_entities_dtf.hds_id.value_counts().head()
+
+
+# %%
+
+nb_entities_per_articles_dtf = selected_entities_dtf.groupby("hds_id").aggregate({"level": max, "nbtags":len})
+nb_entities_per_articles_dtf.sort_values(by="nbtags",inplace=True, ascending=False)
+nb_entities_per_articles_dtf.head()
+
+nb_entities_per_level_nbtags = nb_entities_per_articles_dtf.value_counts().to_frame("nb_entities")
+nb_entities_per_level_nbtags = nb_entities_per_level_nbtags.reset_index().set_index("level")
+nb_entities_per_level_nbtags.head()
+
+# %%
+
+nb_entities_per_levellabel_nbtags = nb_entities_per_level_nbtags.join(levels_descriptions_dtf).groupby(["label","nbtags"]).aggregate(sum)
+nb_entities_per_levellabel_nbtags.reset_index(inplace=True)
+nb_entities_per_levellabel_nbtags = nb_entities_per_levellabel_nbtags.pivot(index="nbtags", columns="label", values="nb_entities").fillna(0)
+nb_entities_per_levellabel_nbtags = nb_entities_per_levellabel_nbtags[[nb_entities_per_levellabel_nbtags.columns[1],nb_entities_per_levellabel_nbtags.columns[0],nb_entities_per_levellabel_nbtags.columns[3],nb_entities_per_levellabel_nbtags.columns[2]]]
+
+
+# %%
+
+ax = nb_entities_per_levellabel_nbtags.plot(kind='bar', stacked=True)
+#plt.legend(bbox_to_anchor=(1.1, 1.1), bbox_transform=ax.transAxes)
+#plt.title('Distribution of selected polities by tags')
+plt.title("Distribution of entities per article")
+ax.set_xticklabels([1,2,3,4],rotation=0)
+ax.set_ylabel("# articles")
+ax.set_xlabel("# of entities per article\n\nReading: 217 articles each have as subject two relevant entities")
+
 
 # %%
