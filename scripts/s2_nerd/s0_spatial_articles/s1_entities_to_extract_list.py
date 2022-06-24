@@ -456,7 +456,7 @@ ax = nb_entities_per_levellabel_nbtags.plot(kind='bar', stacked=True)
 plt.title("Distribution of entities per article")
 ax.set_xticklabels([1,2,3,4],rotation=0)
 ax.set_ylabel("# articles")
-ax.set_xlabel("# of entities per article\n\nReading: 217 articles each have as subject two relevant entities")
+ax.set_xlabel("# of entities per article\n\nReading: 217 articles each refer to two polities as their main subject")
 
 
 # %%
