@@ -19,6 +19,7 @@ print(os.getcwd())
 from dhs_scraper import DhsArticle, DhsTag, tag_tree, DHS_ARTICLE_CATEGORIES
 from data_file_paths import S0_JSONL_ALL_ARTICLES_PARSED_FILE, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, localize, s2_s1_polities_tags_extraction_rules, s2_s1_polities_tags_extraction_rules_hand_filled
 from plot_styles import *
+from polities_to_extract_rules import *
 
 # %matplotlib inline
 
@@ -210,10 +211,8 @@ empty_node_line = {
         "notes": ""
 }
 basis_line_returns=2
-def name_to_short_name(n):
-    return n.split("/")[-1].strip()
 
-def tag_tree_node_to_polities_to_extract_json_template(node, children_json):
+def tag_tree_node_to_tags_tags_extraction_rules_annotation_dtf_row(node, children_json):
     lvl = len(node["facet"].split(".")) if node["facet"] is not None else 0
     print("\n\nnode name")
     print(node["full_name"] if node["full_name"] is not None else node["name"])
@@ -222,7 +221,7 @@ def tag_tree_node_to_polities_to_extract_json_template(node, children_json):
     name = node["full_name"] if node["full_name"] is not None else node["name"]
     node_line = {
         "depth": lvl,
-        "short_name": name_to_short_name(name),
+        "short_name": tag_name_to_short_name(name),
         "name": name,
         "facet": node["facet"],
         "nb_articles": len(node["articles"]) if len(node["articles"])>0 else "",
@@ -236,27 +235,17 @@ def tag_tree_node_to_polities_to_extract_json_template(node, children_json):
         if n is not None
     ] + (max(basis_line_returns-lvl,0) * [empty_node_line])
 
-polities_to_extract_json_template = tag_tree.traverse_depth_first(spatial_tag_tree, tag_tree_node_to_polities_to_extract_json_template)
 # %%
 
-polities_to_extract = pd.DataFrame(polities_to_extract_json_template)
-polities_to_extract.to_csv(s2_s1_polities_tags_extraction_rules, index=False)
-polities_to_extract
+tags_extraction_rules_annotation_dtf = pd.DataFrame(tag_tree.traverse_depth_first(spatial_tag_tree, tag_tree_node_to_tags_tags_extraction_rules_annotation_dtf_row))
+tags_extraction_rules_annotation_dtf.to_csv(s2_s1_polities_tags_extraction_rules, index=False)
+tags_extraction_rules_annotation_dtf
 # %%
 pd.set_option('display.max_rows', None)
-tags_to_extract = pd.read_csv(s2_s1_polities_tags_extraction_rules_hand_filled)
-tags_to_extract = tags_to_extract.loc[~tags_to_extract.depth.isna()]
-tags_to_extract.nb_articles[tags_to_extract.nb_articles.isna()] = 0
-tags_to_extract["dhstag"] = tags_to_extract.name.apply(lambda n: DhsTag(n))
-tags_to_extract["short_name"] = tags_to_extract.name.apply(name_to_short_name)
-tags_to_extract_reordered_columns = set(["depth", "name", "short_name"])
-tags_to_extract = tags_to_extract[["depth", "short_name"] + [c for c in tags_to_extract.columns if c not in tags_to_extract_reordered_columns] +["name"]]
-tags_to_extract
 
-selected_tags_dtf = tags_to_extract.loc[tags_to_extract["polities_extraction_rule"]=="oui"]
-selected_tags_dtf.rename(columns={"nb_articles": "nb_entities"}, inplace=True)
-selected_tags_dtf = selected_tags_dtf.sort_values(["level","nb_entities"],ascending=False)
-selected_tags_dtf["pct_entities"] = selected_tags_dtf.nb_entities / selected_tags_dtf.nb_entities.sum()*100
+tags_extraction_rules = get_polities_tags_extraction_rules_hand_filled()
+
+selected_tags_dtf = get_selected_tags_dtf(tags_extraction_rules)
 
 # %%
 
@@ -276,53 +265,25 @@ ax.set_ylabel("% polities")
 
 # %%
 
-selected_tags = set(selected_tags_dtf["dhstag"])
+selected_tags = get_selected_tags(selected_tags_dtf)
 selected_tags
 for t in selected_tags:
     print(t.tag)
 
 # %%
 
-tagname_to_initial = {
-    "Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré":"m",
-    "Entités ecclésiastiques / Archidiocèse":"ad",
-    "Entités ecclésiastiques / Chapitre cathédral":"cc",
-    "Entités ecclésiastiques / Commanderie":"cm",
-    "Entités ecclésiastiques / Evêché, diocèse":"e",
-    "Entités ecclésiastiques / Hospice":"h",
-    "Entités politiques / Ancien district":"d",
-    "Entités politiques / Ancienne commune":"c",
-    "Entités politiques / Bailliage, châtellenie":"b",
-    "Entités politiques / Canton":"ct",
-    "Entités politiques / Canton, Département, République (1790-1813)":"ct",
-    "Entités politiques / Commune":"c",
-    "Entités politiques / Comté, landgraviat":"co",
-    "Entités politiques / District":"d",
-    "Entités politiques / Etat historique disparu":"e",
-    "Entités politiques / Seigneurie":"s",
-    "Entités politiques / Ville, commune, localité (étranger)":"c"
-}
-
+tagname_to_initial
 
 # %%
 
-selected_articles = [(a,[t for t in a.tags if t in selected_tags]) for a in spatial_articles]
-selected_articles = [(*sa,len(sa[1])) for sa in selected_articles if len(sa[1])>0]
+selected_articles = get_selected_articles(spatial_articles, selected_tags)
 selected_articles_dict = {a: (tags, nbtags) for (a, tags, nbtags) in selected_articles}
 unselected_articles = [(a.id,a.title) for a in spatial_articles if a not in selected_articles_dict]
-polities = [
-    (a.id+"-"+tagname_to_initial[t.tag], a, t, nbtags)
-    for a, tags, nbtags in selected_articles
-    for i,t in enumerate(sorted(tags, key=lambda t: t.tag))
-]
-polities_dtf = pd.DataFrame([
-    (eid, a.title, t, nbtags, a.id)
-    for eid, a, t, nbtags in polities
-], columns=["polity_id", "title", "dhstag", "nbtags", "hds_id"])
-# merging in level info
-polities_dtf["name"] = polities_dtf.dhstag.apply(lambda t: t.tag)
-polities_dtf = polities_dtf.merge(selected_tags_dtf[["name","level"]], on="name")
-polities_dtf.drop("name", axis=1, inplace=True)
+polities = get_polities_to_extract(selected_articles)
+
+# %%
+
+polities_dtf = get_polities_to_extract_dtf(polities, selected_tags_dtf)
 
 
 # %%
