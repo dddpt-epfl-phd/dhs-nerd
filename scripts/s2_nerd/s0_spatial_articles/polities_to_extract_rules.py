@@ -1,4 +1,5 @@
 
+
 import pandas as pd
 
 import sys
@@ -6,7 +7,24 @@ sys.path.append("../../../src")
 sys.path.append("../../../scripts")
 
 from dhs_scraper import DhsArticle, DhsTag, tag_tree, DHS_ARTICLE_CATEGORIES
-from data_file_paths import s2_s1_polities_tags_extraction_rules_hand_filled
+from data_file_paths import s2_s1_polities_tags_extraction_rules_hand_filled, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, localize, S0_JSONL_ALL_ARTICLES_PARSED_FILE
+
+
+def get_articles(language="fr"):
+    articles_jsonl_file = localize(S0_JSONL_ALL_ARTICLES_PARSED_FILE, language)
+    articles = list(DhsArticle.load_articles_from_jsonl(articles_jsonl_file))
+    return articles
+
+def get_articles_by_category(articles):
+    language="fr" # categories are the same in all languages, they have been scraped in fr only
+    empty_articles_by_category = {c:set(DhsArticle.load_articles_from_jsonl(localize(f, language))) for c,f in S0_JSONL_ARTICLES_BY_CATEGORIES_FILES.items()}
+    articles_ids_by_category = {c:set(a.id for a in abc) for c,abc in empty_articles_by_category.items()}
+    articles_by_category = {
+        c:set([a for a in articles if a.id in abyc])
+        for c,abyc in articles_ids_by_category.items()
+    }
+    return articles_by_category
+
 
 tagname_to_initial = {
     "Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré":"m",
@@ -31,7 +49,7 @@ tagname_to_initial = {
 def tag_name_to_short_name(n):
     return n.split("/")[-1].strip()
 
-def get_polities_tags_extraction_rules_hand_filled():
+def get_polities_tags_extraction_rules_hand_filled(**kwargs):
     """Returns a dataframe containing the polities tags extraction rules filled by hand
     
     Does some dumb preprocessing (columns ordering, replacing NaNs)
@@ -45,7 +63,7 @@ def get_polities_tags_extraction_rules_hand_filled():
     tags_to_extract = tags_to_extract[["depth", "short_name"] + [c for c in tags_to_extract.columns if c not in tags_to_extract_reordered_columns] +["name"]]
     return tags_to_extract
 
-def get_selected_tags_dtf(tags_extraction_rules=None):
+def get_selected_tags_dtf(tags_extraction_rules=None, **kwargs):
     """Returns a dataframe containing only the tags to extract along with a few statistics"""
     if tags_extraction_rules is None:
         tags_extraction_rules = get_polities_tags_extraction_rules_hand_filled()

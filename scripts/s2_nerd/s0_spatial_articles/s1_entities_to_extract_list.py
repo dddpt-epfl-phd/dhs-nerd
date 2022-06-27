@@ -12,10 +12,6 @@ import sys
 sys.path.append("../../../src")
 sys.path.append("../../../scripts")
 
-import os
-print("cwd:")
-print(os.getcwd())
-
 from dhs_scraper import DhsArticle, DhsTag, tag_tree, DHS_ARTICLE_CATEGORIES
 from data_file_paths import S0_JSONL_ALL_ARTICLES_PARSED_FILE, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, localize, s2_s1_polities_tags_extraction_rules, s2_s1_polities_tags_extraction_rules_hand_filled
 from plot_styles import *
