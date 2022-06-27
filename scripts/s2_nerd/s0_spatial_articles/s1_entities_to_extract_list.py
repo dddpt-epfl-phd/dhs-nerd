@@ -283,19 +283,46 @@ for t in selected_tags:
 
 # %%
 
+tagname_to_initial = {
+    "Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré":"m",
+    "Entités ecclésiastiques / Archidiocèse":"ad",
+    "Entités ecclésiastiques / Chapitre cathédral":"cc",
+    "Entités ecclésiastiques / Commanderie":"cm",
+    "Entités ecclésiastiques / Evêché, diocèse":"e",
+    "Entités ecclésiastiques / Hospice":"h",
+    "Entités politiques / Ancien district":"d",
+    "Entités politiques / Ancienne commune":"c",
+    "Entités politiques / Bailliage, châtellenie":"b",
+    "Entités politiques / Canton":"ct",
+    "Entités politiques / Canton, Département, République (1790-1813)":"ct",
+    "Entités politiques / Commune":"c",
+    "Entités politiques / Comté, landgraviat":"co",
+    "Entités politiques / District":"d",
+    "Entités politiques / Etat historique disparu":"e",
+    "Entités politiques / Seigneurie":"s",
+    "Entités politiques / Ville, commune, localité (étranger)":"c"
+}
+
+
+# %%
+
 selected_articles = [(a,[t for t in a.tags if t in selected_tags]) for a in spatial_articles]
 selected_articles = [(*sa,len(sa[1])) for sa in selected_articles if len(sa[1])>0]
 selected_articles_dict = {a: (tags, nbtags) for (a, tags, nbtags) in selected_articles}
 unselected_articles = [(a.id,a.title) for a in spatial_articles if a not in selected_articles_dict]
-selected_entities_dtf = pd.DataFrame([
-    (a.id+f"-{i}", a.title, t, nbtags, a.id)
+polities = [
+    (a.id+"-"+tagname_to_initial[t.tag], a, t, nbtags)
     for a, tags, nbtags in selected_articles
     for i,t in enumerate(sorted(tags, key=lambda t: t.tag))
+]
+polities_dtf = pd.DataFrame([
+    (eid, a.title, t, nbtags, a.id)
+    for eid, a, t, nbtags in polities
 ], columns=["polity_id", "title", "dhstag", "nbtags", "hds_id"])
 # merging in level info
-selected_entities_dtf["name"] = selected_entities_dtf.dhstag.apply(lambda t: t.tag)
-selected_entities_dtf = selected_entities_dtf.merge(selected_tags_dtf[["name","level"]], on="name")
-selected_entities_dtf.drop("name", axis=1, inplace=True)
+polities_dtf["name"] = polities_dtf.dhstag.apply(lambda t: t.tag)
+polities_dtf = polities_dtf.merge(selected_tags_dtf[["name","level"]], on="name")
+polities_dtf.drop("name", axis=1, inplace=True)
 
 
 # %%
@@ -322,9 +349,9 @@ tag_coverage_stats_dtf.coverage.describe()
 # %%
 
 print("total nb of entities:")
-print(selected_entities_dtf.shape[0])
+print(polities_dtf.shape[0])
 print("representing articles:")
-print(len(selected_entities_dtf.hds_id.unique()))
+print(len(polities_dtf.hds_id.unique()))
 # %%
 
 # investingating whether villes médiévales deserve to be included?
@@ -369,7 +396,16 @@ Relevant discussion
     EL:
         +
 - possible strategies to adress lack of training data
-    - 
+
+
+Proposition next steps 24.6:
+- annotate 20 randomly selected articles
+- ~10 communes
+- 5 seigneuries
+- 2 communes/seigneuries duplicates
+
+
+
 """
 
 
@@ -402,7 +438,7 @@ ax.set_ylabel("% entities")
 
 # %%
 
-nb_entities_per_lvl_distrib = selected_entities_dtf.hds_id.value_counts().value_counts()
+nb_entities_per_lvl_distrib = polities_dtf.hds_id.value_counts().value_counts()
 ax = plt.subplot()
 plt.bar([0.5,1,1.5,2], list(nb_entities_per_lvl_distrib), width=0.3)
 ax.set_xticks([0.5,1,1.5,2])
@@ -412,27 +448,27 @@ ax.set_xticklabels([1,2,3,4])
 # %%
 
 selected_tags_dtf.head()
-selected_entities_dtf.head()
+polities_dtf.head()
 
-max_level_per_hds_id_dtf = selected_entities_dtf[["hds_id","level"]].groupby("hds_id").aggregate(max)
+max_level_per_hds_id_dtf = polities_dtf[["hds_id","level"]].groupby("hds_id").aggregate(max)
 max_level_per_hds_id_dtf.rename({"level": "max_level"}, axis=1, inplace=True)
-if "max_level" not in selected_entities_dtf.columns:
-    selected_entities_dtf = selected_entities_dtf.merge(max_level_per_hds_id_dtf, on="hds_id")
+if "max_level" not in polities_dtf.columns:
+    polities_dtf = polities_dtf.merge(max_level_per_hds_id_dtf, on="hds_id")
 
-selected_entities_dtf.head()
+polities_dtf.head()
 
-(selected_entities_dtf.level!=selected_entities_dtf.max_level).sum()
+(polities_dtf.level!=polities_dtf.max_level).sum()
 
 # %%
 
 articles_per_tag_distrib.T
 # %%
-selected_entities_dtf.hds_id.value_counts().head()
+polities_dtf.hds_id.value_counts().head()
 
 
 # %%
 
-nb_entities_per_articles_dtf = selected_entities_dtf.groupby("hds_id").aggregate({"level": max, "nbtags":len})
+nb_entities_per_articles_dtf = polities_dtf.groupby("hds_id").aggregate({"level": max, "nbtags":len})
 nb_entities_per_articles_dtf.sort_values(by="nbtags",inplace=True, ascending=False)
 nb_entities_per_articles_dtf.head()
 
