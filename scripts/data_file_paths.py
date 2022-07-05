@@ -138,8 +138,13 @@ s2_s1_polities_tags_extraction_rules_hand_filled = path.join(s2_polities_to_extr
 s2_hds_article_titles_terms_csv = path.join(s2_polities_to_extract_folder,"hds_article_titles_terms.csv")
 s2_hds_article_titles_terms_to_remove_csv = path.join(s2_polities_to_extract_folder,"hds_article_titles_terms_to_remove.csv")
 s2_hds_article_titles_terms_to_remove_hand_corrected_csv = path.join(s2_polities_to_extract_folder,"hds_article_titles_terms_to_remove_HAND_CORRECTED.csv")
-
+s2_hds_article_titles_statuswords_csv = path.join(s2_polities_to_extract_folder,"hds_article_titles_statuswords.csv")
+s2_hds_article_titles_statuswords_hand_corrected_csv = path.join(s2_polities_to_extract_folder,"hds_article_titles_statuswords_HAND_CORRECTED.csv")
+s2_hds_article_titles_statuswords_json = path.join(s2_polities_to_extract_folder,"hds_article_titles_statuswords.json")
+s2_hds_article_titles_statuswords_hand_corrected_json = path.join(s2_polities_to_extract_folder,"hds_article_titles_statuswords_HAND_CORRECTED.json")
+s2_hds_tag_default_status_word = path.join(s2_polities_to_extract_folder, "hds_tag_default_status_word.json")
 
 def localize(path, language):
     return path.replace("<LANGUAGE>", language)
+
 

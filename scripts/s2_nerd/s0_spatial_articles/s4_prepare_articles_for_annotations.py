@@ -1,7 +1,9 @@
 
 # %%
 
+import json
 import re
+from warnings import warn
 
 from cassis import *
 
@@ -30,14 +32,17 @@ polities_dtf.head()
 
 polities_dtf["original_title"] = polities_dtf.title
 
-def get_titles_containing_str(s):
-    return polities_dtf[polities_dtf.original_title.apply(lambda t: s in t)]
+def get_titles_containing_str(s, title_column="original_title"):
+    return polities_dtf[polities_dtf[title_column].apply(lambda t: s in t)]
+
+def get_terms_from_title(t):
+    return [w.replace(",","") for w in t.replace("L' ", "L'").replace("d' ", "d'").split(" ")]
 
 pd.set_option('display.max_rows', None)
 # analysis of terms in polities titles
-titles = list(polities_dtf.title)
+polities_dtf["terms"] = polities_dtf.title.apply(get_terms_from_title)
 
-titles_terms = [w.replace(",","") for t in titles for w in t.split(" ")]
+titles_terms = [w for t in polities_dtf.terms for w in t]
 titles_terms[0:5]
 
 terms_stats = pd.Series(titles_terms).value_counts()
@@ -66,8 +71,6 @@ terms_stats_dtf.head(20)
 # %%
 """things to correct in titles:
 - remove ,
-- remove (...)
-- remove cantonal affiliation (VD), (ZH), etc...
 
 questions:
 - what to do with cantonal affiliation?
@@ -107,7 +110,141 @@ terms_to_remove = pd.read_csv(s2_hds_article_titles_terms_to_remove_hand_correct
 
 # %%
 
-get_titles_containing_str("duché")
+get_titles_containing_str("département")
 
 # %%
 
+
+
+polities_dtf[polities_dtf.terms.apply(lambda t: "d'Otmarsberg" in t)]
+
+# %%
+polities_dtf[polities_dtf.title.apply(lambda t: "commune" in t)].shape
+
+
+# %%
+
+"""
+Strategy to correct entity-names to identify proper status-words and obtain canonic title:
+- detect all statuswords
+    -> list of statuswords
+    -> what about composed statuswords (principauté abbatial, chapitre collégial):
+        011604 Einsiedeln (abbaye de bénédictines)
+        011491 Einsiedeln (abbaye de bénédictins)
+        008394 Saint-Gall (principauté abbatiale)
+        012120 Saint-Ursanne (chapitre collégial)
+- keep the one consistent with entity-tag
+    -> list of statusword with corresponding entity-tag
+-
+
+notes:
+- 012128 institut de Menzingen, fondé en 1844
+    -> pas relevant car n'a jamais contrôlé de territoire
+- 012991 Uznach - abbaye d'Otmarsberg, fondé ~1919
+    -> pas relevant
+
+titles that I do want to obtain:
+- original title: original title as obtained from HDS
+- canonic_title: unambiguous name for an entity
+- alternative_titles: possible other titles (with/without status word or cantonal affiliation)
+
+todo:
+- adding missing entities based on names (dizain, pieve)
+- abbaye-couvent-monastère-prieuré default tag name is whut?
+"""
+
+terms_without_upper_case_start.to_csv(s2_hds_article_titles_statuswords_csv, index=False)
+
+status_words_dtf = pd.read_csv(s2_hds_article_titles_statuswords_hand_corrected_csv)
+status_words_dtf["tags"] = status_words_dtf.term.apply(lambda t: [])
+status_words_dtf.to_json(s2_hds_article_titles_statuswords_json, indent=2, orient="records", force_ascii=False)
+status_words_dtf = pd.read_json(s2_hds_article_titles_statuswords_hand_corrected_json)
+
+status_words_dict = {
+    r[1]["term"]: r[1]["tags"]
+    for r in status_words_dtf.iterrows()
+}
+
+# %%
+
+terms_to_remove[terms_to_remove.term.apply(lambda t: t not in set(status_words_dtf.term))]
+# -> only 5 terms to remove that aren't status words, and only 1 (chateau) linked to polities that doesnt need hand correction anyway
+
+
+# %%
+
+status_words_set = set(status_words_dtf.term)
+polities_with_status = polities_dtf[polities_dtf.terms.apply(lambda ts: sum(t in status_words_set for t in ts)>=1)]
+polities_with_status["status_words"] = polities_with_status.terms.apply(lambda ts: frozenset([t for t in ts if t in status_words_set]))
+polities_with_status["nb_status_words"] = polities_with_status.status_words.apply(len)
+
+len(set(polities_with_status.status_words))
+
+"""
+frozenset({'bailliage', 'commanderie'})
+ frozenset({'diocèse', 'évêché'}),
+ frozenset({'bailliage', 'district', 'pieve'}),
+ frozenset({'bailliage', 'comté'}),
+ frozenset({'couvent', 'district'}),
+ frozenset({'bailliage', 'seigneurie'})}
+
+only problematic one is frozenset({'diocèse', 'évêché'}),
+-> concerns 2 articles, Genève and Coire
+"""
+
+polities_with_status[polities_with_status["status_words"].apply(lambda sw: sw==frozenset({'diocèse', 'évêché'}))]
+
+# %%
+
+with open(s2_hds_tag_default_status_word) as f:
+    tags_default_status_words = json.load(f)
+
+# %%
+
+
+def get_canonic_title(pid, original_title, tagname, status_words_dict, tags_default_status_words=tags_default_status_words):
+    """
+    algorithm:
+    - detect sw and non-sw
+    - identify pertinent sw
+    - keep only pertinent sw with added "xxx de yyy"
+    """
+    terms = get_terms_from_title(original_title)
+
+    status_words = [t for t in terms if t in status_words_dict]
+    non_status_words = [t for t in terms if t not in status_words_dict]
+    relevant_status_words = [sw for sw in status_words if tagname in status_words_dict[sw]]
+    if len(status_words)==0:
+        return original_title
+    elif len(relevant_status_words)==0:
+        if tags_default_status_words[tagname] is not None:
+            return " ".join([tags_default_status_words[tagname],"de"]+non_status_words)
+        else:
+            return " ".join(non_status_words)
+    elif len(relevant_status_words)==1:
+        return " ".join([relevant_status_words[0],"de"]+non_status_words)
+    elif len(relevant_status_words)>1:
+        warn(f"get_canonic_title() for entity {pid} - {original_title} has multiple relevant status words: {relevant_status_words}")
+    return "PROBLEM"
+
+def get_dtf_canonic_titles(dtf, status_words_dict):
+    dtf["canonic_title"] = [get_canonic_title(r["polity_id"], r["original_title"], r["dhstag"].tag, status_words_dict) for i, r in dtf.iterrows()]
+
+
+# %%
+
+get_dtf_canonic_titles(polities_dtf, status_words_dict)#["canonic_title"] = [get_canonic_title(r["polity_id"], r["original_title"], r["dhstag"].tag, status_words_dict) for i, r in polities_dtf.iterrows()]
+# %%
+
+# %%
+
+get_dtf_canonic_titles(polities_with_status, status_words_dict)
+# %%
+polities_with_status[["polity_id", "original_title", "canonic_title", "dhstag"]]
+
+# %%
+
+get_titles_containing_str("PROBLEM", "canonic_title")
+# %%
+get_titles_containing_str("château", "canonic_title")
+# %%
