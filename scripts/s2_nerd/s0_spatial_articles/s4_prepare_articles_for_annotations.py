@@ -81,9 +81,10 @@ questions:
 
 # %%
 
-unwanted_chars_regex = re.compile(",|\(|\)|/")
-terms_stats_dtf[terms_stats_dtf.term.apply(lambda t: unwanted_chars_regex.search(t) is not None)]
-
+unwanted_chars_regex = re.compile(r",|\(|\)|/")
+only_upper_case_regex = re.compile(r"^[A-Z]+$")
+unwanted_terms_dtf = terms_stats_dtf[terms_stats_dtf.term.apply(lambda t: unwanted_chars_regex.search(t) is not None or only_upper_case_regex.match(t) is not None)]
+unwanted_terms_dtf.shape
 
 # %%
 
@@ -151,6 +152,7 @@ titles that I do want to obtain:
 todo:
 - adding missing entities based on names (dizain, pieve)
 - abbaye-couvent-monastère-prieuré default tag name is whut?
+- évêché-état disparu doublons
 """
 
 terms_without_upper_case_start.to_csv(s2_hds_article_titles_statuswords_csv, index=False)
@@ -201,6 +203,71 @@ with open(s2_hds_tag_default_status_word) as f:
 
 # %%
 
+def remove_parentheses(t):
+    return t.replace("(", "").replace(")", "")
+
+parentheses_chars_regex = re.compile(r"\(|\)")
+only_upper_case_regex = re.compile(r"^[A-Z]+$")
+def get_geoidentifier(title, status_words_dict):
+    """Extracts the geoidentifier (if present) from a polity's title
+    
+    strategy:
+    - get all terms with ( or )
+    - get all terms with capitals only
+    - check that term aren't status words
+    """
+    terms = get_terms_from_title(title)
+
+    geoidentifier_terms = [t for t in terms if parentheses_chars_regex.search(t) is not None or only_upper_case_regex.match(t) is not None]
+    geoidentifier_terms = [remove_parentheses(t) for t in geoidentifier_terms]
+    geoidentifier_terms = [t for t in geoidentifier_terms if t not in status_words_dict]
+    if len(geoidentifier_terms)==0:
+        return None
+    else:
+        return " ".join(geoidentifier_terms)
+
+def get_canonic_title_from_components(typology, toponym, geoidentifier):
+    return typology+" de "+toponym + (" ("+geoidentifier+")" if geoidentifier is not None else "")
+
+def get_title_components(pid, original_title, tagname, status_words_dict, tags_default_status_words=tags_default_status_words):
+    """returns a 4-tuple containing: canonic title, typology, toponym, geo-identifier
+    
+    - canonic title: unique title containing the three following component of the tuple
+    - typology: (optional) abbaye/commune/seigneurie/..., None if not present
+    - toponym: name of the place to which the entity refers
+    - geoidentifier: (optional) if the toponym has homonyms serves as unique identifier, None if not present
+    
+    """
+    geoidentifier=get_geoidentifier(original_title, status_words_dict)
+    terms = [remove_parentheses(t) for t in get_terms_from_title(original_title)]
+
+    status_words = [t for t in terms if t in status_words_dict]
+    non_status_words = [t for t in terms if t not in status_words_dict and t != geoidentifier]
+    relevant_status_words = [sw for sw in status_words if tagname in status_words_dict[sw]]
+    toponym = " ".join(non_status_words)
+    if len(status_words)==0:
+        return (original_title, None, original_title, geoidentifier)
+    elif len(relevant_status_words)==0:
+        typology = tags_default_status_words[tagname]
+        if typology is not None:
+            canonic_title = get_canonic_title_from_components(typology, toponym, geoidentifier)
+            return (canonic_title, typology, toponym, geoidentifier)
+        else:
+            return (toponym, None, toponym, geoidentifier)
+    elif len(relevant_status_words)==1:
+        typology = relevant_status_words[0]
+        canonic_title = get_canonic_title_from_components(typology, toponym, geoidentifier)
+        return (canonic_title, typology, toponym, geoidentifier)
+    elif len(relevant_status_words)>1:
+        warn(f"get_canonic_title() for entity {pid} - {original_title} has multiple relevant status words: {relevant_status_words}")
+    return ("PROBLEM", "PROBLEM", "PROBLEM", "PROBLEM")
+
+def get_dtf_titles_components(dtf, status_words_dict):
+    title_components = [get_title_components(r["polity_id"], r["original_title"], r["dhstag"].tag, status_words_dict) for i, r in dtf.iterrows()]
+    dtf["canonic_title"] = [tc[0] for tc in title_components] 
+    dtf["typology"] = [tc[1] for tc in title_components] 
+    dtf["toponym"] = [tc[2] for tc in title_components] 
+    dtf["geoidentifier"] = [tc[3] for tc in title_components] 
 
 def get_canonic_title(pid, original_title, tagname, status_words_dict, tags_default_status_words=tags_default_status_words):
     """
@@ -245,6 +312,13 @@ polities_with_status[["polity_id", "original_title", "canonic_title", "dhstag"]]
 # %%
 
 get_titles_containing_str("PROBLEM", "canonic_title")
+get_titles_containing_str("Genève", "canonic_title")
+
 # %%
 get_titles_containing_str("château", "canonic_title")
+# %%
+
+get_dtf_titles_components(polities_dtf, status_words_dict)
+polities_dtf[["polity_id", "original_title", "canonic_title", "typology", "toponym", "geoidentifier", "dhstag"]][0:50]
+
 # %%

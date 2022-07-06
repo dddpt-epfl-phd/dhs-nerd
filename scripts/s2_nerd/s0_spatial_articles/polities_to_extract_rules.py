@@ -31,7 +31,7 @@ tagname_to_initial = {
     "Entités ecclésiastiques / Archidiocèse":"ad",
     "Entités ecclésiastiques / Chapitre cathédral":"cc",
     "Entités ecclésiastiques / Commanderie":"cm",
-    "Entités ecclésiastiques / Evêché, diocèse":"e",
+    "Entités ecclésiastiques / Evêché, diocèse":"ev",
     "Entités ecclésiastiques / Hospice":"h",
     "Entités politiques / Ancien district":"d",
     "Entités politiques / Ancienne commune":"c",
@@ -41,7 +41,7 @@ tagname_to_initial = {
     "Entités politiques / Commune":"c",
     "Entités politiques / Comté, landgraviat":"co",
     "Entités politiques / District":"d",
-    "Entités politiques / Etat historique disparu":"e",
+    "Entités politiques / Etat historique disparu":"et",
     "Entités politiques / Seigneurie":"s",
     "Entités politiques / Ville, commune, localité (étranger)":"c"
 }
