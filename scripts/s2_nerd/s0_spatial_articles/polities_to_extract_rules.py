@@ -105,6 +105,31 @@ def handle_eveche_exception(selected_articles):
         for a, atags, nbtags in selected_articles
     ]
 
+unwanted_hds_ids= set([
+    "012128", # institut de Menzingen, fondé en 1844, pas pertinent car n'a jamais contrôlé de territoire
+    "012991" # Uznach - abbaye d'Otmarsberg, fondé ~1919, pas pertinent
+])
+unwanted_hds_ids_tags={
+    "008394": [DhsTag("Entités politiques / Etat historique disparu")] # principauté abbatiale de Saint-Gall
+}
+def selected_articles_post_correction(selected_articles):
+    selected_articles = [
+        (a, atags, nbtags)
+        for a, atags, nbtags in selected_articles
+        if a.id not in unwanted_hds_ids
+    ]
+    selected_articles = [
+        (a, atags, nbtags)
+        if a.id not in unwanted_hds_ids_tags
+        else (
+            a,
+            [t for t in atags if t not in unwanted_hds_ids_tags[a.id]],
+            nbtags-len(unwanted_hds_ids_tags[a.id])
+        )
+        for a, atags, nbtags in selected_articles
+    ]
+    return selected_articles
+
 def get_selected_articles(spatial_articles, selected_tags=None, **kwargs):
     """Returns a list of tuples each containing: a selected article, its selected tags, the nb of selected tags
     
@@ -116,8 +141,9 @@ def get_selected_articles(spatial_articles, selected_tags=None, **kwargs):
     selected_articles = [(a, atags,len(atags)) for a, atags in selected_articles if len(atags)>0]
     selected_articles = add_extra_polities_from_articles_title(selected_articles)
     selected_articles = handle_eveche_exception(selected_articles)
+    selected_articles = selected_articles_post_correction(selected_articles)
     return selected_articles
-    
+
 def get_polities_to_extract(selected_articles=None, **kwargs):
     """Returns a list with 1 tuple per polity
     
@@ -184,6 +210,20 @@ def get_geoidentifier(title, status_words_dict):
 def get_canonic_title_from_components(typology, toponym, geoidentifier):
     return typology+" de "+toponym + (" ("+geoidentifier+")" if geoidentifier is not None else "")
 
+
+hand_corrected_titles = {
+    "011604-m": ("abbaye de bénédictines", "Einsiedeln",None),
+    "011491-m": ("abbaye de bénédictins", "Einsiedeln",None),
+    "008394-m": ("principauté abbatiale", "Saint-Gall",None),
+    "012120-cclg": ("chapitre collégial", "Saint-Ursanne",None)
+}
+def titles_post_correction(polity_id, title_components):
+    if polity_id in hand_corrected_titles:
+        return (get_canonic_title_from_components(*hand_corrected_titles[polity_id]), *hand_corrected_titles[polity_id])
+    else:
+        return title_components
+
+
 def get_title_components(pid, original_title, tagname, status_words_dict, tags_default_status_words=tags_default_status_words):
     """returns a 4-tuple containing: canonic title, typology, toponym, geo-identifier
     
@@ -217,8 +257,13 @@ def get_title_components(pid, original_title, tagname, status_words_dict, tags_d
         warn(f"get_canonic_title() for entity {pid} - {original_title} has multiple relevant status words: {relevant_status_words}")
     return ("PROBLEM", "PROBLEM", "PROBLEM", "PROBLEM")
 
+
 def get_dtf_titles_components(dtf, status_words_dict):
-    title_components = [get_title_components(r["polity_id"], r["original_title"], r["dhstag"].tag, status_words_dict) for i, r in dtf.iterrows()]
+    title_components = [titles_post_correction(
+        r["polity_id"],
+        get_title_components(r["polity_id"], r["original_title"], r["dhstag"].tag, status_words_dict))
+        for i, r in dtf.iterrows()
+    ]
     dtf["canonic_title"] = [tc[0] for tc in title_components] 
     dtf["typology"] = [tc[1] for tc in title_components] 
     dtf["toponym"] = [tc[2] for tc in title_components] 

@@ -297,8 +297,8 @@ len([(t.tag, t.facet, len(t.get_levels())- len(t.get_facet_levels())) for t in l
 
 # %%
 
-eveches_dioceses_tag = [t for t in spatial_utags if t.tag=="Entités ecclésiastiques / Evêché, diocèse"][0]
-etat_disparu_tag = [t for t in spatial_utags if t.tag=="Entités politiques / Etat historique disparu"][0]
+eveches_dioceses_tag = DhsTag("Entités ecclésiastiques / Evêché, diocèse")
+etat_disparu_tag = DhsTag("Entités politiques / Etat historique disparu")
 eveches_dioceses = [a for a in spatial_articles if eveches_dioceses_tag in a.tags]
 
 eveches_dioceses_dtf = pd.DataFrame([(a.id, a.title, a.tags) for a in eveches_dioceses],columns=["id", "title", "tags"])

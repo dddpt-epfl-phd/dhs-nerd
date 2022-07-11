@@ -1,7 +1,8 @@
 {
     "Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré":"m",
     "Entités ecclésiastiques / Archidiocèse":"ad",
-    "Entités ecclésiastiques / Chapitre cathédral":"cc",
+    "Entités ecclésiastiques / Chapitre cathédral":"ccth",
+    "Entités ecclésiastiques / Chapitre collégial":"cclg",
     "Entités ecclésiastiques / Commanderie":"cm",
     "Entités ecclésiastiques / Evêché, diocèse":"ev",
     "Entités ecclésiastiques / Hospice":"h",

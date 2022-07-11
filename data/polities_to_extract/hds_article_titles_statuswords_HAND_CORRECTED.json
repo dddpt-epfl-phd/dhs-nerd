@@ -105,7 +105,8 @@
     "term":"chapitre",
     "specialty":null,
     "tags":[
-      "Entités ecclésiastiques / Chapitre cathédral"
+      "Entités ecclésiastiques / Chapitre cathédral",
+      "Entités ecclésiastiques / Chapitre collégial"
     ]
   },
   {
@@ -248,6 +249,14 @@
     "specialty":"unused, denotes religious unit only",
     "tags":[
       "unused-diocèse"
+    ]
+  },
+  {
+    "term_count":15,
+    "term":"collégial",
+    "specialty":"unused, denotes religious unit only",
+    "tags":[
+      "unused-collégial"
     ]
   }
 ]

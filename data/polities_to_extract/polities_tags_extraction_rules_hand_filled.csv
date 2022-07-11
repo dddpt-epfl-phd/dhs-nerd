@@ -141,13 +141,13 @@ depth,name,facet,nb_articles,polities_extraction_rule,level,discussion,discussio
 ,,,,,,,
 1,Entités ecclésiastiques,9500,,-,,-,-
 2,Entités ecclésiastiques / Commanderie,9500.01,20,oui,15,,
-2,Entités ecclésiastiques / Chapitre cathédral,9500.0098,8,oui,15,,
+2,Entités ecclésiastiques / Chapitre cathédral,9500.0098,8,oui,15,"chapitre cathédral: chapitre de chanoines adjoints à une cathédrale, sensés conseiller l’évêque/abbé et le remplacer s’il n’y en a pas",
 2,"Entités ecclésiastiques / Décanat, paroisse, pieve",9500.0101,24,-,,"représente principalement une paroisse, a un autre tag si entité politique pertinente",
 2,"Entités ecclésiastiques / Evêché, diocèse",9500.0102,18,oui,25,,
 2,"Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré",9500.0096,179,oui,20,,
 2,Entités ecclésiastiques / Hospice,9500.0103,5,oui,15,,
 2,Entités ecclésiastiques / Archidiocèse,9500.0097,7,oui,30,,
-2,Entités ecclésiastiques / Chapitre collégial,9500.0099,22,discutable,15,"C’est ambigu. Bischofszell chapitre (012008) possédait une seigneurie. Muralto (002115)  n’a pas de raison d’être une polity, Saint-Léger (012236) non plus",
+2,Entités ecclésiastiques / Chapitre collégial,9500.0099,22,oui,15,chapitre collégial: comme un chapitre cathédral mais dans une église “collégiale” (où il y a un service religieux quotidien),"C’est ambigu. Bischofszell chapitre (012008) possédait une seigneurie. Muralto (002115)  n’a pas de raison d’être une polity, Saint-Léger (012236) non plus"
 ,,,,,,,
 1,Habitat infracommunal,9100,,-,,-,-
 2,Habitat infracommunal / Habitat abandonné,9100.0092,30,-,,,
