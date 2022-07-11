@@ -1,0 +1,253 @@
+[
+  {
+    "term_count":208,
+    "term":"commune",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / Commune",
+      "Entités politiques / Ancienne commune",
+      "Entités politiques / Ville, commune, localité (étranger)"
+    ]
+  },
+  {
+    "term_count":148,
+    "term":"district",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / District",
+      "Entités politiques / Ancien district"
+    ]
+  },
+  {
+    "term_count":103,
+    "term":"bailliage",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / Bailliage, châtellenie"
+    ]
+  },
+  {
+    "term_count":99,
+    "term":"seigneurie",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / Seigneurie"
+    ]
+  },
+  {
+    "term_count":31,
+    "term":"canton",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / Canton",
+      "Entités politiques / Canton, Département, République (1790-1813)"
+    ]
+  },
+  {
+    "term_count":26,
+    "term":"couvent",
+    "specialty":null,
+    "tags":[
+      "Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré"
+    ]
+  },
+  {
+    "term_count":21,
+    "term":"châtellenie",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / Bailliage, châtellenie"
+    ]
+  },
+  {
+    "term_count":15,
+    "term":"comté",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / Comté, landgraviat",
+      "Entités politiques / Seigneurie"
+    ]
+  },
+  {
+    "term_count":13,
+    "term":"évêché",
+    "specialty":null,
+    "tags":[
+      "Entités ecclésiastiques / Evêché, diocèse"
+    ]
+  },
+  {
+    "term_count":13,
+    "term":"abbaye",
+    "specialty":null,
+    "tags":[
+      "Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré"
+    ]
+  },
+  {
+    "term_count":13,
+    "term":"commanderie",
+    "specialty":null,
+    "tags":[
+      "Entités ecclésiastiques / Commanderie"
+    ]
+  },
+  {
+    "term_count":7,
+    "term":"dizain",
+    "specialty":"VS-only",
+    "tags":[
+      "Custom"
+    ]
+  },
+  {
+    "term_count":6,
+    "term":"chapitre",
+    "specialty":null,
+    "tags":[
+      "Entités ecclésiastiques / Chapitre cathédral"
+    ]
+  },
+  {
+    "term_count":6,
+    "term":"ville",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / Commune",
+      "Entités politiques / Ancienne commune",
+      "Entités politiques / Ville, commune, localité (étranger)"
+    ]
+  },
+  {
+    "term_count":6,
+    "term":"pieve",
+    "specialty":"TI-only",
+    "tags":[
+      "Custom"
+    ]
+  },
+  {
+    "term_count":5,
+    "term":"prieuré",
+    "specialty":null,
+    "tags":[
+      "Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré"
+    ]
+  },
+  {
+    "term_count":4,
+    "term":"vallée",
+    "specialty":"redondant",
+    "tags":[
+
+    ]
+  },
+  {
+    "term_count":4,
+    "term":"gouvernement",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / Bailliage, châtellenie"
+    ]
+  },
+  {
+    "term_count":4,
+    "term":"village",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / Commune",
+      "Entités politiques / Ancienne commune",
+      "Entités politiques / Ville, commune, localité (étranger)"
+    ]
+  },
+  {
+    "term_count":3,
+    "term":"localité",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / Commune",
+      "Entités politiques / Ancienne commune",
+      "Entités politiques / Ville, commune, localité (étranger)"
+    ]
+  },
+  {
+    "term_count":2,
+    "term":"duché",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / Etat historique disparu"
+    ]
+  },
+  {
+    "term_count":2,
+    "term":"abbatiale",
+    "specialty":null,
+    "tags":[
+    ]
+  },
+  {
+    "term_count":2,
+    "term":"principauté",
+    "specialty":null,
+    "tags":[
+
+    ]
+  },
+  {
+    "term_count":2,
+    "term":"prévôté",
+    "specialty":null,
+    "tags":[
+      "Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré",
+      "Entités politiques / Bailliage, châtellenie"
+    ]
+  },
+  {
+    "term_count":2,
+    "term":"archidiocèse",
+    "specialty":null,
+    "tags":[
+      "Entités ecclésiastiques / Archidiocèse"
+    ]
+  },
+  {
+    "term_count":2,
+    "term":"département",
+    "specialty":null,
+    "tags":[
+      "Entités politiques / Canton, Département, République (1790-1813)"
+    ]
+  },
+  {
+    "term_count":1,
+    "term":"mandement",
+    "specialty":null,
+    "tags":[
+      "Custom"
+    ]
+  },
+  {
+    "term_count":0,
+    "term":"juridiction",
+    "specialty":"jurisdiction for legal matters, unused as of now",
+    "tags":[
+      "Entités politiques / Juridiction"
+    ]
+  },
+  {
+    "term_count":0,
+    "term":"château",
+    "specialty":"denotes building, unused",
+    "tags":[
+      "Patrimoine / Château fort, tour, siège baillival"
+    ]
+  },
+  {
+    "term_count":15,
+    "term":"diocèse",
+    "specialty":"unused, denotes religious unit only",
+    "tags":[
+      "unused-diocèse"
+    ]
+  }
+]

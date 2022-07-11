@@ -214,13 +214,12 @@ polities_with_status[["polity_id", "original_title", "canonic_title", "dhstag"]]
 # %%
 
 get_titles_containing_str("PROBLEM", "canonic_title")
-get_titles_containing_str("diocèse")#, "canonic_title")
+get_titles_containing_str("mandement")#, "canonic_title")
 
 # %%
-get_titles_containing_str("château", "canonic_title")
+get_titles_containing_str("mandement", "canonic_title")
 # %%
 
-get_dtf_titles_components(polities_dtf, status_words_dict)
 polities_dtf[["polity_id", "original_title", "canonic_title", "typology", "toponym", "geoidentifier", "dhstag"]][0:50]
 
 # %%

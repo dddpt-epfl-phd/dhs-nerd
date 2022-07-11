@@ -11,8 +11,10 @@ sys.path.append("../../../src")
 sys.path.append("../../../scripts")
 
 from dhs_scraper import DhsArticle, DhsTag, tag_tree, DHS_ARTICLE_CATEGORIES
-from data_file_paths import s2_s1_polities_tags_extraction_rules_hand_filled, S0_JSONL_ARTICLES_BY_CATEGORIES_FILES, localize, S0_JSONL_ALL_ARTICLES_PARSED_FILE, s2_hds_tag_default_status_word
+from data_file_paths import *
 
+
+custom_dhstag = DhsTag("Custom", "u=99999")
 
 def get_articles(language="fr"):
     articles_jsonl_file = localize(S0_JSONL_ALL_ARTICLES_PARSED_FILE, language)
@@ -30,25 +32,10 @@ def get_articles_by_category(articles):
     return articles_by_category
 
 
-tagname_to_initial = {
-    "Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré":"m",
-    "Entités ecclésiastiques / Archidiocèse":"ad",
-    "Entités ecclésiastiques / Chapitre cathédral":"cc",
-    "Entités ecclésiastiques / Commanderie":"cm",
-    "Entités ecclésiastiques / Evêché, diocèse":"ev",
-    "Entités ecclésiastiques / Hospice":"h",
-    "Entités politiques / Ancien district":"d",
-    "Entités politiques / Ancienne commune":"c",
-    "Entités politiques / Bailliage, châtellenie":"b",
-    "Entités politiques / Canton":"ct",
-    "Entités politiques / Canton, Département, République (1790-1813)":"ct",
-    "Entités politiques / Commune":"c",
-    "Entités politiques / Comté, landgraviat":"co",
-    "Entités politiques / District":"d",
-    "Entités politiques / Etat historique disparu":"et",
-    "Entités politiques / Seigneurie":"s",
-    "Entités politiques / Ville, commune, localité (étranger)":"c"
-}
+with open(s2_hds_tagname_to_initial) as f:
+    tagname_to_initial = json.load(f)
+def get_initial_from_tag(tag):
+    return tagname_to_initial[tag] if tag in tagname_to_initial else tagname_to_initial["other"]
 
 def tag_name_to_short_name(n):
     return n.split("/")[-1].strip()
@@ -85,6 +72,39 @@ def get_selected_tags(selected_tags_dtf=None, **kwargs):
         selected_tags_dtf = get_selected_tags_dtf(**kwargs)
     return set(selected_tags_dtf["dhstag"])
 
+title_terms_indicating_extra_polity = list(pd.read_csv(s2_hds_title_terms_indicating_extra_polity).term)
+def add_extra_polities_from_articles_title(selected_articles):
+    selected_articles = [
+        (a, atags+[custom_dhstag], nbtags+1)
+        if any(t in a.title for t in title_terms_indicating_extra_polity)
+        else (a, atags, nbtags)
+        for a, atags, nbtags in selected_articles
+    ]
+    return selected_articles
+
+def handle_eveche_exception(selected_articles):
+    """The "Eveche, Diocèse" tag is really a polity only if it is accompanied by the "Etat historique disparu" tag
+
+    Hence this function
+    - removes "Eveche, Diocèse" if it is not accompanied by etat historique disparu
+    - removes "Etat historique disparu" tag from accompanied "Eveche, Diocèse" tags
+    Entités politiques / Etat historique disparu
+    Entités ecclésiastiques / Evêché, diocèse
+    """
+    ev_tag = DhsTag("Entités ecclésiastiques / Evêché, diocèse")
+    ehd_tag = DhsTag("Entités politiques / Etat historique disparu")
+    def correct_eveche_tags(article, tags, nbtags):
+        if ev_tag not in tags:
+            return (article, tags, nbtags)
+        elif ehd_tag in tags:
+            return (article, [t for t in tags if t!=ehd_tag], nbtags-1)
+        else :
+            return (article, [t for t in tags if t!=ev_tag], nbtags-1)
+    return [
+        correct_eveche_tags(a, atags, nbtags)
+        for a, atags, nbtags in selected_articles
+    ]
+
 def get_selected_articles(spatial_articles, selected_tags=None, **kwargs):
     """Returns a list of tuples each containing: a selected article, its selected tags, the nb of selected tags
     
@@ -94,8 +114,10 @@ def get_selected_articles(spatial_articles, selected_tags=None, **kwargs):
         selected_tags = get_selected_tags(**kwargs)
     selected_articles = [(a,[t for t in a.tags if t in selected_tags]) for a in spatial_articles]
     selected_articles = [(a, atags,len(atags)) for a, atags in selected_articles if len(atags)>0]
+    selected_articles = add_extra_polities_from_articles_title(selected_articles)
+    selected_articles = handle_eveche_exception(selected_articles)
     return selected_articles
-
+    
 def get_polities_to_extract(selected_articles=None, **kwargs):
     """Returns a list with 1 tuple per polity
     
@@ -103,7 +125,7 @@ def get_polities_to_extract(selected_articles=None, **kwargs):
     if selected_articles is None:
         selected_articles = get_selected_articles(**kwargs)
     polities = [
-        (a.id+"-"+tagname_to_initial[t.tag], a, t, nbtags)
+        (a.id+"-"+get_initial_from_tag(t.tag), a, t, nbtags)
         for a, tags, nbtags in selected_articles
         for i,t in enumerate(sorted(tags, key=lambda t: t.tag))
     ]

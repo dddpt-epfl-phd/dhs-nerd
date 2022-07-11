@@ -1,0 +1,20 @@
+{
+    "Entités ecclésiastiques / Abbaye, couvent, monastère, prieuré":"m",
+    "Entités ecclésiastiques / Archidiocèse":"ad",
+    "Entités ecclésiastiques / Chapitre cathédral":"cc",
+    "Entités ecclésiastiques / Commanderie":"cm",
+    "Entités ecclésiastiques / Evêché, diocèse":"ev",
+    "Entités ecclésiastiques / Hospice":"h",
+    "Entités politiques / Ancien district":"d",
+    "Entités politiques / Ancienne commune":"c",
+    "Entités politiques / Bailliage, châtellenie":"b",
+    "Entités politiques / Canton":"ct",
+    "Entités politiques / Canton, Département, République (1790-1813)":"ct",
+    "Entités politiques / Commune":"c",
+    "Entités politiques / Comté, landgraviat":"co",
+    "Entités politiques / District":"d",
+    "Entités politiques / Etat historique disparu":"et",
+    "Entités politiques / Seigneurie":"s",
+    "Entités politiques / Ville, commune, localité (étranger)":"c",
+    "other": "sp"
+}

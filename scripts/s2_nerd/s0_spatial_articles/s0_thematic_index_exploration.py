@@ -245,7 +245,8 @@ relevant_tags_names = [
     "Habitat infracommunal / Village, hameau, fraction, localité, ferme",
     "Entités politiques / Ville médiévale",
     "Transports / Hospice",
-    "Etat, pouvoir, politique / Territoires, circonscriptions / Peuples et états avec territoires suisses"
+    "Etat, pouvoir, politique / Territoires, circonscriptions / Peuples et états avec territoires suisses",
+    "Entités ecclésiastiques / Evêché, diocèse"
 ]
 
 relevant_tags = [[t for t in utags if t.tag ==tname][0] for tname in relevant_tags_names]
@@ -295,3 +296,20 @@ set([ len(t.get_levels())- len(t.get_facet_levels()) for t in list(utags)])
 len([(t.tag, t.facet, len(t.get_levels())- len(t.get_facet_levels())) for t in list(utags) if (len(t.get_levels())- len(t.get_facet_levels()))==0])
 
 # %%
+
+eveches_dioceses_tag = [t for t in spatial_utags if t.tag=="Entités ecclésiastiques / Evêché, diocèse"][0]
+etat_disparu_tag = [t for t in spatial_utags if t.tag=="Entités politiques / Etat historique disparu"][0]
+eveches_dioceses = [a for a in spatial_articles if eveches_dioceses_tag in a.tags]
+
+eveches_dioceses_dtf = pd.DataFrame([(a.id, a.title, a.tags) for a in eveches_dioceses],columns=["id", "title", "tags"])
+eveches_dioceses_dtf["etat_hist"] = eveches_dioceses_dtf.tags.apply(lambda tags: etat_disparu_tag in tags)
+eveches_dioceses_dtf[eveches_dioceses_dtf.etat_hist]
+# %%
+eveches_dioceses_dtf[~eveches_dioceses_dtf.etat_hist]
+
+# %%
+"""
+the tag "Entités ecclésiastiques / Evêché, diocèse" denotes a polity only if it
+is accompanied by the "Entités politiques / Etat historique disparu" tag,
+otherwise it denotes the ecclesiastical "diocèse" entity which only has religious purposes
+"""
