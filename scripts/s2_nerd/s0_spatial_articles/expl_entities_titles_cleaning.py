@@ -11,7 +11,7 @@ import sys
 sys.path.append("../../../src")
 sys.path.append("../../../scripts")
 
-from polities_to_extract_rules import *
+from f_polities_to_extract_rules import *
 from data_file_paths import *
 
 # %%

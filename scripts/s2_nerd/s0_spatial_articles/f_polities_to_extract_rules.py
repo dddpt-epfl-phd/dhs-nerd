@@ -168,7 +168,7 @@ def get_polities_to_extract_dtf(polities_to_extract=None,selected_tags_dtf=None,
     polities_dtf = pd.DataFrame([
         (eid, a.title, t, nbtags, a.id)
         for eid, a, t, nbtags in polities_to_extract
-    ], columns=["polity_id", "title", "dhstag", "nbtags", "hds_id"])
+    ], columns=["polity_id", "original_title", "dhstag", "nbtags", "hds_id"])
     # merging in level info
     polities_dtf["name"] = polities_dtf.dhstag.apply(lambda t: t.tag)
     polities_dtf = polities_dtf.merge(selected_tags_dtf[["name","level"]], on="name")
