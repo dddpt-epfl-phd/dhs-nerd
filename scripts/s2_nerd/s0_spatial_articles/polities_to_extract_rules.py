@@ -13,6 +13,8 @@ sys.path.append("../../../scripts")
 from dhs_scraper import DhsArticle, DhsTag, tag_tree, DHS_ARTICLE_CATEGORIES
 from data_file_paths import *
 
+from Polity import *
+
 
 custom_dhstag = DhsTag("Custom", "u=99999")
 
@@ -268,3 +270,16 @@ def get_dtf_titles_components(dtf, status_words_dict):
     dtf["typology"] = [tc[1] for tc in title_components] 
     dtf["toponym"] = [tc[2] for tc in title_components] 
     dtf["geoidentifier"] = [tc[3] for tc in title_components] 
+
+def from_dtf_polity_list(dtf):
+    """unimplemented: get a csv out"""
+    if False:
+        def create_polity(r):
+            print(r["geoidentifier"])
+            Polity(r["polity_id"], r["toponym"], r["typology"], r["geoidentifer"], r["dhstag"], r["hds_id"])
+        polities = [
+            create_polity(r)
+            for i,r in dtf.iterrows()
+        ]
+        return polities
+        #Polity(polity_id, toponym, typology=None, geoidentifer=None, hds_tag=None, hds_article_id=None)
