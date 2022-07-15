@@ -145,8 +145,8 @@ s2_hds_article_titles_statuswords_hand_corrected_json = path.join(s2_polities_to
 s2_hds_tag_default_status_word = path.join(s2_polities_to_extract_folder, "hds_tag_default_status_word.json")
 s2_hds_tagname_to_initial = path.join(s2_polities_to_extract_folder, "tagname_to_initial.json")
 s2_hds_title_terms_indicating_extra_polity = path.join(s2_polities_to_extract_folder, "title_terms_indicating_extra_polity.csv")
+s2_polities_list_csv = path.join(s2_polities_to_extract_folder,"polities_list.csv")
 
-    
 def localize(path, language):
     return path.replace("<LANGUAGE>", language)
 

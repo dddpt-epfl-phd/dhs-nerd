@@ -452,6 +452,33 @@ ax.set_ylabel("# articles")
 ax.set_xlabel("# of entities per article\n\nReading: 217 articles each refer to two polities as their main subject")
 
 
+# %% Loading status words dict in title
+
+status_words_dtf = pd.read_json(s2_hds_article_titles_statuswords_hand_corrected_json)
+status_words_dict = {
+    r[1]["term"]: r[1]["tags"]
+    for r in status_words_dtf.iterrows()
+}
+# %% Correcting polities titles using status words
+
+get_dtf_titles_components(polities_dtf, status_words_dict)#["canonic_title"] = [get_canonic_title(r["polity_id"], r["article_title"], r["hds_tag"].tag, status_words_dict) for i, r in polities_dtf.iterrows()]
+
+
 # %%
 
+polities_dtf_csv = polities_dtf.copy()
+polities_dtf_csv.hds_tag.apply(lambda t: t.tag)
+polities_dtf_csv["hds_article_id"] = polities_dtf_csv.hds_id
+del polities_dtf_csv["hds_id"]
+polities_dtf_csv.hds_tag = polities_dtf_csv.hds_tag.apply(lambda t: t.tag)
+columns_ordering = [
+    'polity_id', 'hds_tag', 'canonic_title',
+    'typology', 'toponym', 'geoidentifier',
+    'hds_article_id', 'article_title', 'nbtags', 'level', 'max_level'
+]
+polities_dtf_csv = polities_dtf_csv[columns_ordering]
+polities_dtf_csv.to_csv(s2_polities_list_csv, index=False)
 
+polities_dtf_csv.head()
+
+# %%

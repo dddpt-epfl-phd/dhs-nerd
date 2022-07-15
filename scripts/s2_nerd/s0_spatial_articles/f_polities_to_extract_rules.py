@@ -16,7 +16,7 @@ from data_file_paths import *
 from Polity import *
 
 
-custom_dhstag = DhsTag("Custom", "u=99999")
+custom_hds_tag = DhsTag("Custom", "u=99999")
 
 def get_articles(language="fr"):
     articles_jsonl_file = localize(S0_JSONL_ALL_ARTICLES_PARSED_FILE, language)
@@ -50,7 +50,7 @@ def get_polities_tags_extraction_rules_hand_filled(**kwargs):
     tags_to_extract = pd.read_csv(s2_s1_polities_tags_extraction_rules_hand_filled)
     tags_to_extract = tags_to_extract.loc[~tags_to_extract.depth.isna()]
     tags_to_extract.nb_articles[tags_to_extract.nb_articles.isna()] = 0
-    tags_to_extract["dhstag"] = tags_to_extract.name.apply(lambda n: DhsTag(n))
+    tags_to_extract["hds_tag"] = tags_to_extract.name.apply(lambda n: DhsTag(n))
     tags_to_extract["short_name"] = tags_to_extract.name.apply(tag_name_to_short_name)
     tags_to_extract_reordered_columns = set(["depth", "name", "short_name"])
     tags_to_extract = tags_to_extract[["depth", "short_name"] + [c for c in tags_to_extract.columns if c not in tags_to_extract_reordered_columns] +["name"]]
@@ -72,12 +72,12 @@ def get_selected_tags(selected_tags_dtf=None, **kwargs):
     Note: the DhsTags are incomplete, they only have their tagname, no url or facet"""
     if selected_tags_dtf is None:
         selected_tags_dtf = get_selected_tags_dtf(**kwargs)
-    return set(selected_tags_dtf["dhstag"])
+    return set(selected_tags_dtf["hds_tag"])
 
 title_terms_indicating_extra_polity = list(pd.read_csv(s2_hds_title_terms_indicating_extra_polity).term)
 def add_extra_polities_from_articles_title(selected_articles):
     selected_articles = [
-        (a, atags+[custom_dhstag], nbtags+1)
+        (a, atags+[custom_hds_tag], nbtags+1)
         if any(t in a.title for t in title_terms_indicating_extra_polity)
         else (a, atags, nbtags)
         for a, atags, nbtags in selected_articles
@@ -168,9 +168,9 @@ def get_polities_to_extract_dtf(polities_to_extract=None,selected_tags_dtf=None,
     polities_dtf = pd.DataFrame([
         (eid, a.title, t, nbtags, a.id)
         for eid, a, t, nbtags in polities_to_extract
-    ], columns=["polity_id", "original_title", "dhstag", "nbtags", "hds_id"])
+    ], columns=["polity_id", "article_title", "hds_tag", "nbtags", "hds_id"])
     # merging in level info
-    polities_dtf["name"] = polities_dtf.dhstag.apply(lambda t: t.tag)
+    polities_dtf["name"] = polities_dtf.hds_tag.apply(lambda t: t.tag)
     polities_dtf = polities_dtf.merge(selected_tags_dtf[["name","level"]], on="name")
     polities_dtf.drop("name", axis=1, inplace=True)
     return polities_dtf
@@ -226,7 +226,7 @@ def titles_post_correction(polity_id, title_components):
         return title_components
 
 
-def get_title_components(pid, original_title, tagname, status_words_dict, tags_default_status_words=tags_default_status_words):
+def get_title_components(pid, article_title, tagname, status_words_dict, tags_default_status_words=tags_default_status_words):
     """returns a 4-tuple containing: canonic title, typology, toponym, geo-identifier
     
     - canonic title: unique title containing the three following component of the tuple
@@ -235,15 +235,15 @@ def get_title_components(pid, original_title, tagname, status_words_dict, tags_d
     - geoidentifier: (optional) if the toponym has homonyms serves as unique identifier, None if not present
     
     """
-    geoidentifier=get_geoidentifier(original_title, status_words_dict)
-    terms = [remove_parentheses(t) for t in get_terms_from_title(original_title)]
+    geoidentifier=get_geoidentifier(article_title, status_words_dict)
+    terms = [remove_parentheses(t) for t in get_terms_from_title(article_title)]
 
     status_words = [t for t in terms if t in status_words_dict]
     non_status_words = [t for t in terms if t not in status_words_dict and t != geoidentifier]
     relevant_status_words = [sw for sw in status_words if tagname in status_words_dict[sw]]
     toponym = " ".join(non_status_words)
     if len(status_words)==0:
-        return (original_title, None, original_title, geoidentifier)
+        return (article_title, None, article_title, geoidentifier)
     elif len(relevant_status_words)==0:
         typology = tags_default_status_words[tagname]
         if typology is not None:
@@ -256,14 +256,14 @@ def get_title_components(pid, original_title, tagname, status_words_dict, tags_d
         canonic_title = get_canonic_title_from_components(typology, toponym, geoidentifier)
         return (canonic_title, typology, toponym, geoidentifier)
     elif len(relevant_status_words)>1:
-        warn(f"get_canonic_title() for entity {pid} - {original_title} has multiple relevant status words: {relevant_status_words}")
+        warn(f"get_canonic_title() for entity {pid} - {article_title} has multiple relevant status words: {relevant_status_words}")
     return ("PROBLEM", "PROBLEM", "PROBLEM", "PROBLEM")
 
 
 def get_dtf_titles_components(dtf, status_words_dict):
     title_components = [titles_post_correction(
         r["polity_id"],
-        get_title_components(r["polity_id"], r["original_title"], r["dhstag"].tag, status_words_dict))
+        get_title_components(r["polity_id"], r["article_title"], r["hds_tag"].tag, status_words_dict))
         for i, r in dtf.iterrows()
     ]
     dtf["canonic_title"] = [tc[0] for tc in title_components] 
@@ -276,7 +276,7 @@ def from_dtf_polity_list(dtf):
     if False:
         def create_polity(r):
             print(r["geoidentifier"])
-            Polity(r["polity_id"], r["toponym"], r["typology"], r["geoidentifer"], r["dhstag"], r["hds_id"])
+            Polity(r["polity_id"], r["toponym"], r["typology"], r["geoidentifer"], r["hds_tag"], r["hds_id"])
         polities = [
             create_polity(r)
             for i,r in dtf.iterrows()

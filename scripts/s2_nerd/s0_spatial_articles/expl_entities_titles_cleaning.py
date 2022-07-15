@@ -30,9 +30,9 @@ polities_dtf.head()
 # %%
 
 
-polities_dtf["original_title"] = polities_dtf.title
+polities_dtf["article_title"] = polities_dtf.title
 
-def get_titles_containing_str(s, title_column="original_title"):
+def get_titles_containing_str(s, title_column="article_title"):
     return polities_dtf[polities_dtf[title_column].apply(lambda t: s in t)]
 
 
@@ -94,7 +94,7 @@ Special treatments:
     -> "de" is not part of stopwords
     -> how to remove?
 - Milan duché
-    -> useful information as it is not mentioned in the dhstag
+    -> useful information as it is not mentioned in the hds_tag
 """
 
 terms_without_upper_case_start.to_csv(s2_hds_article_titles_terms_to_remove_csv, index=False)
@@ -202,14 +202,14 @@ polities_with_status[polities_with_status["status_words"].apply(lambda sw: sw==f
 
 # %%
 
-get_dtf_titles_components(polities_dtf, status_words_dict)#["canonic_title"] = [get_canonic_title(r["polity_id"], r["original_title"], r["dhstag"].tag, status_words_dict) for i, r in polities_dtf.iterrows()]
+get_dtf_titles_components(polities_dtf, status_words_dict)#["canonic_title"] = [get_canonic_title(r["polity_id"], r["article_title"], r["hds_tag"].tag, status_words_dict) for i, r in polities_dtf.iterrows()]
 # %%
 
 # %%
 
 get_dtf_titles_components(polities_with_status, status_words_dict)
 # %%
-polities_with_status[["polity_id", "original_title", "canonic_title", "dhstag"]]
+polities_with_status[["polity_id", "article_title", "canonic_title", "hds_tag"]]
 
 # %%
 
@@ -220,12 +220,12 @@ get_titles_containing_str("mandement")#, "canonic_title")
 get_titles_containing_str("Ursanne", "canonic_title")
 # %%
 
-polities_dtf[["polity_id", "original_title", "canonic_title", "typology", "toponym", "geoidentifier", "dhstag"]][0:50]
+polities_dtf[["polity_id", "article_title", "canonic_title", "typology", "toponym", "geoidentifier", "hds_tag"]][0:50]
 
 # %%
 
 cclg_tag = DhsTag("Entités ecclésiastiques / Chapitre collégial")
 
-polities_dtf[polities_dtf.dhstag.apply(lambda t: t==cclg_tag)]
+polities_dtf[polities_dtf.hds_tag.apply(lambda t: t==cclg_tag)]
 
 # %%
