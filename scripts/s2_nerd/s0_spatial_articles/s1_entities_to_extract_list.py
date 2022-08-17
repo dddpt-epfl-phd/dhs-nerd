@@ -1,6 +1,7 @@
 # started with file script s0_scrape_dhs/s0_scrape_dhs/s2_dhs_stats.py as basis
 
 # %%
+import csv
 import json
 from langcodes import tag_match_score
 import numpy as np
@@ -477,7 +478,7 @@ columns_ordering = [
     'hds_article_id', 'article_title', 'nbtags', 'level', 'max_level'
 ]
 polities_dtf_csv = polities_dtf_csv[columns_ordering]
-polities_dtf_csv.to_csv(s2_polities_list_csv, index=False)
+polities_dtf_csv.to_csv(s2_polities_list_csv, index=False, quoting=csv.QUOTE_NONNUMERIC)
 
 polities_dtf_csv.head()
 
