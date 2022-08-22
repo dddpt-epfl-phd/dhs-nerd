@@ -1,5 +1,5 @@
 import React from 'react'
-import {Navbar, Nav, NavDropdown} from 'react-bootstrap'
+import {Navbar, Nav, NavDropdown, Alert} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
 import {
     Link,
@@ -21,6 +21,7 @@ const LanguageChooser = ({}) => {
     )
     return <NavDropdown className="language-chooser" title={language.toUpperCase()} id="basic-nav-dropdown">
             {links}
+            <Alert variant="info">the chosen language only affects articles contents.</Alert>
         </NavDropdown>
 }
 
