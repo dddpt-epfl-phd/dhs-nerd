@@ -147,6 +147,8 @@ s2_hds_tagname_to_initial = path.join(s2_polities_to_extract_folder, "tagname_to
 s2_hds_title_terms_indicating_extra_polity = path.join(s2_polities_to_extract_folder, "title_terms_indicating_extra_polity.csv")
 s2_polities_list_csv = path.join(s2_polities_to_extract_folder,"polities_list.csv")
 
+s2_polities_txt_folder = path.join(s2_polities_to_extract_folder, "polities_txt")
+
 def localize(path, language):
     return path.replace("<LANGUAGE>", language)
 
