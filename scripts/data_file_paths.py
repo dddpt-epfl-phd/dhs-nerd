@@ -146,6 +146,7 @@ s2_hds_tag_default_status_word = path.join(s2_polities_to_extract_folder, "hds_t
 s2_hds_tagname_to_initial = path.join(s2_polities_to_extract_folder, "tagname_to_initial.json")
 s2_hds_title_terms_indicating_extra_polity = path.join(s2_polities_to_extract_folder, "title_terms_indicating_extra_polity.csv")
 s2_polities_list_csv = path.join(s2_polities_to_extract_folder,"polities_list.csv")
+s2_sampled_polities_for_annotation_json = path.join(s2_polities_to_extract_folder,"sampled_polities_for_annotation.json")
 
 s2_polities_txt_folder = path.join(s2_polities_to_extract_folder, "polities_txt")
 

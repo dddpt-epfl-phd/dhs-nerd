@@ -28,8 +28,8 @@ polities_dtf = pd.read_csv(s2_polities_list_csv)
 # restore hds id to their proper str format
 polities_dtf.hds_article_id = polities_dtf.hds_article_id.apply(lambda id: str(id))
 polities_dtf.hds_article_id = polities_dtf.hds_article_id.apply(lambda id: ((6-len(id))*"0")+id)
-polities_dtf.typology[polities_dtf.typology.isna()] = None
-polities_dtf.geoidentifier[polities_dtf.geoidentifier.isna()] = None
+polities_dtf.loc[polities_dtf.typology.isna(),"typology"] = None
+polities_dtf.loc[polities_dtf.geoidentifier.isna(), "geoidentifier"] = None
 
 polities_dtf[50:70]
 # %%
@@ -75,6 +75,8 @@ polities_dtf["document"] = [
 seed(54367)
 
 sampled_articles_ids = [a.id for a in sample(articles, 100)]
+with open(s2_sampled_polities_for_annotation_json, "w") as f:
+    json.dump(sampled_articles_ids, f, ensure_ascii=False)
 
 for i,row in polities_dtf.iterrows():
     if row["hds_article_id"] in sampled_articles_ids:
