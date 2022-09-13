@@ -206,18 +206,20 @@ def get_geoidentifier(title, status_words_dict):
     if len(geoidentifier_terms)==0:
         return None
     else:
-        return " ".join(geoidentifier_terms)
+        return geoidentifier_terms
 
 
 def get_canonic_title_from_components(typology, toponym, geoidentifier):
-    return typology+" de "+toponym + (" ("+geoidentifier+")" if geoidentifier is not None else "")
+    typology_start = typology+" de " if typology is not None else ""
+    return typology_start+toponym + (" ("+geoidentifier+")" if geoidentifier is not None else "")
 
 
 hand_corrected_titles = {
     "011604-m": ("abbaye de bénédictines", "Einsiedeln",None),
     "011491-m": ("abbaye de bénédictins", "Einsiedeln",None),
     "008394-m": ("principauté abbatiale", "Saint-Gall",None),
-    "012120-cclg": ("chapitre collégial", "Saint-Ursanne",None)
+    "012120-cclg": ("chapitre collégial", "Saint-Ursanne",None),
+    "032485-c": (None, "Dettighofen","D")
 }
 def titles_post_correction(polity_id, title_components):
     if polity_id in hand_corrected_titles:
@@ -235,15 +237,18 @@ def get_title_components(pid, article_title, tagname, status_words_dict, tags_de
     - geoidentifier: (optional) if the toponym has homonyms serves as unique identifier, None if not present
     
     """
-    geoidentifier=get_geoidentifier(article_title, status_words_dict)
+
+    geoidentifier_terms=get_geoidentifier(article_title, status_words_dict)
+    geoidentifier = " ".join(geoidentifier_terms) if geoidentifier_terms is not None else None
+    geoidentifier_terms = geoidentifier_terms if geoidentifier_terms is not None else []
     terms = [remove_parentheses(t) for t in get_terms_from_title(article_title)]
 
     status_words = [t for t in terms if t in status_words_dict]
-    non_status_words = [t for t in terms if t not in status_words_dict and t != geoidentifier]
+    non_status_words = [t for t in terms if t not in status_words_dict and all(gt not in t for gt in geoidentifier_terms)]
     relevant_status_words = [sw for sw in status_words if tagname in status_words_dict[sw]]
     toponym = " ".join(non_status_words)
     if len(status_words)==0:
-        return (article_title, None, article_title, geoidentifier)
+        return (article_title, None, toponym, geoidentifier)
     elif len(relevant_status_words)==0:
         typology = tags_default_status_words[tagname]
         if typology is not None:
@@ -270,6 +275,11 @@ def get_dtf_titles_components(dtf, status_words_dict):
     dtf["typology"] = [tc[1] for tc in title_components] 
     dtf["toponym"] = [tc[2] for tc in title_components] 
     dtf["geoidentifier"] = [tc[3] for tc in title_components] 
+    be_title_components = [tc for tc in title_components if "BE" in tc[0]]
+    print(f"entries with BE in toponym:\n{dtf[dtf.toponym.apply(lambda t: 'BE' in t)]}")
+    print(f"nb entries with BE in toponym: {dtf[dtf.toponym.apply(lambda t: 'BE' in t)].shape}")
+    print(f"be_title_components:\n{be_title_components}")
+    
 
 def from_dtf_polity_list(dtf):
     """unimplemented: get a csv out"""

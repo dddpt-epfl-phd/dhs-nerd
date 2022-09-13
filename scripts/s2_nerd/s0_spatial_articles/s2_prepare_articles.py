@@ -67,6 +67,24 @@ polities_dtf["document"] = [
     for row in polities_dtf.iterrows()
 ]
     
+# %%
+
+def get_articles_dtf_from_polities_dtf(polities_dtf, additional_columns=None):
+    if additional_columns is None:
+        additional_columns = []
+    articles_dtf = polities_dtf.loc[~polities_dtf.hds_article_id.duplicated()]
+    articles_dtf = articles_dtf.loc[:,
+        [
+            'hds_article_id','toponym', 'geoidentifier',
+            'article_title', 'nbtags','max_level'
+        ] + additional_columns
+    ].copy()
+    articles_dtf["polities_ids"] = articles_dtf.hds_article_id.apply(lambda hdsid: list(polities_dtf.polity_id[polities_dtf.hds_article_id==hdsid]))
+    articles_dtf["nb_polities"] = articles_dtf["polities_ids"].apply(len)
+    return articles_dtf
+
+# %%
+
 
 # %%
 
