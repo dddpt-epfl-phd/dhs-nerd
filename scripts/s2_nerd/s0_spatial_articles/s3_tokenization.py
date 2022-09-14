@@ -209,7 +209,7 @@ sampled_articles_dtf["toponym_tokens"] = [
 
 # %%
 
-nb_predecessors = 5
+nb_predecessors = 10
 nb_successors = 1
 sampled_articles_dtf["predecessors_tokens"] = [
     [t.nbor(i) for t in row.toponym_tokens for i in range(-min(nb_predecessors,t.i),nb_successors+1)]
@@ -223,7 +223,7 @@ predecessors_tokens_value_counts = predecessors_tokens.value_counts().to_frame()
 #pd.set_option('display.max_rows', None)
 predecessors_tokens_value_counts[predecessors_tokens_value_counts.predecessors_tokens==2]
 
-polity_token_text = [
+statusword_token_text = [
     # > 4 appearances
     "seigneur",
     "région",
@@ -285,24 +285,81 @@ toponyms_tokens_sequences = [
 ]
 # %%
 
-sampled_articles_dtf["polity_tokens_sequences"] = [
-    [seq for seq in toponyms_tokens_sequences if any(token.text in polity_token_text for token in seq)]
+sampled_articles_dtf["statusword_tokens_sequences"] = [
+    [seq for seq in toponyms_tokens_sequences if any(token.text in statusword_token_text for token in seq)]
     for toponyms_tokens_sequences in sampled_articles_dtf.toponyms_tokens_sequences
 ]
 # %%
 
-polity_tokens_sequences = [
-    seq for polity_tokens_sequences in sampled_articles_dtf.polity_tokens_sequences
-    for seq in polity_tokens_sequences
+statusword_tokens_sequences = [
+    seq for statusword_tokens_sequences in sampled_articles_dtf.statusword_tokens_sequences
+    for seq in statusword_tokens_sequences
 ]
 
 # %%
 
-def analyse_polity_tokens_sequence(token_sequence):
+def analyse_statusword_tokens_sequence_single(dtf_row, token_sequence, statusword_index, toponym_index):
+    """"""
+    sequence = token_sequence[statusword_index:(toponym_index+1)]
+    sequence_structure = [
+        "STATUS" if token.text in statusword_token_text else(
+        "TOPONYM" if (
+            token.text in normalized_toponym_tokens or token.text in dtf_row.loose_normalized_tokenized_toponym
+        ) else token.text
+        )
+        for token in sequence
+    ]
+    statusword = token_sequence[statusword_index]
+    return (statusword, sequence, sequence_structure)
+
+def analyse_statusword_tokens_sequence(dtf_row, token_sequence):
     """
     Goals:
-    1) find polity token
-    2) trim down sequence from polity-token to toponym token
+    1) find statusword token
+    2) trim down sequence from statusword-token to toponym token
+    3) get a structureal-token sequence "status-XX-toponym"
     """
+    statusword_indices = [i for i,tok in enumerate(token_sequence) if tok.text in statusword_token_text]
+    toponym_indices = [i for i,tok in enumerate(token_sequence) if tok.text in normalized_toponym_tokens or tok.text in dtf_row.loose_normalized_tokenized_toponym]
+    sequences_analyses = [
+        analyse_statusword_tokens_sequence_single(dtf_row, token_sequence, i, j)
+        for i in statusword_indices for j in toponym_indices[:1] if i<j # only consider first toponym_index
+    ]
+    return sequences_analyses
 
 # %%
+statusword_tokens_sequences_dtf = sampled_articles_dtf.explode("statusword_tokens_sequences")
+statusword_tokens_sequences_dtf = statusword_tokens_sequences_dtf[['hds_article_id', 'toponym', 'geoidentifier', 'article_title', 'polities_ids', 'nb_polities',
+       'tokenized_toponym', 'loose_normalized_tokenized_toponym',
+       'strict_normalized_tokenized_toponym',
+       'statusword_tokens_sequences']].copy()
+# %%
+statusword_tokens_sequences_dtf["sequence_analysis"] = [
+    analyse_statusword_tokens_sequence(row, row.statusword_tokens_sequences)
+    for k, row in statusword_tokens_sequences_dtf.iterrows()
+]
+
+# %%
+
+sequences_analyses_dtf = statusword_tokens_sequences_dtf.explode("sequence_analysis")
+sequences_analyses_dtf = sequences_analyses_dtf[~sequences_analyses_dtf.sequence_analysis.isna()]
+sequences_analyses_dtf["statusword"] = sequences_analyses_dtf.sequence_analysis.apply(lambda sa: sa[0])
+sequences_analyses_dtf["sequence"] = sequences_analyses_dtf.sequence_analysis.apply(lambda sa: sa[1])
+sequences_analyses_dtf["sequence_structure"] = sequences_analyses_dtf.sequence_analysis.apply(lambda sa: sa[2])
+sequences_analyses_dtf["sequence_structure_str"] = sequences_analyses_dtf["sequence_structure"].apply(lambda ss: "-".join(ss))
+sequence_structures = sequences_analyses_dtf["sequence_structure_str"].value_counts()
+
+# %%
+
+sequence_structures
+sequence_structures[sequence_structures>5].shape
+
+# %%
+
+sequence_structures_human_columns = ['toponym', 'article_title', 'polities_ids', "statusword", "sequence", "sequence_structure"]
+
+sequence_structure = "STATUS-(-TOPONYM"
+sequences_analyses_dtf.loc[sequences_analyses_dtf["sequence_structure_str"]==sequence_structure,sequence_structures_human_columns]
+# %%
+
+
