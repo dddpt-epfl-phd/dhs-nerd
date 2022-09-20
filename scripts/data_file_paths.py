@@ -150,6 +150,8 @@ s2_sampled_polities_for_annotation_json = path.join(s2_polities_to_extract_folde
 
 s2_polities_txt_folder = path.join(s2_polities_to_extract_folder, "polities_txt")
 
+s2_sequence_structures_validation_csv = path.join(s2_polities_to_extract_folder, "sequence_structures_validation.csv")
+
 def localize(path, language):
     return path.replace("<LANGUAGE>", language)
 

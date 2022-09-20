@@ -162,9 +162,11 @@ not_toponym_tokens = {"'",
  'le',
  'près',
  'sur',
- 'zum'
+ 'zum',
+ "vers"
 }
 ambiguous_toponym_tokens={
+ 'Au',
  'Bois',
  'Col',
  'Dieu',
@@ -175,6 +177,8 @@ ambiguous_toponym_tokens={
  'Pont',
  'Port',
  'Rue',
+ "vaudois",
+ "helvétique",
 }
 
 # %%
@@ -195,14 +199,21 @@ sampled_articles_dtf["tokens"] = sampled_articles_dtf.document.apply(lambda d: s
 
 # %%
 
+def is_token_toponym(token, dtf_row):
+    """Checks that a given token isn't a toponym (either corresponding to any strict toponym, or a loose toponym from the particular article toponym"""
+    return (
+        token.text in normalized_toponym_tokens
+        or token.text in dtf_row.loose_normalized_tokenized_toponym
+    )
+# %%
+
 # toponym_tokens: tokens in the text that denote a toponym
 sampled_articles_dtf["toponym_tokens"] = [
     # handle the case of multiple toponym tokens: in this case only take first token each time
     [
         token for token in row.tokens
-        if token.text in normalized_toponym_tokens
-        or token.text in row.loose_normalized_tokenized_toponym
-        and (token.i==0 or token.nbor(-1).text not in row.tokenized_toponym)
+        if is_token_toponym(token, row)
+        and (token.i==0 or not is_token_toponym(token.nbor(-1), row))
     ]
     for k, row in sampled_articles_dtf.iterrows()
 ]
@@ -217,6 +228,7 @@ sampled_articles_dtf["predecessors_tokens"] = [
 ]
 predecessors_tokens = sampled_articles_dtf["predecessors_tokens"].apply(lambda ts: [t.text for t in ts]).explode()
 predecessors_tokens_value_counts = predecessors_tokens.value_counts().to_frame()
+predecessors_tokens_value_counts.to_csv("predecessors_tokens_value_counts.csv", sep="\t")
 
 # %%
 
@@ -224,50 +236,103 @@ predecessors_tokens_value_counts = predecessors_tokens.value_counts().to_frame()
 predecessors_tokens_value_counts[predecessors_tokens_value_counts.predecessors_tokens==2]
 
 statusword_token_text = [
-    # > 4 appearances
     "seigneur",
-    "région",
-    "abbaye",
-    "canton",
-    "château",
-    #"terres",
-    "district",
-    "communes",
-    "village",
-    "seigneurie",
-    "bailliage",
-    "commune",
-    "paroisse",
-    "ville",
-    # 3 appearances
-    "dîme", # -> ?
-    "hameau",
-    #"vestiges",# -> ?
-    "communauté",
-    "Commune",
-    #"hôpital",
-    "villages",
     "seigneurs",
+    "seigneurie",
+    "seigneuries",
+    "région",
+    "régions",
+    "abbaye",
+    "abbayes",
+    "canton",
+    "cantons",
+    "district",
+    "districts",
+    "distr", # abbréviation
+    "village",
+    "villages",
+    "bailliage",
+    "bailliages",
+    "bailli",
+    "baillis",
+    "commune",
+    "comm", # abbréviation
+    "communauté",
     "communautés",
-    # 2
+    "communes",
+    "paroisse",
+    "paroisses",
+    "comte",
+    "comtes",
+    "comté",
+    "comtés",
+    "baron",
+    "barons",
+    "baronnie",
+    "baronnies",
+    "duc",
+    "ducs",
+    "duché",
+    "duchés",
+    "ville",
+    "hameau",
+    "hameaux",
     "suzeraineté",
     "administration",
     "circonscriptions",
     "bourgade",
-    "juridictions",
+    "bourgades",
+    "localité",
     "localités",
     "cercle",
-    "Munizipalgemeinde",
-    "Ortsgemeinden",
+    "cercles",
+    "dizain",
+    "dizains"
+    "munizipalgemeinde",
+    "ortsgemeinden",
     "vallon",
     "chapitre",
-    "dîmes", # -> ?
-    "juridiction",
     "prieuré",
+    "prieurés",
     "abbés",
     "abbé",
     "évêque",
+    "évêques",
+    "évêché",
+    "évêchés",
+    "diocèse",
+    "diocèses",
+    "monastère",
+    "monastères",
+    "avouerie",
+    "avoueries",
     "châtellenie",
+    "châtellenies",
+    "domaine",
+    "domaines"
+    "municipalité",
+    "municipalités"
+]
+
+ambiguous_statusword_token_text = [
+    "vallée",
+    "château",
+    "châteaux"
+    "terres",
+    "territoire",
+    "église",
+    #"dîme", # -> ?
+    "juridictions",
+    "juridiction",
+    "forêt",
+    "forêts",
+    "possession",
+    "possessions",
+    "ferme",
+    "fermes"
+    #"vestiges",# -> ?
+    #"hôpital",
+
 ]
 # %%
 
@@ -303,9 +368,8 @@ def analyse_statusword_tokens_sequence_single(dtf_row, token_sequence, statuswor
     sequence = token_sequence[statusword_index:(toponym_index+1)]
     sequence_structure = [
         "STATUS" if token.text in statusword_token_text else(
-        "TOPONYM" if (
-            token.text in normalized_toponym_tokens or token.text in dtf_row.loose_normalized_tokenized_toponym
-        ) else token.text
+        "TOPONYM" if is_token_toponym(token, dtf_row)
+        else token.text
         )
         for token in sequence
     ]
@@ -320,10 +384,11 @@ def analyse_statusword_tokens_sequence(dtf_row, token_sequence):
     3) get a structureal-token sequence "status-XX-toponym"
     """
     statusword_indices = [i for i,tok in enumerate(token_sequence) if tok.text in statusword_token_text]
-    toponym_indices = [i for i,tok in enumerate(token_sequence) if tok.text in normalized_toponym_tokens or tok.text in dtf_row.loose_normalized_tokenized_toponym]
+    #toponym_indices = [i for i,tok in enumerate(token_sequence) if tok.text in normalized_toponym_tokens or tok.text in dtf_row.loose_normalized_tokenized_toponym]
+    toponym_indices = [len(token_sequence)-nb_successors-1] # the toponym is always at the same spot in the sequence
     sequences_analyses = [
         analyse_statusword_tokens_sequence_single(dtf_row, token_sequence, i, j)
-        for i in statusword_indices for j in toponym_indices[:1] if i<j # only consider first toponym_index
+        for i in statusword_indices for j in toponym_indices if i<j
     ]
     return sequences_analyses
 
@@ -333,6 +398,9 @@ statusword_tokens_sequences_dtf = statusword_tokens_sequences_dtf[['hds_article_
        'tokenized_toponym', 'loose_normalized_tokenized_toponym',
        'strict_normalized_tokenized_toponym',
        'statusword_tokens_sequences']].copy()
+
+statusword_tokens_sequences_dtf = statusword_tokens_sequences_dtf[~statusword_tokens_sequences_dtf.statusword_tokens_sequences.isna()]
+
 # %%
 statusword_tokens_sequences_dtf["sequence_analysis"] = [
     analyse_statusword_tokens_sequence(row, row.statusword_tokens_sequences)
@@ -352,14 +420,30 @@ sequence_structures = sequences_analyses_dtf["sequence_structure_str"].value_cou
 # %%
 
 sequence_structures
-sequence_structures[sequence_structures>5].shape
+sequence_structures.to_frame().to_csv("sequence_structures_counts.csv", sep="\t")
+sequence_structures[sequence_structures>3]
 
 # %%
 
 sequence_structures_human_columns = ['toponym', 'article_title', 'polities_ids', "statusword", "sequence", "sequence_structure"]
 
-sequence_structure = "STATUS-(-TOPONYM"
+sequence_structure = "STATUS-TOPONYM"
+
 sequences_analyses_dtf.loc[sequences_analyses_dtf["sequence_structure_str"]==sequence_structure,sequence_structures_human_columns]
 # %%
 
+valid_sequence_structures = pd.read_csv(s2_sequence_structures_validation_csv, sep="\t")
+valid_sequence_structures = set(valid_sequence_structures[valid_sequence_structures.validity=="yes"].structure)
+valid_sequence_structures
 
+# %%
+
+sequence_structures.shape
+# %%
+
+
+# BUG INVESTIGATION 
+
+pd.Series(sampled_articles_dtf.iloc[4].tokens)[[is_token_toponym(t, sampled_articles_dtf.iloc[4]) for t in sampled_articles_dtf.iloc[4].tokens]]
+len(sampled_articles_dtf.iloc[4].toponym_tokens)
+# %%
