@@ -70,7 +70,7 @@ terms_stats_dtf.head(20)
 """
 A title contains up to 3 pieces of information:
 - a toponym (Echallens, Zollikofen, etc...)
-- (optional) a typology (seigneurie, abbaye, baillage, ...)
+- (optional) a typology (seigneurie, abbaye, bailliage, ...)
 - (optional) a geoidentifier (most often cantonal such as VD, GR, sometimes more precise)
 """
 

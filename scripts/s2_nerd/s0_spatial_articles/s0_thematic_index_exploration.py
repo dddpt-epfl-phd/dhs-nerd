@@ -275,7 +275,7 @@ Bailliage, châtellenie (203)
 -> mixed up with district (62), seigneurie (74)
 
 District
--> mixed up with baillage (62), seigneurie(24)
+-> mixed up with bailliage (62), seigneurie(24)
 
 Ville médiévale
 -> mostly commune

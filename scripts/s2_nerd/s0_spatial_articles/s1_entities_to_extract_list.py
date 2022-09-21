@@ -120,7 +120,7 @@ TODO creation list of entities to extract
 
 todo:
 - list all tags relevant to create a spatial entity
-    commune, ancienne commune, baillage, seigneurie, etc
+    commune, ancienne commune, bailliage, seigneurie, etc
 - list all spatial entities
 - make 1 entry per relevant spatial entity tag
 
@@ -375,8 +375,8 @@ levels_descriptions = [
     (40, "Etats historiques disparus"),
     (30, "Cantons, Comtés, \nevêchés, archidiocèses, ..."),
     (25, "Cantons, Comtés, \nevêchés, archidiocèses, ..."),
-    (20, "Seigneuries, baillages, \nabbayes, districts, ..."),
-    (15, "Seigneuries, baillages, \nabbayes, districts, ..."),
+    (20, "Seigneuries, bailliages, \nabbayes, districts, ..."),
+    (15, "Seigneuries, bailliages, \nabbayes, districts, ..."),
     (10, "Communes")
 ]
 levels_descriptions_dtf = pd.DataFrame(levels_descriptions, columns=["level", "label"]).set_index("level")
