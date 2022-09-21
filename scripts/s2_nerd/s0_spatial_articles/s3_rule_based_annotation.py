@@ -262,7 +262,7 @@ statusword_token_text = [
     # cantons
     "canton",
     "cantons",
-    # administrative: district/baillage/etc
+    # administrative: district/bailliage/etc
     "district",
     "districts",
     "distr",
@@ -313,6 +313,8 @@ statusword_token_text = [
     "monastères",
     "avouerie",
     "avoueries",
+    "commanderie",
+    "commanderies",
     # fuzzy terms
     "région",
     "régions",
@@ -457,3 +459,174 @@ valid_sequences_dtf = sequences_analyses_dtf[sequences_analyses_dtf.sequence_str
 valid_sequences_dtf.shape
 
 # %%
+
+{t: [] for t in set(polities_dtf.typology)}
+
+# %%
+
+
+
+
+
+
+
+polities_dtf[polities_dtf.typology=="baillage"]
+
+# %%
+
+
+
+statusword_to_typology_dict = {
+    # lordships
+    (
+        "seigneur",
+        "seigneurs",
+        "seigneurie",
+        "seigneuries",
+    ) : ["seigneurie", "châtellenie", "duché", "mandement", "commanderie"],
+    (
+        "châtellenie",
+        "châtellenies",
+    ) : ["châtellenie", "seigneurie"],
+    (
+        "mandement",
+        "mandements"
+    ) : ["mandement", "seigneurie"],
+    (
+        "comte",
+        "comtes",
+        "comté",
+        "comtés",
+    ) : ["comté", "seigneurie"],
+    (
+        "baron",
+        "barons",
+        "baronnie",
+        "baronnies",
+    ) : ["baronnie", "seigneurie"],
+    (
+        "duc",
+        "ducs",
+        "duché",
+        "duchés",
+    ) : ["duché", "seigneurie"],
+    (
+        # cantons
+        "canton",
+        "cantons",
+    ) : ["canton", 'état'],
+    (
+        # administrative: district/bailliage/etc
+        "district",
+        "districts",
+        "distr",
+    ) : ["district", 'pieve', 'gouvernement'],
+    (
+        "dizain",
+        "dizains"
+    ) : ["dizain", "bailliage"],
+    (
+        "pieve"
+    ) : ["pieve", "bailliage"],
+    (
+        "bailliage",
+        "bailliages",
+        "bailli",
+        "baillis",
+    ) : ["bailliage", "baillage"],
+    (
+        'gouvernement',
+        'gouvernements'
+    ) : ['gouvernement', "bailliage"],
+    (
+        # commmunes
+        "commune",
+        "communes",
+        "comm",
+        "village",
+        "villages",
+        "municipalité",
+        "municipalités"
+        "communauté",
+        "communautés",
+        "munizipalgemeinde",
+        "ortsgemeinden",
+        "hameau",
+        "hameaux",
+        "paroisse",
+        "paroisses",
+        "bourgade",
+        "bourgades",
+        "localité",
+        "localités",
+    ) : ["commune", 'village', "localité"],
+    (
+        "ville",
+    ) : ['ville', "canton", "commune", 'état'],
+    (
+        # ecclesiastical
+        "chapitre",
+    ) : ["chapitre", 'chapitre collégial', 'abbaye/couvent/monastère/prieuré'],
+    (
+        "prieuré",
+        "prieurés",
+    ) : ["prieuré", 'abbaye/couvent/monastère/prieuré'],
+    (
+        "abbaye",
+        "abbayes",
+        "abbé",
+        "abbés",
+    ) : ["abbaye", 'abbaye de bénédictines', 'abbaye de bénédictins', 'principauté abbatiale', 'abbaye/couvent/monastère/prieuré'],
+    (
+        "évêque",
+        "évêques",
+        "évêché",
+        "évêchés",
+    ) : ["évêché"],
+    (
+        "diocèse",
+        "diocèses",
+    ) : ["évêché"],
+    (
+        "archevêque",
+        "archevêques",
+        "archevêché",
+        "archevêchés"
+    ) : ["archidiocèse"],
+    (
+        "archidiocèse",
+        "archidiocèses",
+    ) : ["archidiocèse"],
+    (
+        "monastère",
+        "monastères",
+    ) : ['abbaye/couvent/monastère/prieuré'],
+    (
+        'couvent',
+        'couvents'
+    ) : ['couvent', 'abbaye/couvent/monastère/prieuré'],
+    ( # quite special as an avouerie is a military protect of a ecclesiastical entity
+        "avouerie",
+        "avoueries",
+    ) : [], # ["duché"]
+    (
+        'prévôté',
+        'prévôtés',
+    ) : ['prévôté', 'abbaye/couvent/monastère/prieuré'],
+    (
+        "commanderie",
+        "commanderies",
+    ) : ["commanderie"],
+    (
+        # fuzzy terms
+        "région",
+        "régions",
+        "domaine",
+        "domaines",
+        "vallon",
+        "administration",
+        "circonscriptions",
+        "cercle",
+        "cercles",
+    ) : []
+}
