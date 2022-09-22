@@ -1,0 +1,148 @@
+[
+    [[
+        "seigneur",
+        "seigneurs",
+        "seigneurie",
+        "seigneuries"
+    ], ["seigneurie", "châtellenie", "duché", "mandement", "commanderie"]],
+    [[
+        "châtellenie",
+        "châtellenies"
+    ], ["châtellenie", "seigneurie"]],
+    [[
+        "mandement",
+        "mandements"
+    ], ["mandement", "seigneurie"]],
+    [[
+        "comte",
+        "comtes",
+        "comté",
+        "comtés"
+    ], ["comté", "seigneurie"]],
+    [[
+        "baron",
+        "barons",
+        "baronnie",
+        "baronnies"
+    ], ["baronnie", "seigneurie"]],
+    [[
+        "duc",
+        "ducs",
+        "duché",
+        "duchés"
+    ], ["duché", "seigneurie"]],
+    [[
+        "canton",
+        "cantons"
+    ], ["canton", "état"]],
+    [[
+        "district",
+        "districts",
+        "distr"
+    ], ["district", "pieve", "gouvernement"]],
+    [[
+        "dizain",
+        "dizains"
+    ], ["dizain", "bailliage"]],
+    [[
+        "pieve"
+    ], ["pieve", "bailliage"]],
+    [[
+        "bailliage",
+        "bailliages",
+        "bailli",
+        "baillis"
+    ], ["bailliage", "baillage"]],
+    [[
+        "gouvernement",
+        "gouvernements"
+    ], ["gouvernement", "bailliage"]],
+    [[
+        "commune",
+        "communes",
+        "comm",
+        "village",
+        "villages",
+        "municipalité",
+        "municipalités",
+        "communauté",
+        "communautés",
+        "munizipalgemeinde",
+        "ortsgemeinden",
+        "hameau",
+        "hameaux",
+        "paroisse",
+        "paroisses",
+        "bourgade",
+        "bourgades",
+        "localité",
+        "localités"
+    ], ["commune", "village", "localité"]],
+    [[
+        "ville"
+    ], ["ville", "canton", "commune", "état"]],
+    [[
+        "chapitre"
+    ], ["chapitre", "chapitre collégial", "abbaye/couvent/monastère/prieuré"]],
+    [[
+        "prieuré",
+        "prieurés"
+    ], ["prieuré", "abbaye/couvent/monastère/prieuré"]],
+    [[
+        "abbaye",
+        "abbayes",
+        "abbé",
+        "abbés"
+    ], ["abbaye", "abbaye de bénédictines", "abbaye de bénédictins", "principauté abbatiale", "abbaye/couvent/monastère/prieuré"]],
+    [[
+        "évêque",
+        "évêques",
+        "évêché",
+        "évêchés"
+    ], ["évêché"]],
+    [[
+        "diocèse",
+        "diocèses"
+    ], ["évêché"]],
+    [[
+        "archevêque",
+        "archevêques",
+        "archevêché",
+        "archevêchés"
+    ], ["archidiocèse"]],
+    [[
+        "archidiocèse",
+        "archidiocèses"
+    ], ["archidiocèse"]],
+    [[
+        "monastère",
+        "monastères"
+    ], ["abbaye/couvent/monastère/prieuré"]],
+    [[
+        "couvent",
+        "couvents"
+    ], ["couvent", "abbaye/couvent/monastère/prieuré"]],
+    [[ 
+        "avouerie",
+        "avoueries"
+    ], []],
+    [[
+        "prévôté",
+        "prévôtés"
+    ], ["prévôté", "abbaye/couvent/monastère/prieuré"]],
+    [[
+        "commanderie",
+        "commanderies"
+    ], ["commanderie"]],
+    [[
+        "région",
+        "régions",
+        "domaine",
+        "domaines",
+        "vallon",
+        "administration",
+        "circonscriptions",
+        "cercle",
+        "cercles"
+    ], []]
+]
