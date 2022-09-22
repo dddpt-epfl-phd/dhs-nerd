@@ -460,11 +460,6 @@ valid_sequences_dtf.shape
 
 # %%
 
-{t: [] for t in set(polities_dtf.typology)}
-
-# %%
-
-
 
 
 
@@ -473,160 +468,70 @@ valid_sequences_dtf.shape
 polities_dtf[polities_dtf.typology=="baillage"]
 
 # %%
-
-
-
+with open(s2_statusword_to_typology_json) as f:
+    statusword_to_typology_dict = json.load(f)
 statusword_to_typology_dict = {
-    # lordships
-    (
-        "seigneur",
-        "seigneurs",
-        "seigneurie",
-        "seigneuries",
-    ) : ["seigneurie", "châtellenie", "duché", "mandement", "commanderie"],
-    (
-        "châtellenie",
-        "châtellenies",
-    ) : ["châtellenie", "seigneurie"],
-    (
-        "mandement",
-        "mandements"
-    ) : ["mandement", "seigneurie"],
-    (
-        "comte",
-        "comtes",
-        "comté",
-        "comtés",
-    ) : ["comté", "seigneurie"],
-    (
-        "baron",
-        "barons",
-        "baronnie",
-        "baronnies",
-    ) : ["baronnie", "seigneurie"],
-    (
-        "duc",
-        "ducs",
-        "duché",
-        "duchés",
-    ) : ["duché", "seigneurie"],
-    (
-        # cantons
-        "canton",
-        "cantons",
-    ) : ["canton", 'état'],
-    (
-        # administrative: district/bailliage/etc
-        "district",
-        "districts",
-        "distr",
-    ) : ["district", 'pieve', 'gouvernement'],
-    (
-        "dizain",
-        "dizains"
-    ) : ["dizain", "bailliage"],
-    (
-        "pieve"
-    ) : ["pieve", "bailliage"],
-    (
-        "bailliage",
-        "bailliages",
-        "bailli",
-        "baillis",
-    ) : ["bailliage", "baillage"],
-    (
-        'gouvernement',
-        'gouvernements'
-    ) : ['gouvernement', "bailliage"],
-    (
-        # commmunes
-        "commune",
-        "communes",
-        "comm",
-        "village",
-        "villages",
-        "municipalité",
-        "municipalités"
-        "communauté",
-        "communautés",
-        "munizipalgemeinde",
-        "ortsgemeinden",
-        "hameau",
-        "hameaux",
-        "paroisse",
-        "paroisses",
-        "bourgade",
-        "bourgades",
-        "localité",
-        "localités",
-    ) : ["commune", 'village', "localité"],
-    (
-        "ville",
-    ) : ['ville', "canton", "commune", 'état'],
-    (
-        # ecclesiastical
-        "chapitre",
-    ) : ["chapitre", 'chapitre collégial', 'abbaye/couvent/monastère/prieuré'],
-    (
-        "prieuré",
-        "prieurés",
-    ) : ["prieuré", 'abbaye/couvent/monastère/prieuré'],
-    (
-        "abbaye",
-        "abbayes",
-        "abbé",
-        "abbés",
-    ) : ["abbaye", 'abbaye de bénédictines', 'abbaye de bénédictins', 'principauté abbatiale', 'abbaye/couvent/monastère/prieuré'],
-    (
-        "évêque",
-        "évêques",
-        "évêché",
-        "évêchés",
-    ) : ["évêché"],
-    (
-        "diocèse",
-        "diocèses",
-    ) : ["évêché"],
-    (
-        "archevêque",
-        "archevêques",
-        "archevêché",
-        "archevêchés"
-    ) : ["archidiocèse"],
-    (
-        "archidiocèse",
-        "archidiocèses",
-    ) : ["archidiocèse"],
-    (
-        "monastère",
-        "monastères",
-    ) : ['abbaye/couvent/monastère/prieuré'],
-    (
-        'couvent',
-        'couvents'
-    ) : ['couvent', 'abbaye/couvent/monastère/prieuré'],
-    ( # quite special as an avouerie is a military protect of a ecclesiastical entity
-        "avouerie",
-        "avoueries",
-    ) : [], # ["duché"]
-    (
-        'prévôté',
-        'prévôtés',
-    ) : ['prévôté', 'abbaye/couvent/monastère/prieuré'],
-    (
-        "commanderie",
-        "commanderies",
-    ) : ["commanderie"],
-    (
-        # fuzzy terms
-        "région",
-        "régions",
-        "domaine",
-        "domaines",
-        "vallon",
-        "administration",
-        "circonscriptions",
-        "cercle",
-        "cercles",
-    ) : []
+    statusword : t[1] 
+    for t in statusword_to_typology_dict
+    for statusword in t[0]
 }
+
+
+# %%
+
+def link_entity(dtf_row, polities_dtf):
+    possible_typologies = statusword_to_typology_dict.get(dtf_row.statusword.text.lower())
+
+    if possible_typologies is None:
+        print("WARNING: statusword without corresponding typology: |"+dtf_row.statusword.text.lower()+"|")
+        return []
+
+    possible_polities = [
+        polities_dtf.loc[(polities_dtf.typology==typology) & polities_dtf.toponym.apply(lambda t: dtf_row.sequence_toponym.text == t)]
+        for typology in possible_typologies
+    ]
+    possible_polities = [dtf for dtf in possible_polities if dtf.shape[0]>0]
+    return possible_polities
+    
+
+# %%
+
+valid_sequences_dtf["possible_polities"] = [
+    link_entity(row, polities_dtf)
+    for i, row in valid_sequences_dtf.iterrows()
+]
+
+# %%
+
+valid_sequences_dtf["possible_polities"].apply(len).value_counts()
+
+# %%
+
+linked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(len) == 1].copy()
+linked_sequences_dtf["possible_polities"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp[0])
+linked_sequences_dtf["linked_polity_id"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["polity_id"])
+linked_sequences_dtf["linked_typology"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["typology"])
+linked_sequences_dtf["linked_toponym"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["toponym"])
+
+# %%
+
+linked_sequences_human_columns = ["hds_article_id", "statusword", "sequence_toponym", "sequence", "linked_polity_id", "linked_typology", "linked_toponym"]
+
+linked_sequences_dtf.loc[:,linked_sequences_human_columns]
+
+# %%
+
+unlinked_sequences_human_columns = ["hds_article_id", "statusword", "sequence_toponym", "sequence"]
+
+unlinked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(len) == 0].copy()
+unlinked_sequences_dtf.loc[:,unlinked_sequences_human_columns]
+
+# %%
+
+polities_dtf[polities_dtf.typology.apply(lambda t: t is None)].hds_tag.value_counts()
+
+
+# %%
+
+polities_dtf.hds_tag.value_counts()
+# %%
