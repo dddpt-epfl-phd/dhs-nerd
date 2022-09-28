@@ -469,17 +469,24 @@ polities_dtf[polities_dtf.typology=="baillage"]
 
 # %%
 with open(s2_statusword_to_typology_json) as f:
-    statusword_to_typology_dict = json.load(f)
+    statusword_keys_dict = json.load(f)
+
 statusword_to_typology_dict = {
     statusword : t[1] 
-    for t in statusword_to_typology_dict
+    for t in statusword_keys_dict
+    for statusword in t[0]
+}
+
+statusword_to_hdstag_dict = {
+    statusword : t[2] 
+    for t in statusword_keys_dict
     for statusword in t[0]
 }
 
 
 # %%
 
-def link_entity(dtf_row, polities_dtf):
+def link_entity_by_typology(dtf_row, polities_dtf):
     possible_typologies = statusword_to_typology_dict.get(dtf_row.statusword.text.lower())
 
     if possible_typologies is None:
@@ -493,13 +500,37 @@ def link_entity(dtf_row, polities_dtf):
     possible_polities = [dtf for dtf in possible_polities if dtf.shape[0]>0]
     return possible_polities
     
+def link_entity_by_hdstag(dtf_row, polities_dtf):
+    possible_hdstags = statusword_to_hdstag_dict.get(dtf_row.statusword.text.lower())
+
+    if possible_hdstags is None:
+        print("WARNING: statusword without corresponding hdstag: |"+dtf_row.statusword.text.lower()+"|")
+        return []
+
+    possible_polities = [(
+            i, polities_dtf.loc[(polities_dtf.hds_tag==hds_tag) & polities_dtf.toponym.apply(lambda t: dtf_row.sequence_toponym.text == t)]
+        )for i,hds_tag in enumerate(possible_hdstags)
+    ]
+    possible_polities = [(i,dtf) for i, dtf in possible_polities if dtf.shape[0]>0]
+    return possible_polities
+    
 
 # %%
 
 valid_sequences_dtf["possible_polities"] = [
-    link_entity(row, polities_dtf)
+    link_entity_by_hdstag(row, polities_dtf)
     for i, row in valid_sequences_dtf.iterrows()
 ]
+
+valid_sequences_dtf["possible_polities_ranks"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: [t[0] for t in pp])
+valid_sequences_dtf["possible_polities_min_ranks"] = valid_sequences_dtf["possible_polities_ranks"].apply(lambda rs: min(rs) if len(rs)>0 else None)
+valid_sequences_dtf["possible_polities"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: [t[1] for t in pp])
+# %%
+if False:
+    valid_sequences_dtf["possible_polities_by_typology"] = [
+        link_entity_by_typology(row, polities_dtf)
+        for i, row in valid_sequences_dtf.iterrows()
+    ]
 
 # %%
 
@@ -510,12 +541,12 @@ valid_sequences_dtf["possible_polities"].apply(len).value_counts()
 linked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(len) == 1].copy()
 linked_sequences_dtf["possible_polities"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp[0])
 linked_sequences_dtf["linked_polity_id"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["polity_id"])
-linked_sequences_dtf["linked_typology"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["typology"])
+linked_sequences_dtf["linked_hds_tag"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["hds_tag"])
 linked_sequences_dtf["linked_toponym"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["toponym"])
 
 # %%
 
-linked_sequences_human_columns = ["hds_article_id", "statusword", "sequence_toponym", "sequence", "linked_polity_id", "linked_typology", "linked_toponym"]
+linked_sequences_human_columns = ["hds_article_id", "statusword", "sequence_toponym", "sequence", "linked_polity_id", "linked_hds_tag", "linked_toponym"]
 
 linked_sequences_dtf.loc[:,linked_sequences_human_columns]
 
@@ -531,7 +562,4 @@ unlinked_sequences_dtf.loc[:,unlinked_sequences_human_columns]
 polities_dtf[polities_dtf.typology.apply(lambda t: t is None)].hds_tag.value_counts()
 
 
-# %%
-
-polities_dtf.hds_tag.value_counts()
 # %%
