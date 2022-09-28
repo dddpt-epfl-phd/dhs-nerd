@@ -3,6 +3,7 @@
 import unicodedata
 import spacy
 
+from inception_fishing import Annotation
 from s2_prepare_articles import *
 
 
@@ -523,7 +524,7 @@ valid_sequences_dtf["possible_polities"] = [
 ]
 
 valid_sequences_dtf["possible_polities_ranks"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: [t[0] for t in pp])
-valid_sequences_dtf["possible_polities_min_ranks"] = valid_sequences_dtf["possible_polities_ranks"].apply(lambda rs: min(rs) if len(rs)>0 else None)
+valid_sequences_dtf["possible_polities_min_rank"] = valid_sequences_dtf["possible_polities_ranks"].apply(lambda rs: min(rs) if len(rs)>0 else None)
 valid_sequences_dtf["possible_polities"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: [t[1] for t in pp])
 # %%
 if False:
@@ -535,10 +536,11 @@ if False:
 # %%
 
 valid_sequences_dtf["possible_polities"].apply(len).value_counts()
+valid_sequences_dtf["possible_polities_min_rank"].value_counts()
 
 # %%
 
-linked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(len) == 1].copy()
+linked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(len) >= 1].copy()
 linked_sequences_dtf["possible_polities"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp[0])
 linked_sequences_dtf["linked_polity_id"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["polity_id"])
 linked_sequences_dtf["linked_hds_tag"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["hds_tag"])
@@ -562,4 +564,23 @@ unlinked_sequences_dtf.loc[:,unlinked_sequences_human_columns]
 polities_dtf[polities_dtf.typology.apply(lambda t: t is None)].hds_tag.value_counts()
 
 
+# %%
+
+def add_annotation_to_document_from_linked_sequences(document, linked_sequences_dtf_rows):
+    new_annotations = [
+        Annotation(
+            row.sequence[0].idx,
+            row.sequence[-1].idx+len(row.sequence[-1]),
+            extra_fields={
+                "polity_id": row.linked_polity_id
+            }
+        )
+        for i, row in linked_sequences_dtf_rows.iterrows()
+    ]
+    document.annotations = document.annotations + new_annotations
+
+# %%
+
+for i, row in sampled_articles_dtf.iterrows():
+    add_annotation_to_document_from_linked_sequences(row.document, linked_sequences_dtf[linked_sequences_dtf.hds_article_id ==row.hds_article_id])
 # %%
