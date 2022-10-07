@@ -1,11 +1,17 @@
 
 # %%
 import unicodedata
-import spacy
 
+import sys
+sys.path.append("../../../src")
+sys.path.append("../../../scripts")
 from inception_fishing import Annotation
 from s2_prepare_articles import *
 
+from inception_fishing import spacy as spacyIO
+
+
+import spacy
 
 # %%
 spacy_tokenizer = spacy.load("fr_core_news_sm")
@@ -582,5 +588,14 @@ def add_annotation_to_document_from_linked_sequences(document, linked_sequences_
 # %%
 
 for i, row in sampled_articles_dtf.iterrows():
-    add_annotation_to_document_from_linked_sequences(row.document, linked_sequences_dtf[linked_sequences_dtf.hds_article_id ==row.hds_article_id])
+    add_annotation_to_document_from_linked_sequences(row.document, linked_sequences_dtf[linked_sequences_dtf.hds_article_id==row.hds_article_id])
+# %%
+
+
+
+spacyIO.document_add_tokens_as_annotations(
+    sampled_articles_dtf.iloc[0,:].document,
+    sampled_articles_dtf.iloc[0,:].tokens
+)
+sampled_articles_dtf.iloc[0,:].document.annotations
 # %%
