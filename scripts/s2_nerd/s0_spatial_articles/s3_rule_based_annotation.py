@@ -8,8 +8,6 @@ sys.path.append("../../../scripts")
 from inception_fishing import Annotation
 from s2_prepare_articles import *
 
-from inception_fishing import spacy as spacyIO
-
 
 import spacy
 
@@ -546,16 +544,20 @@ valid_sequences_dtf["possible_polities_min_rank"].value_counts()
 
 # %%
 
-linked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(len) >= 1].copy()
-linked_sequences_dtf["possible_polities"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp[0])
-linked_sequences_dtf["linked_polity_id"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["polity_id"])
-linked_sequences_dtf["linked_hds_tag"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["hds_tag"])
-linked_sequences_dtf["linked_toponym"] = linked_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["toponym"])
+valid_sequences_dtf["possible_polities"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp[0] if len(pp)>0 else None)
+valid_sequences_dtf["linked_polity_id"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["polity_id"] if pp is not None else None)
+valid_sequences_dtf["linked_hds_tag"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["hds_tag"]if pp is not None else None)
+valid_sequences_dtf["linked_toponym"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["toponym"]if pp is not None else None)
 
 # %%
 
 linked_sequences_human_columns = ["hds_article_id", "statusword", "sequence_toponym", "sequence", "linked_polity_id", "linked_hds_tag", "linked_toponym"]
 
+valid_sequences_dtf.loc[:,linked_sequences_human_columns]
+
+# %%
+
+linked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(len) >= 1].copy()
 linked_sequences_dtf.loc[:,linked_sequences_human_columns]
 
 # %%
@@ -572,7 +574,7 @@ polities_dtf[polities_dtf.typology.apply(lambda t: t is None)].hds_tag.value_cou
 
 # %%
 
-def add_annotation_to_document_from_linked_sequences(document, linked_sequences_dtf_rows):
+def add_annotation_to_document_from_valid_sequences(document, valid_sequences_dtf_rows):
     new_annotations = [
         Annotation(
             row.sequence[0].idx,
@@ -581,21 +583,14 @@ def add_annotation_to_document_from_linked_sequences(document, linked_sequences_
                 "polity_id": row.linked_polity_id
             }
         )
-        for i, row in linked_sequences_dtf_rows.iterrows()
+        for i, row in valid_sequences_dtf_rows.iterrows()
     ]
     document.annotations = document.annotations + new_annotations
 
 # %%
 
 for i, row in sampled_articles_dtf.iterrows():
-    add_annotation_to_document_from_linked_sequences(row.document, linked_sequences_dtf[linked_sequences_dtf.hds_article_id==row.hds_article_id])
+    add_annotation_to_document_from_valid_sequences(row.document, valid_sequences_dtf[valid_sequences_dtf.hds_article_id==row.hds_article_id])
 # %%
 
 
-
-spacyIO.document_add_tokens_as_annotations(
-    sampled_articles_dtf.iloc[0,:].document,
-    sampled_articles_dtf.iloc[0,:].tokens
-)
-sampled_articles_dtf.iloc[0,:].document.annotations
-# %%
