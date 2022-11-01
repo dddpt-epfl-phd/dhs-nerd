@@ -16,7 +16,8 @@ spacy_tokenizer = spacy.load("fr_core_news_sm")
 
 
 
-# %% Evaluating normalized text difference with original text:
+# %%
+# Evaluating normalized text difference with original text:
 
 polities_dtf["normalized_text"] = polities_dtf.document.apply(lambda d: unicodedata.normalize("NFKC",d.text))
 
@@ -25,7 +26,8 @@ polities_dtf["len_unnormalized_text"] = polities_dtf.document.apply(lambda d: le
 polities_dtf["len_diff_normalized_text"] = polities_dtf["len_unnormalized_text"] - polities_dtf["len_normalized_text"]
 polities_dtf["len_diff_normalized_text"].value_counts()
 
-# %% Character normalization investigation -> NFKC is the way to go :-)
+# %%
+# Character normalization investigation -> NFKC is the way to go :-)
 
 # Zoug had a very big 2529 char diff using NFKD
 lendif2529NFKD = polities_dtf[polities_dtf["hds_article_id"]=="007373"]
