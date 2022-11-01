@@ -169,6 +169,7 @@ not_toponym_tokens = {"'",
  'l',
  'la',
  'le',
+ 'les',
  'près',
  'sur',
  'zum',
@@ -230,9 +231,12 @@ sampled_articles_dtf["toponym_tokens"] = [
 # %%
 
 nb_predecessors = 10
-nb_successors = 1
-sampled_articles_dtf["predecessors_tokens"] = [
-    [t.nbor(i) for t in row.toponym_tokens for i in range(-min(nb_predecessors,t.i),nb_successors+1)]
+nb_successors = 3
+sampled_articles_dtf["predecessors_tokens"] = [[
+        #(print(f"nb_successors={nb_successors}, len(t.doc)={len(t.doc)}, t.i={t.i}, len(t.doc)-t.i)+1={(len(t.doc)-t.i)+1}, total={min(nb_successors, len(t.doc)-t.i)}"),
+        t.nbor(i)
+        for t in row.toponym_tokens for i in range(-min(nb_predecessors,t.i),min(nb_successors, len(t.doc)-t.i))
+    ]
     for k, row in sampled_articles_dtf.iterrows()
 ]
 predecessors_tokens = sampled_articles_dtf["predecessors_tokens"].apply(lambda ts: [t.text for t in ts]).explode()
@@ -356,7 +360,7 @@ ambiguous_statusword_token_text = [
 
 sampled_articles_dtf["toponyms_tokens_sequences"] = [
     [
-        [t.nbor(i) for i in range(-min(nb_predecessors,t.i),nb_successors+1)]
+        [t.nbor(i) for i in range(-min(nb_predecessors,t.i),min(nb_successors, len(t.doc)-t.i))]
         for t in row.toponym_tokens
     ]
     for k, row in sampled_articles_dtf.iterrows()
@@ -403,7 +407,7 @@ def analyse_statusword_tokens_sequence(dtf_row, token_sequence):
     """
     statusword_indices = [i for i,tok in enumerate(token_sequence) if tok.text.lower() in statusword_token_text]
     #toponym_indices = [i for i,tok in enumerate(token_sequence) if tok.text in normalized_toponym_tokens or tok.text in dtf_row.loose_normalized_tokenized_toponym]
-    toponym_indices = [len(token_sequence)-nb_successors-1] # the toponym is always at the same spot in the sequence
+    toponym_indices = [len(token_sequence)-nb_successors] # the toponym is always at the same spot in the sequence
     sequences_analyses = [
         analyse_statusword_tokens_sequence_single(dtf_row, token_sequence, i, j)
         for i in statusword_indices for j in toponym_indices if i<j
@@ -467,12 +471,6 @@ valid_sequences_dtf.shape
 
 
 
-
-
-
-polities_dtf[polities_dtf.typology=="baillage"]
-
-# %%
 with open(s2_statusword_to_typology_json) as f:
     statusword_keys_dict = json.load(f)
 
@@ -488,6 +486,20 @@ statusword_to_hdstag_dict = {
     for statusword in t[0]
 }
 
+# %%
+
+polities_dtf[polities_dtf.typology=="baillage"].tail()
+
+# %%
+
+
+polities_dtf["tokenized_toponym"] = polities_dtf.toponym.apply(lambda t: spacy_tokenizer(t))
+polities_dtf["tokenized_toponym_texts"] = polities_dtf.tokenized_toponym.apply(lambda tokens: [t.text for t in tokens])
+
+polities_dtf["tokenized_toponym"].apply(len).value_counts()
+polities_dtf[polities_dtf["tokenized_toponym"].apply(len)>1]
+
+# %%
 
 # %%
 
@@ -504,8 +516,37 @@ def link_entity_by_typology(dtf_row, polities_dtf):
     ]
     possible_polities = [dtf for dtf in possible_polities if dtf.shape[0]>0]
     return possible_polities
-    
-def link_entity_by_hdstag(dtf_row, polities_dtf):
+
+def count_nb_matching_tokens(sequence_dtf_row, tokenized_toponym_texts):
+    sequence_dtf_row_tokens_texts = [t.text for t in sequence_dtf_row.statusword_tokens_sequences]
+    nb_matching_tokens = sum([
+        word in sequence_dtf_row_tokens_texts[-(nb_successors+1):]
+        for word in tokenized_toponym_texts
+    ])
+    return nb_matching_tokens
+
+def link_entity_by_hdstag(dtf_row, polities_dtf, statusword_to_hdstag_dict):
+    """
+        # find possible polities: take polities that have matching hds_tag AND an exact match between the searched toponym and th sequence's identified toponym
+
+    replacement proposition:
+    - tokenize polities_dtf canonic_title
+    - computing toponym matching score
+
+    toponym matching score:
+    - nb_matching_tokens= nb of polities_dtf.toponym_tokens present in sequence_tokens
+    - all_tokens_matched: whether all tokens of the polities_dtf.toponym_tokens are in the sequence_tokens 
+    - hds_tag_score: score inversely proportional to the rank an hds_tag has in the ordering (rank 0 -> highest score)
+
+    ranking algorithm:
+    -> order according to following order:
+        1) all_tokens_matched*nb_matching_tokens
+        2) hds_tag_score
+        3) nb_matched_tokens
+    -> score = 100* all_tokens_matched*nb_matching_tokens +
+                10 * hds_tag_score + 
+                nb_matched_tokens
+    """
     possible_hdstags = statusword_to_hdstag_dict.get(dtf_row.statusword.text.lower())
 
     if possible_hdstags is None:
@@ -513,23 +554,34 @@ def link_entity_by_hdstag(dtf_row, polities_dtf):
         return []
 
     possible_polities = [(
-            i, polities_dtf.loc[(polities_dtf.hds_tag==hds_tag) & polities_dtf.toponym.apply(lambda t: dtf_row.sequence_toponym.text == t)]
+            i,
+            polities_dtf.loc[(polities_dtf.hds_tag==hds_tag) &
+            polities_dtf.tokenized_toponym_texts.apply(lambda tokens:
+                any([dtf_row.sequence_toponym.text == t for t in tokens])
+            )].copy()
         )for i,hds_tag in enumerate(possible_hdstags)
     ]
-    possible_polities = [(i,dtf) for i, dtf in possible_polities if dtf.shape[0]>0]
-    return possible_polities
-    
+    for i,dtf in possible_polities:
+        dtf["possibility_hds_tag_rank"] = i 
+    possible_polities_dtf = pd.concat([dtf for i,dtf in possible_polities])
+    possible_polities_dtf["nb_matching_tokens"] = possible_polities_dtf.tokenized_toponym_texts.apply(lambda ttt: count_nb_matching_tokens(dtf_row, ttt))
+    possible_polities_dtf["possible_polity_score"] = \
+        100* (possible_polities_dtf.tokenized_toponym_texts.apply(len)==possible_polities_dtf["nb_matching_tokens"]) * possible_polities_dtf["nb_matching_tokens"] + \
+        10* (possible_polities_dtf["possibility_hds_tag_rank"].max() - possible_polities_dtf["possibility_hds_tag_rank"])+ \
+        possible_polities_dtf["nb_matching_tokens"]
+    possible_polities_dtf = possible_polities_dtf.sort_values(by ='possible_polity_score', ascending = False)
+
+    return possible_polities_dtf
 
 # %%
 
 valid_sequences_dtf["possible_polities"] = [
-    link_entity_by_hdstag(row, polities_dtf)
+    link_entity_by_hdstag(row, polities_dtf, statusword_to_hdstag_dict)
     for i, row in valid_sequences_dtf.iterrows()
 ]
 
-valid_sequences_dtf["possible_polities_ranks"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: [t[0] for t in pp])
-valid_sequences_dtf["possible_polities_min_rank"] = valid_sequences_dtf["possible_polities_ranks"].apply(lambda rs: min(rs) if len(rs)>0 else None)
-valid_sequences_dtf["possible_polities"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: [t[1] for t in pp])
+#valid_sequences_dtf["possible_polities_ranks"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: [t[0] for t in pp])
+valid_sequences_dtf["possible_polities_min_rank"] = valid_sequences_dtf["possible_polities"].apply(lambda pp_dtf: pp_dtf.possibility_hds_tag_rank.min() if pp_dtf.shape[0]>0 else None)
 # %%
 if False:
     valid_sequences_dtf["possible_polities_by_typology"] = [
@@ -539,15 +591,14 @@ if False:
 
 # %%
 
-valid_sequences_dtf["possible_polities"].apply(len).value_counts()
+valid_sequences_dtf["possible_polities"].apply(lambda pp_dtf: pp_dtf.shape[0]).value_counts()
 valid_sequences_dtf["possible_polities_min_rank"].value_counts()
 
 # %%
 
-valid_sequences_dtf["possible_polities"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp[0] if len(pp)>0 else None)
-valid_sequences_dtf["linked_polity_id"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["polity_id"] if pp is not None else None)
-valid_sequences_dtf["linked_hds_tag"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["hds_tag"]if pp is not None else None)
-valid_sequences_dtf["linked_toponym"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["toponym"]if pp is not None else None)
+valid_sequences_dtf["linked_polity_id"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["polity_id"] if pp.shape[0]>0 else None)
+valid_sequences_dtf["linked_hds_tag"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["hds_tag"]if pp.shape[0]>0 else None)
+valid_sequences_dtf["linked_toponym"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["toponym"]if pp.shape[0]>0 else None)
 
 # %%
 
@@ -557,14 +608,15 @@ valid_sequences_dtf.loc[:,linked_sequences_human_columns]
 
 # %%
 
-linked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(len) >= 1].copy()
+linked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(lambda pp: pp is not None)].copy()
 linked_sequences_dtf.loc[:,linked_sequences_human_columns]
+
 
 # %%
 
 unlinked_sequences_human_columns = ["hds_article_id", "statusword", "sequence_toponym", "sequence"]
 
-unlinked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(len) == 0].copy()
+unlinked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(lambda pp: pp is None)].copy()
 unlinked_sequences_dtf.loc[:,unlinked_sequences_human_columns]
 
 # %%
@@ -580,6 +632,7 @@ def add_annotation_to_document_from_valid_sequences(document, valid_sequences_dt
             row.sequence[0].idx,
             row.sequence[-1].idx+len(row.sequence[-1]),
             extra_fields={
+                "type": "polity_id_LOC",
                 "polity_id": row.linked_polity_id
             }
         )
@@ -594,3 +647,17 @@ for i, row in sampled_articles_dtf.iterrows():
 # %%
 
 
+
+#%%
+
+# COMPLETING ANNOTATIONS OF MULTI-TOKEN TOPONYMS
+sampled_articles_dtf.iloc[32,:].hds_article_id
+
+valid_sequences_dtf[valid_sequences_dtf.hds_article_id=="001245"]
+dtf_row = valid_sequences_dtf[valid_sequences_dtf.hds_article_id=="001245"].iloc[1,:]
+
+valid_sequences_dtf[valid_sequences_dtf.hds_article_id=="001245"].iloc[0,:].possible_polities
+
+#hds_tag = valid_sequences_dtf.loc[valid_sequences_dtf.hds_article_id=="001245",["hds_tag"]]
+
+# %%
