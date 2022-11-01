@@ -49,9 +49,12 @@ investigate_norm_len_diff(lendif2529NFKD)
 
 lendifNFKC = polities_dtf[polities_dtf["len_diff_normalized_text"]!=0]
 
-"""Still some problem with some minor characters... we'll come to it when we need ta"""
+"""Still some problem with some minor characters... we'll come to it when we need ta
+Funny enough... when running this script as ipynb: no problem... Still these are the 3 problematic one if further inspection is needed"""
+polities_dtf.loc[polities_dtf.polity_id.apply(lambda i: i in ["001256-c", "001321-c", "007384-ct"]),:]
 
-[investigate_norm_len_diff(lendifNFKC, i) for i in range(2)]
+
+[investigate_norm_len_diff(lendifNFKC, i) for i in range(lendifNFKC.shape[0])]
 
 
 # %%
