@@ -1,5 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
 
-# %%
+# In[1]:
+
+
 import unicodedata
 
 import sys
@@ -11,12 +15,16 @@ from s2_prepare_articles import *
 
 import spacy
 
-# %%
+
+# In[ ]:
+
+
 spacy_tokenizer = spacy.load("fr_core_news_sm")
 
 
+# In[ ]:
 
-# %%
+
 # Evaluating normalized text difference with original text:
 
 polities_dtf["normalized_text"] = polities_dtf.document.apply(lambda d: unicodedata.normalize("NFKC",d.text))
@@ -26,7 +34,10 @@ polities_dtf["len_unnormalized_text"] = polities_dtf.document.apply(lambda d: le
 polities_dtf["len_diff_normalized_text"] = polities_dtf["len_unnormalized_text"] - polities_dtf["len_normalized_text"]
 polities_dtf["len_diff_normalized_text"].value_counts()
 
-# %%
+
+# In[ ]:
+
+
 # Character normalization investigation -> NFKC is the way to go :-)
 
 # Zoug had a very big 2529 char diff using NFKD
@@ -47,7 +58,9 @@ def investigate_norm_len_diff(dtf, i=0):
 
 investigate_norm_len_diff(lendif2529NFKD)
 
-# %%
+
+# In[ ]:
+
 
 lendifNFKC = polities_dtf[polities_dtf["len_diff_normalized_text"]!=0]
 
@@ -59,7 +72,8 @@ polities_dtf.loc[polities_dtf.polity_id.apply(lambda i: i in ["001256-c", "00132
 [investigate_norm_len_diff(lendifNFKC, i) for i in range(lendifNFKC.shape[0])]
 
 
-# %%
+# In[ ]:
+
 
 def normalize_unicode_text(text):
     """unicode normalization NFKD removes accents in characters -> NFKC is the way to go :-)
@@ -69,28 +83,43 @@ def normalize_unicode_text(text):
 
     return unicodedata.normalize("NFKC",text)
 
-#%%
+
+# In[ ]:
+
+
 grandson_dtf = polities_dtf[polities_dtf.toponym=="Grandson"]
 grandson_article = grandson_dtf.article.iloc[0]
 grandson_document = grandson_dtf.document.iloc[0]
 doc = spacy_tokenizer(normalize_unicode_text(grandson_document.text))
 
-# %%
+
+# In[ ]:
+
 
 grandson_tokens = [token for token in doc if token.text =="Grandson"]
 
 grandson_tokens
-# %%
+
+
+# In[ ]:
+
+
 seigneurs_tokens = [token for token in doc if token.text =="seigneurs"]
 [seigneurs_tokens[0].nbor(i) for i in range(-5,5)]
-# %%
+
+
+# In[ ]:
+
+
 nb_prev = 2
 
 grandson_tokens_3g = [[t.nbor(i) for i in range(-nb_prev,1)] for t in grandson_tokens]
 
 grandson_tokens_3g
 
-# %%
+
+# In[ ]:
+
 
 """
 Strategy rule-based annotations:
@@ -107,7 +136,9 @@ Strategy rule-based annotations:
 
 """
 
-# %%
+
+# In[ ]:
+
 
 def normalize_doc_text(d):
     """ /!\\ use with caution, see above"""
@@ -116,19 +147,23 @@ def normalize_doc_text(d):
 polities_dtf.document.apply(normalize_doc_text)
 ""
 
-# %%
+
+# In[ ]:
+
+
 sampled_articles_ids = set(sampled_articles_ids)
 #sampled_polities_dtf = polities_dtf[polities_dtf.hds_article_id.apply(lambda id: id in sampled_articles_ids)]
 
-# %%
+
+# In[ ]:
+
 
 additional_columns = ["article", "document"]
 articles_dtf = get_articles_dtf_from_polities_dtf(polities_dtf, additional_columns)
 
-# %%
 
+# In[ ]:
 
-# %%
 
 # take into account the fact that toponym might span multiple tokens
 articles_dtf["tokenized_toponym"] = articles_dtf.toponym.apply(lambda t: set([tok.text for tok in spacy_tokenizer(normalize_unicode_text(t))]))
@@ -142,7 +177,10 @@ toponym_tokens_value_counts.shape
 #with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 toponym_tokens_value_counts
 
-# %%
+
+# In[ ]:
+
+
 not_toponym_tokens = {"'",
  '-',
  '/',
@@ -196,23 +234,30 @@ ambiguous_toponym_tokens={
  "helvétique",
 }
 
-# %%
+
+# In[ ]:
+
 
 articles_dtf["loose_normalized_tokenized_toponym"] = [[s for s in texts if s not in not_toponym_tokens] for texts in articles_dtf["tokenized_toponym"]]
 articles_dtf["strict_normalized_tokenized_toponym"] = [[s for s in texts if s not in ambiguous_toponym_tokens] for texts in articles_dtf["loose_normalized_tokenized_toponym"]]
 
-# %%
+
+# In[ ]:
+
 
 normalized_toponym_tokens = set(articles_dtf["strict_normalized_tokenized_toponym"].explode())
 
 
-# %%
+# In[ ]:
+
 
 sampled_articles_dtf = articles_dtf[articles_dtf.hds_article_id.apply(lambda id: id in sampled_articles_ids)].copy()
 
 sampled_articles_dtf["tokens"] = sampled_articles_dtf.document.apply(lambda d: spacy_tokenizer(normalize_unicode_text(d.text)))
 
-# %%
+
+# In[ ]:
+
 
 def is_token_toponym(token, dtf_row):
     """Checks that a given token isn't a toponym (either corresponding to any strict toponym, or a loose toponym from the particular article toponym"""
@@ -220,7 +265,10 @@ def is_token_toponym(token, dtf_row):
         token.text in normalized_toponym_tokens
         or token.text in dtf_row.loose_normalized_tokenized_toponym
     )
-# %%
+
+
+# In[ ]:
+
 
 # toponym_tokens: tokens in the text that denote a toponym
 sampled_articles_dtf["toponym_tokens"] = [
@@ -233,7 +281,9 @@ sampled_articles_dtf["toponym_tokens"] = [
     for k, row in sampled_articles_dtf.iterrows()
 ]
 
-# %%
+
+# In[ ]:
+
 
 nb_predecessors = 10
 nb_successors = 3
@@ -248,7 +298,9 @@ predecessors_tokens = sampled_articles_dtf["predecessors_tokens"].apply(lambda t
 predecessors_tokens_value_counts = predecessors_tokens.value_counts().to_frame()
 predecessors_tokens_value_counts.to_csv("predecessors_tokens_value_counts.csv", sep="\t")
 
-# %%
+
+# In[ ]:
+
 
 #pd.set_option('display.max_rows', None)
 predecessors_tokens_value_counts[predecessors_tokens_value_counts.predecessors_tokens==2]
@@ -361,7 +413,10 @@ ambiguous_statusword_token_text = [
     #"hôpital",
 
 ]
-# %%
+
+
+# In[ ]:
+
 
 sampled_articles_dtf["toponyms_tokens_sequences"] = [
     [
@@ -370,25 +425,37 @@ sampled_articles_dtf["toponyms_tokens_sequences"] = [
     ]
     for k, row in sampled_articles_dtf.iterrows()
 ]
-# %%
+
+
+# In[ ]:
+
+
 toponyms_tokens_sequences = [
     seq for toponyms_tokens_sequences in sampled_articles_dtf.toponyms_tokens_sequences
     for seq in toponyms_tokens_sequences
 ]
-# %%
+
+
+# In[ ]:
+
 
 sampled_articles_dtf["statusword_tokens_sequences"] = [
     [seq for seq in toponyms_tokens_sequences if any(token.text.lower() in statusword_token_text for token in seq)]
     for toponyms_tokens_sequences in sampled_articles_dtf.toponyms_tokens_sequences
 ]
-# %%
+
+
+# In[ ]:
+
 
 statusword_tokens_sequences = [
     seq for statusword_tokens_sequences in sampled_articles_dtf.statusword_tokens_sequences
     for seq in statusword_tokens_sequences
 ]
 
-# %%
+
+# In[ ]:
+
 
 def analyse_statusword_tokens_sequence_single(dtf_row, token_sequence, statusword_index, toponym_index):
     """Analyses a single statusword-toponym combination
@@ -419,7 +486,10 @@ def analyse_statusword_tokens_sequence(dtf_row, token_sequence):
     ]
     return sequences_analyses
 
-# %%
+
+# In[ ]:
+
+
 statusword_tokens_sequences_dtf = sampled_articles_dtf.explode("statusword_tokens_sequences")
 statusword_tokens_sequences_dtf = statusword_tokens_sequences_dtf[['hds_article_id', 'toponym', 'geoidentifier', 'article_title', 'polities_ids', 'nb_polities',
        'tokenized_toponym', 'loose_normalized_tokenized_toponym',
@@ -428,13 +498,18 @@ statusword_tokens_sequences_dtf = statusword_tokens_sequences_dtf[['hds_article_
 
 statusword_tokens_sequences_dtf = statusword_tokens_sequences_dtf[~statusword_tokens_sequences_dtf.statusword_tokens_sequences.isna()]
 
-# %%
+
+# In[ ]:
+
+
 statusword_tokens_sequences_dtf["sequence_analysis"] = [
     analyse_statusword_tokens_sequence(row, row.statusword_tokens_sequences)
     for k, row in statusword_tokens_sequences_dtf.iterrows()
 ]
 
-# %%
+
+# In[ ]:
+
 
 sequences_analyses_dtf = statusword_tokens_sequences_dtf.explode("sequence_analysis")
 sequences_analyses_dtf = sequences_analyses_dtf[~sequences_analyses_dtf.sequence_analysis.isna()]
@@ -445,35 +520,47 @@ sequences_analyses_dtf["sequence_structure"] = sequences_analyses_dtf.sequence_a
 sequences_analyses_dtf["sequence_structure_str"] = sequences_analyses_dtf["sequence_structure"].apply(lambda ss: "-".join(ss))
 sequence_structures = sequences_analyses_dtf["sequence_structure_str"].value_counts()
 
-# %%
+
+# In[ ]:
+
 
 sequence_structures
 sequence_structures.to_frame().to_csv(s2_sequence_structures_counts_csv, sep="\t")
 sequence_structures[sequence_structures>3]
 
-# %%
+
+# In[ ]:
+
 
 sequence_structure = "STATUS-\n-Dizain-du-TOPONYM"
 
 sequence_structures_human_columns = ['toponym', 'article_title', 'polities_ids', "statusword", "sequence", "sequence_structure"]
 
 sequences_analyses_dtf.loc[sequences_analyses_dtf["sequence_structure_str"]==sequence_structure,sequence_structures_human_columns]
-# %%
+
+
+# In[ ]:
+
 
 valid_sequence_structures = pd.read_csv(s2_sequence_structures_validation_csv, sep="\t")
 valid_sequence_structures = set(valid_sequence_structures[valid_sequence_structures.validity=="yes"].structure)
 valid_sequence_structures
 
-# %%
+
+# In[ ]:
+
 
 sequence_structures.shape
-# %%
+
+
+# In[ ]:
+
 
 valid_sequences_dtf = sequences_analyses_dtf[sequences_analyses_dtf.sequence_structure_str.apply(lambda struct: struct in valid_sequence_structures)].copy()
 valid_sequences_dtf.shape
 
-# %%
 
+# In[ ]:
 
 
 with open(s2_statusword_to_typology_json) as f:
@@ -491,11 +578,14 @@ statusword_to_hdstag_dict = {
     for statusword in t[0]
 }
 
-# %%
+
+# In[ ]:
+
 
 polities_dtf[polities_dtf.typology=="baillage"].tail()
 
-# %%
+
+# In[ ]:
 
 
 polities_dtf["tokenized_toponym"] = polities_dtf.toponym.apply(lambda t: spacy_tokenizer(t))
@@ -504,9 +594,9 @@ polities_dtf["tokenized_toponym_texts"] = polities_dtf.tokenized_toponym.apply(l
 polities_dtf["tokenized_toponym"].apply(len).value_counts()
 polities_dtf[polities_dtf["tokenized_toponym"].apply(len)>1]
 
-# %%
 
-# %%
+# In[ ]:
+
 
 def link_entity_by_typology(dtf_row, polities_dtf):
     possible_typologies = statusword_to_typology_dict.get(dtf_row.statusword.text.lower())
@@ -570,15 +660,14 @@ def link_entity_by_hdstag(dtf_row, polities_dtf, statusword_to_hdstag_dict):
         dtf["possibility_hds_tag_rank"] = i 
     possible_polities_dtf = pd.concat([dtf for i,dtf in possible_polities])
     possible_polities_dtf["nb_matching_tokens"] = possible_polities_dtf.tokenized_toponym_texts.apply(lambda ttt: count_nb_matching_tokens(dtf_row, ttt))
-    possible_polities_dtf["possible_polity_score"] = \
-        100* (possible_polities_dtf.tokenized_toponym_texts.apply(len)==possible_polities_dtf["nb_matching_tokens"]) * possible_polities_dtf["nb_matching_tokens"] + \
-        10* (possible_polities_dtf["possibility_hds_tag_rank"].max() - possible_polities_dtf["possibility_hds_tag_rank"])+ \
-        possible_polities_dtf["nb_matching_tokens"]
+    possible_polities_dtf["possible_polity_score"] =         100* (possible_polities_dtf.tokenized_toponym_texts.apply(len)==possible_polities_dtf["nb_matching_tokens"]) * possible_polities_dtf["nb_matching_tokens"] +         10* (possible_polities_dtf["possibility_hds_tag_rank"].max() - possible_polities_dtf["possibility_hds_tag_rank"])+         possible_polities_dtf["nb_matching_tokens"]
     possible_polities_dtf = possible_polities_dtf.sort_values(by ='possible_polity_score', ascending = False)
 
     return possible_polities_dtf
 
-# %%
+
+# In[ ]:
+
 
 valid_sequences_dtf["possible_polities"] = [
     link_entity_by_hdstag(row, polities_dtf, statusword_to_hdstag_dict)
@@ -587,49 +676,65 @@ valid_sequences_dtf["possible_polities"] = [
 
 #valid_sequences_dtf["possible_polities_ranks"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: [t[0] for t in pp])
 valid_sequences_dtf["possible_polities_min_rank"] = valid_sequences_dtf["possible_polities"].apply(lambda pp_dtf: pp_dtf.possibility_hds_tag_rank.min() if pp_dtf.shape[0]>0 else None)
-# %%
+
+
+# In[ ]:
+
+
 if False:
     valid_sequences_dtf["possible_polities_by_typology"] = [
         link_entity_by_typology(row, polities_dtf)
         for i, row in valid_sequences_dtf.iterrows()
     ]
 
-# %%
+
+# In[ ]:
+
 
 valid_sequences_dtf["possible_polities"].apply(lambda pp_dtf: pp_dtf.shape[0]).value_counts()
 valid_sequences_dtf["possible_polities_min_rank"].value_counts()
 
-# %%
+
+# In[ ]:
+
 
 valid_sequences_dtf["linked_polity_id"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["polity_id"] if pp.shape[0]>0 else None)
 valid_sequences_dtf["linked_hds_tag"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["hds_tag"]if pp.shape[0]>0 else None)
 valid_sequences_dtf["linked_toponym"] = valid_sequences_dtf["possible_polities"].apply(lambda pp: pp.iloc[0]["toponym"]if pp.shape[0]>0 else None)
 
-# %%
+
+# In[ ]:
+
 
 linked_sequences_human_columns = ["hds_article_id", "statusword", "sequence_toponym", "sequence", "linked_polity_id", "linked_hds_tag", "linked_toponym"]
 
 valid_sequences_dtf.loc[:,linked_sequences_human_columns]
 
-# %%
+
+# In[ ]:
+
 
 linked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(lambda pp: pp is not None)].copy()
 linked_sequences_dtf.loc[:,linked_sequences_human_columns]
 
 
-# %%
+# In[ ]:
+
 
 unlinked_sequences_human_columns = ["hds_article_id", "statusword", "sequence_toponym", "sequence"]
 
 unlinked_sequences_dtf = valid_sequences_dtf.loc[valid_sequences_dtf["possible_polities"].apply(lambda pp: pp is None)].copy()
 unlinked_sequences_dtf.loc[:,unlinked_sequences_human_columns]
 
-# %%
+
+# In[ ]:
+
 
 polities_dtf[polities_dtf.typology.apply(lambda t: t is None)].hds_tag.value_counts()
 
 
-# %%
+# In[ ]:
+
 
 def add_annotation_to_document_from_valid_sequences(document, valid_sequences_dtf_rows):
     new_annotations = [
@@ -645,15 +750,16 @@ def add_annotation_to_document_from_valid_sequences(document, valid_sequences_dt
     ]
     document.annotations = document.annotations + new_annotations
 
-# %%
+
+# In[ ]:
+
 
 for i, row in sampled_articles_dtf.iterrows():
     add_annotation_to_document_from_valid_sequences(row.document, valid_sequences_dtf[valid_sequences_dtf.hds_article_id==row.hds_article_id])
-# %%
 
 
+# In[ ]:
 
-#%%
 
 # COMPLETING ANNOTATIONS OF MULTI-TOKEN TOPONYMS
 sampled_articles_dtf.iloc[32,:].hds_article_id
@@ -665,4 +771,3 @@ valid_sequences_dtf[valid_sequences_dtf.hds_article_id=="001245"].iloc[0,:].poss
 
 #hds_tag = valid_sequences_dtf.loc[valid_sequences_dtf.hds_article_id=="001245",["hds_tag"]]
 
-# %%
