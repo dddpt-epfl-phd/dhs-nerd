@@ -13,32 +13,32 @@ Proposition:
 
 ## Functions:
 ### tokenization & preprocessing
-- add_tokenized_text(): takes a dtf with "text" column
+- DONE add_tokenized_text(): takes a dtf with "text" column
     + adds the following columns:
         - tokens: spacy tokenization of text column
-- add_toponyms(): takes a dtf with a "toponym" column
+- DONE add_toponyms(): takes a dtf with a "toponym" column
     + adds the following columns:
         - tokenized_toponym: spacy tokenization texts of toponym
-- normalize_toponyms(): takes a dtf coming from add_toponyms()
+- DONE normalize_toponyms(): takes a dtf coming from add_toponyms()
     + adds the following columns:
         - loose_normalized_tokenized_toponym: all toponym tokens that are generally toponym (exlcuding "les", "la", etc...)
         - strict_normalized_tokenized_toponym: same as loose_normalized_tokenized_toponym, excluding in addition ambiguous toponym tokens ("eaux", "ile", "bois", "col", etc...)
     + returns:
         - normalized_toponym_tokens: set of all strict_normalized_tokenized_toponym
-- is_token_toponym(): checks whether an article's token is a toponym token based on:
+- DONE is_token_toponym(): checks whether an article's token is a toponym token based on:
     + normalized_toponym_tokens
     + the current article's loose_normalized_tokenized_toponym
-- add_toponym_tokens_sequences(): takes nb_predecessors, nb_successors and a dtf coming from add_toponyms() and add_tokenized_text()
-    /!\ current implementation ignores some toponym_tokens (see challenges) /!\
+- ?DONE? add_toponym_tokens_sequences(): takes nb_predecessors, nb_successors and a dtf coming from add_toponyms() and add_tokenized_text()
     + adds the following columns:
         - toponym_tokens: tokens from the text that are identified as a toponym 
-        - toponym_sequence_tokens: for each toponym_token, a sequence according from nb_pred to nb_succ
-    /!\ current implementation ignores some toponym_tokens (see challenges) /!\
+        - toponyms_tokens_sequences: for each toponym_token, a sequence according from nb_pred to nb_succ
+
 ### polity recognition
 - identify_statuswords_toponyms_sequences(): takes a dtf coming from add_toponym_tokens_sequences()
+    + adds a column "statusword_tokens_sequences" to dtf containing all the toponyms_tokens_sequences also containing a statusword
     + returns a new dtf statusword_tokens_sequences_dtf with one row per sequence containing at least 1 statusword and 1 toponym
 - explode_statuswords_toponyms_sequences(): takes a dtf coming from identify_statuswords_toponyms_sequences()
-    + returns a new dtf sequences_analyses_dtf (renaming it tostatusword_tokens_sequences_dtf?) with one row per statusword+toponym combination (multiple rows possible for one toponym sequence)
+    + returns a new dtf sequences_analyses_dtf (renaming it to statusword_tokens_sequences_dtf?) with one row per statusword+toponym combination (multiple rows possible for one toponym sequence)
 - validate_statuswords_toponyms_sequences(): takes valid_sequence_structures set of strings and a dtf coming from explode_statuswords_toponyms_sequences()
     + returns a new dtf valid_sequences_dtf containing the valid statuswords_toponyms_sequences
 ### polity linking
@@ -56,7 +56,3 @@ Proposition:
 ### Polity recognition and linking for toponyms without statuswords
 
 # Challenges
-
-### creation of `sampled_articles_dtf["toponym_tokens"]`
-- ignores first token of text
-- only identifies first token of a toponym tokens sequence
