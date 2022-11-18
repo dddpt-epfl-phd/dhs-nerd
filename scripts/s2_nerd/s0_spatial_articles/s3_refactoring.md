@@ -28,16 +28,16 @@ Proposition:
 - DONE is_token_toponym(): checks whether an article's token is a toponym token based on:
     + normalized_toponym_tokens
     + the current article's loose_normalized_tokenized_toponym
-- ?DONE? add_toponym_tokens_sequences(): takes nb_predecessors, nb_successors and a dtf coming from add_toponyms() and add_tokenized_text()
+- DONE add_toponym_tokens_sequences(): takes nb_predecessors, nb_successors and a dtf coming from add_toponyms() and add_tokenized_text()
     + adds the following columns:
         - toponym_tokens: tokens from the text that are identified as a toponym 
         - toponyms_tokens_sequences: for each toponym_token, a sequence according from nb_pred to nb_succ
 
 ### polity recognition
-- identify_statuswords_toponyms_sequences(): takes a dtf coming from add_toponym_tokens_sequences()
+- DONE identify_statuswords_toponyms_sequences(): takes a dtf coming from add_toponym_tokens_sequences()
     + adds a column "statusword_tokens_sequences" to dtf containing all the toponyms_tokens_sequences also containing a statusword
     + returns a new dtf statusword_tokens_sequences_dtf with one row per sequence containing at least 1 statusword and 1 toponym
-- explode_statuswords_toponyms_sequences(): takes a dtf coming from identify_statuswords_toponyms_sequences()
+- DONE analyse_statuswords_toponyms_sequences(): takes a dtf coming from identify_statuswords_toponyms_sequences()
     + returns a new dtf sequences_analyses_dtf (renaming it to statusword_tokens_sequences_dtf?) with one row per statusword+toponym combination (multiple rows possible for one toponym sequence)
 - validate_statuswords_toponyms_sequences(): takes valid_sequence_structures set of strings and a dtf coming from explode_statuswords_toponyms_sequences()
     + returns a new dtf valid_sequences_dtf containing the valid statuswords_toponyms_sequences
