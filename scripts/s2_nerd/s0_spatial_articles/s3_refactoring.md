@@ -39,20 +39,28 @@ Proposition:
     + returns a new dtf statusword_tokens_sequences_dtf with one row per sequence containing at least 1 statusword and 1 toponym
 - DONE analyse_statuswords_toponyms_sequences(): takes a dtf coming from identify_statuswords_toponyms_sequences()
     + returns a new dtf sequences_analyses_dtf (renaming it to statusword_tokens_sequences_dtf?) with one row per statusword+toponym combination (multiple rows possible for one toponym sequence)
-- validate_statuswords_toponyms_sequences(): takes valid_sequence_structures set of strings and a dtf coming from explode_statuswords_toponyms_sequences()
+- DONE validate_statuswords_toponyms_sequences(): takes valid_sequence_structures set of strings and a dtf coming from explode_statuswords_toponyms_sequences()
     + returns a new dtf valid_sequences_dtf containing the valid statuswords_toponyms_sequences
 ### polity linking
-- link_entity_by_hdstag() already exists
-- link_statuswords_toponyms_sequences() takes a dtf coming from validate_statuswords_toponyms_sequences()
+- DONE link_entity_by_hdstag() already exists
+- DONE link_statuswords_toponyms_sequences() takes a dtf coming from validate_statuswords_toponyms_sequences()
     + adds columns
         - possible_polities
         - possible_polities_min_rank
         - linked_polity_id, linked_hds_tag, linked_toponym
 ### annotating back documents 
-- add_annotation_to_document_from_valid_sequences() already exists
+- (DONE) add_annotation_to_document_from_valid_sequences() already exists
 
 # Next steps
 
 ### Polity recognition and linking for toponyms without statuswords
 
-# Challenges
+
+needs:
+- detect toponyms that are without statusword
+- don't double detect toponyms that have a statusword
+    - properly identify multi-tokens toponyms
+
+proposition:
+- re-detect all toponyms
+- ignore toponyms that are in a 
