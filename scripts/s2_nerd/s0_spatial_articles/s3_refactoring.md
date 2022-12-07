@@ -64,3 +64,8 @@ needs:
 proposition:
 - re-detect all toponyms
 - ignore toponyms that are in a 
+
+## NEXT TIME
+
+Use [spacy's rule-based matching](https://spacy.io/usage/rule-based-matching#adding-patterns) from the start!
+
