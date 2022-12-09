@@ -23,15 +23,15 @@ Proposition:
     + adds the following columns:
         - loose_normalized_tokenized_toponym: all toponym tokens that are generally toponym (exlcuding "les", "la", etc...)
         - strict_normalized_tokenized_toponym: same as loose_normalized_tokenized_toponym, excluding in addition ambiguous toponym tokens ("eaux", "ile", "bois", "col", etc...)
+        - trimmed_normalized_tokenized_toponym: removing leading tokens that are not_toponym_tokens (mainly to avoid confusion with regard to toponyms such as "Les Verrières")
     + returns:
         - normalized_toponym_tokens: set of all strict_normalized_tokenized_toponym
-- DONE is_token_toponym(): checks whether an article's token is a toponym token based on:
-    + normalized_toponym_tokens
-    + the current article's loose_normalized_tokenized_toponym
-- DONE add_toponym_tokens_sequences(): takes nb_predecessors, nb_successors and a dtf coming from add_toponyms() and add_tokenized_text()
+- DONE add_text_toponyms_spans():  takes a dtf coming from normalize_toponyms()
+    + adds the following columns: 
+        - toponym_tokens_spans: list of spacy Spans, each Span containing a toponym, ensures no overlaps
+- DONE add_toponym_tokens_sequences(): takes nb_predecessors, nb_successors and a dtf coming from add_text_toponyms_spans() and add_tokenized_text()
     + adds the following columns:
-        - toponym_tokens: tokens from the text that are identified as a toponym 
-        - toponyms_tokens_sequences: for each toponym_token, a sequence according from nb_pred to nb_succ
+        - toponyms_tokens_sequences: for each toponym_token_span, a sequence according from nb_pred to nb_succ (indexed on first token from each span)
 
 ### polity recognition
 - DONE identify_statuswords_toponyms_sequences(): takes a dtf coming from add_toponym_tokens_sequences()
