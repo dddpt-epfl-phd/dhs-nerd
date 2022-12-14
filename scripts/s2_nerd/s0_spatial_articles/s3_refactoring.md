@@ -26,7 +26,7 @@ Proposition:
         - trimmed_normalized_tokenized_toponym: removing leading tokens that are not_toponym_tokens (mainly to avoid confusion with regard to toponyms such as "Les Verrières")
     + returns:
         - normalized_toponym_tokens: set of all strict_normalized_tokenized_toponym
-- DONE add_text_toponyms_spans():  takes a dtf coming from normalize_toponyms()
+- DONE add_text_toponyms_spans():  takes a dtf coming from normalize_toponyms() and add_tokenized_text()
     + adds the following columns: 
         - toponym_tokens_spans: list of spacy Spans, each Span containing a toponym, ensures no overlaps
 - DONE save_toponym_tokens_spans(): takes a dtf coming from add_text_toponyms_spans()
@@ -35,12 +35,12 @@ Proposition:
 - DONE restore_or_compute_and_save_toponym_spans()
 - DONE to_toponyms_dtf(): takes a dtf coming from add_text_toponyms_spans()
     + returns a dtf with one line per toponym span
-- TODO add_toponym_tokens_sequences(): takes nb_predecessors, nb_successors and a dtf coming from add_text_toponyms_spans() and add_tokenized_text()
+- DONE add_toponym_tokens_sequence(): takes nb_predecessors, nb_successors and a dtf coming from to_toponyms_dtf()
     + adds the following columns:
         - toponyms_tokens_sequences: for each toponym_token_span, a sequence according from nb_pred to nb_succ (indexed on first token from each span)
 
 ### polity recognition
-- TODO identify_statuswords_toponyms_sequences(): takes a dtf coming from add_toponym_tokens_sequences()
+- TODO identify_statuswords_toponyms_sequences(): takes a dtf coming from add_toponym_tokens_sequence()
     + adds a column "statusword_tokens_sequences" to dtf containing all the toponyms_tokens_sequences also containing a statusword
     + returns a new dtf statusword_tokens_sequences_dtf with one row per sequence containing at least 1 statusword and 1 toponym
 - DONE analyse_statuswords_toponyms_sequences(): takes a dtf coming from identify_statuswords_toponyms_sequences()
