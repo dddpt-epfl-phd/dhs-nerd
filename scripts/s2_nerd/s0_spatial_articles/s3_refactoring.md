@@ -29,12 +29,18 @@ Proposition:
 - DONE add_text_toponyms_spans():  takes a dtf coming from normalize_toponyms()
     + adds the following columns: 
         - toponym_tokens_spans: list of spacy Spans, each Span containing a toponym, ensures no overlaps
-- DONE add_toponym_tokens_sequences(): takes nb_predecessors, nb_successors and a dtf coming from add_text_toponyms_spans() and add_tokenized_text()
+- DONE save_toponym_tokens_spans(): takes a dtf coming from add_text_toponyms_spans()
+    - save the toponym_tokens_spans column to a pickle
+- DONE restore_toponym_tokens_spans(): restores the toponym_tokens_spans column from pickle 
+- DONE restore_or_compute_and_save_toponym_spans()
+- DONE to_toponyms_dtf(): takes a dtf coming from add_text_toponyms_spans()
+    + returns a dtf with one line per toponym span
+- TODO add_toponym_tokens_sequences(): takes nb_predecessors, nb_successors and a dtf coming from add_text_toponyms_spans() and add_tokenized_text()
     + adds the following columns:
         - toponyms_tokens_sequences: for each toponym_token_span, a sequence according from nb_pred to nb_succ (indexed on first token from each span)
 
 ### polity recognition
-- DONE identify_statuswords_toponyms_sequences(): takes a dtf coming from add_toponym_tokens_sequences()
+- TODO identify_statuswords_toponyms_sequences(): takes a dtf coming from add_toponym_tokens_sequences()
     + adds a column "statusword_tokens_sequences" to dtf containing all the toponyms_tokens_sequences also containing a statusword
     + returns a new dtf statusword_tokens_sequences_dtf with one row per sequence containing at least 1 statusword and 1 toponym
 - DONE analyse_statuswords_toponyms_sequences(): takes a dtf coming from identify_statuswords_toponyms_sequences()
