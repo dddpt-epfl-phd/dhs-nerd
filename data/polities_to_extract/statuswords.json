@@ -1,6 +1,5 @@
 {
     "statuswords":[
-        # lordships
         "seigneur",
         "seigneurs",
         "seigneurie",
@@ -19,29 +18,26 @@
         "ducs",
         "duché",
         "duchés",
-        # cantons
         "canton",
         "cantons",
-        # administrative: district/bailliage/etc
         "district",
         "districts",
         "distr",
         "dizain",
-        "dizains"
+        "dizains",
         "bailliage",
         "bailliages",
         "bailli",
         "baillis",
         "département",
         "départements",
-        # commmunes
         "commune",
         "communes",
         "comm",
         "village",
         "villages",
         "municipalité",
-        "municipalités"
+        "municipalités",
         "communauté",
         "communautés",
         "munizipalgemeinde",
@@ -57,7 +53,6 @@
         "localités",
         "cercle",
         "cercles",
-        # ecclesiastical
         "chapitre",
         "prieuré",
         "prieurés",
@@ -77,23 +72,21 @@
         "avoueries",
         "commanderie",
         "commanderies",
-        # fuzzy terms
         "région",
         "régions",
         "domaine",
         "domaines",
         "vallon",
         "administration",
-        "circonscriptions",
+        "circonscriptions"
     ],
-    "ambiguous":[
+    "ambiguous_statuswords":[
         "vallée",
         "château",
-        "châteaux"
+        "châteaux",
         "terres",
         "territoire",
         "église",
-        #"dîme", # -> ?
         "juridictions",
         "juridiction",
         "forêt",
@@ -102,8 +95,6 @@
         "possessions",
         "ferme",
         "fermes",
-        "suzeraineté",
-        #"vestiges",# -> ?
-        #"hôpital",
+        "suzeraineté"
     ]
 }

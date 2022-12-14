@@ -153,7 +153,9 @@ s2_polities_txt_folder = path.join(s2_polities_to_extract_folder, "polities_txt"
 s2_sequence_structures_validation_csv = path.join(s2_polities_to_extract_folder, "sequence_structures_validation.csv")
 s2_sequence_structures_counts_csv = path.join(s2_polities_to_extract_folder, "sequence_structures_counts.csv")
 s2_statusword_to_typology_json = path.join(s2_polities_to_extract_folder, "statusword_to_typology.json")
+s2_statuswords_json = path.join(s2_polities_to_extract_folder, "statuswords.json")
 
+s2_toponyms_spans_dtf_pickle = path.join(s2_polities_to_extract_folder, "toponyms_spans_dtf.pkl")
 
 
 def localize(path, language):
