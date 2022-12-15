@@ -40,14 +40,19 @@ Proposition:
         - toponyms_tokens_sequences: for each toponym_token_span, a sequence according from nb_pred to nb_succ (indexed on first token from each span)
 
 ### polity recognition
-- TODO identify_statuswords_toponyms_sequences(): takes a dtf coming from add_toponym_tokens_sequence()
-    + adds a column "statusword_tokens_sequences" to dtf containing all the toponyms_tokens_sequences also containing a statusword
-    + returns a new dtf statusword_tokens_sequences_dtf with one row per sequence containing at least 1 statusword and 1 toponym
-- DONE analyse_statuswords_toponyms_sequences(): takes a dtf coming from identify_statuswords_toponyms_sequences()
-    + returns a new dtf sequences_analyses_dtf (renaming it to statusword_tokens_sequences_dtf?) with one row per statusword+toponym combination (multiple rows possible for one toponym sequence)
+- DONE identify_statusword_toponym_sequences(): takes a dtf coming from add_toponym_tokens_sequence()
+    + adds a column "is_statusword_toponym_sequence" to dtf indicating which row (=toponym sequence) also contains a statusword
+- DONE analyse_statuswords_toponyms_sequences(): takes a dtf coming from identify_statusword_toponym_sequences()
+    + returns a new dtf sequences_analyses_dtf with one row per statusword+toponym combination (multiple rows possible for one toponym sequence)
 - DONE validate_statuswords_toponyms_sequences(): takes valid_sequence_structures set of strings and a dtf coming from explode_statuswords_toponyms_sequences()
     + returns a new dtf valid_sequences_dtf containing the valid statuswords_toponyms_sequences
 ### polity linking
+- DONE create_toponyms_exact_match_dict(): creates a dict with as keys whole toponyms, and as values the list of polity ids corresponding to that toponym 
+- DONE link_single_toponyms(): takes a dtf coming from identify_statusword_toponym_sequences()
+    + links single toponyms to the polity ids found in the result from create_toponyms_exact_match_dict()
+    + adds columns
+        - possible_polities
+        - linked_polity_id, linked_hds_tag, linked_toponym
 - DONE link_entity_by_hdstag() already exists
 - DONE link_statuswords_toponyms_sequences() takes a dtf coming from validate_statuswords_toponyms_sequences()
     + adds columns

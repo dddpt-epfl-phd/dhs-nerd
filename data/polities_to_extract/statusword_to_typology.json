@@ -1,6 +1,22 @@
 [
     [
 		[
+            "default",
+            "in the absence of a statusword"
+        ],
+        ["default"],
+		[
+            "Entités politiques / Commune",
+            "Entités politiques / Ancienne commune",
+            "Entités politiques / Canton",
+            "Entités politiques / Canton, Département, République (1790-1813)",
+            "Entités politiques / Seigneurie",
+            "Entités politiques / Etat historique disparu",
+            "Entités politiques / Ville, commune, localité (étranger)",
+            "Custom"
+        ]
+	], [
+		[
             "seigneur",
             "seigneurs",
             "seigneurie",
