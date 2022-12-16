@@ -46,6 +46,7 @@ Proposition:
     + returns a new dtf sequences_analyses_dtf with one row per statusword+toponym combination (multiple rows possible for one toponym sequence)
 - DONE validate_statuswords_toponyms_sequences(): takes valid_sequence_structures set of strings and a dtf coming from explode_statuswords_toponyms_sequences()
     + returns a new dtf valid_sequences_dtf containing the valid statuswords_toponyms_sequences
+
 ### polity linking
 - DONE create_toponyms_exact_match_dict(): creates a dict with as keys whole toponyms, and as values the list of polity ids corresponding to that toponym 
 - DONE link_single_toponyms(): takes a dtf coming from identify_statusword_toponym_sequences()
