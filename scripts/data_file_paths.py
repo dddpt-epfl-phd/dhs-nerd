@@ -149,6 +149,7 @@ s2_polities_list_csv = path.join(s2_polities_to_extract_folder,"polities_list.cs
 s2_sampled_polities_for_annotation_json = path.join(s2_polities_to_extract_folder,"sampled_polities_for_annotation.json")
 
 s2_polities_txt_folder = path.join(s2_polities_to_extract_folder, "polities_txt")
+s2_polities_uima_cas_folder = path.join(s2_polities_to_extract_folder, "polities_uima_cas")
 
 s2_sequence_structures_validation_csv = path.join(s2_polities_to_extract_folder, "sequence_structures_validation.csv")
 s2_sequence_structures_counts_csv = path.join(s2_polities_to_extract_folder, "sequence_structures_counts.csv")

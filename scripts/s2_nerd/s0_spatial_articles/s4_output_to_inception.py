@@ -1,6 +1,7 @@
 # %%
 import unicodedata
 from cassis import load_typesystem, Cas
+from os import path
 
 import sys
 sys.path.append("../../../src")
@@ -11,7 +12,8 @@ from inception_fishing import spacy as spacyIO
 
 # %%
 
-from s3_rule_based_annotation import *
+from ipynb.fs.full. s3_rule_based_annotation import *
+#from s3_rule_based_annotation import *
 
 # %%
 
@@ -77,9 +79,13 @@ def document_to_uima_cas(document, typesystem):
 
 # %%
 
-casdoc = document_to_uima_cas(sampled_articles_dtf.iloc[32,:].document, typesystem)
+for i, row in sampled_articles_dtf.iterrows():
+    
+    casdoc = document_to_uima_cas(row.document, typesystem)
+    
+    cas_path = path.join(s2_polities_uima_cas_folder,row.hds_article_id+"_"+row.article_title+".xmi")
+    casdoc.to_xmi(cas_path, pretty_print=True)
 
-
-casdoc.to_xmi("tessst32.xmi", pretty_print=True)
+# %%
 
 # %%
