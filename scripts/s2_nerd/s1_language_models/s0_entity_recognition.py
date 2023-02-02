@@ -62,10 +62,25 @@ def article_entity_recognition(dhs_article, pipeline):
     - per text_block:
         - create tokens based on ner_results
     """
-    return [
+    tb_ner_results = [
         pipeline(text)
         for tag, text in dhs_article.text_blocks
     ]
+    # handle float32s for json dumping
+    for ner_results in tb_ner_results:
+        for nr in ner_results:
+            nr["score"] = float(nr["score"])
+    return tb_ner_results
+
+
+def json_dump_huggingface_ner_results(dhs_article, dhsa_ner_results, jsonfile="huggingface_ner_results.json"):
+    with open(jsonfile, "w") as nerf:
+        json.dump({
+            "hds_article_id": dhs_article.id,
+            "text_blocks": dhs_article.text_blocks,
+            "ner_results": dhsa_ner_results
+        }, nerf, indent="\t", ensure_ascii=False)
+
 
 def displacy_article_ner_results(text_blocks, tb_ner_results, included_ents=["LOC", "DATE", "PER"]):
     """
@@ -89,20 +104,28 @@ def displacy_article_ner_results(text_blocks, tb_ner_results, included_ents=["LO
                 ents.append("O")
     return tokens, ents
 
+def displacy_dhs_article_NER(dhs_article, dhsa_ner_results):
+    tokens, ents = displacy_article_ner_results(dhs_article.text_blocks, dhsa_ner_results)
+    doc = Doc(Vocab(strings=set(tokens)),
+            words=tokens,
+            # spaces=spaces,
+            ents=ents
+    )
+    return displacy.render(doc, style="ent")
+# %%
+
+# %%
+
 # %%
 dhs_article = sampled_articles_dtf.article.iloc[22]
 dhsa_ner_results = article_entity_recognition(dhs_article, camembert_ner)
 
 tokens, ents =  displacy_article_ner_results(dhs_article.text_blocks, dhsa_ner_results)
+displacy_dhs_article_NER(dhs_article, dhsa_ner_results)
+# %%
+# %%
+json_dump_huggingface_ner_results(dhs_article, dhsa_ner_results, jsonfile="huggingface_ner_results.json")
+
+
 
 # %%
-
-
-doc = Doc(Vocab(strings=set(tokens)),
-        words=tokens,
-        # spaces=spaces,
-        ents=ents
-)
-# %%
-#displacy.serve(doc, style="ent")
-displacy.render(doc, style="ent")
