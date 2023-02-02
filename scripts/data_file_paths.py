@@ -159,6 +159,8 @@ s2_statuswords_json = path.join(s2_polities_to_extract_folder, "statuswords.json
 s2_toponyms_spans_dtf_pickle = path.join(s2_polities_to_extract_folder, "toponyms_spans_dtf.pkl")
 
 
+checkpoint = "Jean-Baptiste/camembert-ner-with-dates"
+
 def localize(path, language):
     return path.replace("<LANGUAGE>", language)
 

@@ -166,7 +166,7 @@ def tokens_ner_to_displacy_labels(tokens_texts, ner_results):
 
 # %%
 
-ner_ents = tokens_ner_to_displacy_labels(tokens_text, ner_results)
+#ner_ents = tokens_ner_to_displacy_labels(tokens_text, ner_results)
 # %%
 ner_results
 
