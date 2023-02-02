@@ -4,9 +4,6 @@ import json
 
 from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
 
-import torch
-import numpy as np
-
 from spacy.tokens import Doc
 from spacy.vocab import Vocab
 from spacy import displacy
@@ -17,10 +14,9 @@ sys.path.append("../../../src")
 sys.path.append("../../../scripts")
 from inception_fishing import Annotation
 
+from data_file_paths import *
 from s2_nerd.s0_spatial_articles.s2_prepare_articles import *
 from s2_nerd.s0_spatial_articles.spatial_articles_utils import *
-import spacy
-from tqdm import tqdm
 
 # %%
 
@@ -41,7 +37,6 @@ sampled_articles_dtf.sort_values(by="text_len", inplace=True)
 # %%
 
 # %%
-checkpoint = "Jean-Baptiste/camembert-ner-with-dates"
 
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)
 # %%
@@ -51,7 +46,7 @@ model = AutoModelForTokenClassification.from_pretrained(checkpoint)
 # %%
 
 
-camembert_ner = pipeline('ner', model=model, tokenizer=tokenizer, aggregation_strategy="simple")
+ner_pipeline = pipeline('ner', model=model, tokenizer=tokenizer, aggregation_strategy="simple")
 
 # %%
 
@@ -95,8 +90,9 @@ def displacy_article_ner_results(text_blocks, tb_ner_results, included_ents=["LO
         for i, nr in enumerate(ner_results):
             if i!=0:
                 prev_nr = ner_results[i-1]
-                tokens.append(tb[prev_nr["end"]:nr["start"]])
-                ents.append("O")
+                if nr["start"] > prev_nr["end"] :
+                    tokens.append(tb[prev_nr["end"]:nr["start"]])
+                    ents.append("O")
             tokens.append(tb[nr["start"]:nr["end"]])
             if nr["entity_group"] in included_ents:
                 ents.append("B-"+nr["entity_group"])
@@ -118,7 +114,7 @@ def displacy_dhs_article_NER(dhs_article, dhsa_ner_results):
 
 # %%
 dhs_article = sampled_articles_dtf.article.iloc[22]
-dhsa_ner_results = article_entity_recognition(dhs_article, camembert_ner)
+dhsa_ner_results = article_entity_recognition(dhs_article, ner_pipeline)
 
 tokens, ents =  displacy_article_ner_results(dhs_article.text_blocks, dhsa_ner_results)
 displacy_dhs_article_NER(dhs_article, dhsa_ner_results)
@@ -127,5 +123,17 @@ displacy_dhs_article_NER(dhs_article, dhsa_ner_results)
 json_dump_huggingface_ner_results(dhs_article, dhsa_ner_results, jsonfile="huggingface_ner_results.json")
 
 
+
+# %%
+
+sampled_articles_dtf["ner_results"] = sampled_articles_dtf.article.apply(lambda a: article_entity_recognition(a, ner_pipeline))
+
+# %%
+
+i = 39
+dhs_article = sampled_articles_dtf.article.iloc[i]
+dhsa_ner_results = sampled_articles_dtf.ner_results.iloc[i]
+print(dhs_article.id)
+displacy_dhs_article_NER(dhs_article, dhsa_ner_results)
 
 # %%
