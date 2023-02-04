@@ -4,14 +4,15 @@ import { useEffect } from "react";
 import * as d3 from "d3";
 
 const categories = [
-  {name:"themes", color: "#76b7b2", active:false},
-    {name:"people", color: "#59a14f", active:false},
-    {name:"families", color: "#f28e2c", active:false},
+  {name:"themes", color: "#76b7b2", active:true},
+    {name:"people", color: "#59a14f", active:true},
+    {name:"families", color: "#f28e2c", active:true},
     {name:"spatial", color: "#af7aa1", active:true},
 ]
 
 function HdsThematicIndexation({
-  treeDataJsonUrl = "./tag_tree_with_ids_all.json" // "./tag_tree_with_ids_spatial.json" // 
+  treeDataJsonUrl = "./tag_tree_with_ids_all.json", // "./tag_tree_with_ids_spatial.json" // 
+  baseurl = ""
 }) {
 
   useEffect(()=>{
@@ -101,7 +102,7 @@ function HdsThematicIndexation({
         d.data.articles.forEach(a=>{ 
           newHTML+='<div class="dhs-article">' +
             '<a class="dhs-dhs-link " href="https://dddpt-epfl-phd.github.io/dhs-nerd/#/fr/articles/'+a[1]+'" target="_blank">'+a[0]+' ('+a[1]+')</a>' +
-            '<a class="dhs-real-dhs-link" href="https://hls-dhs-dss.ch/fr/articles/'+a[1]+'" target="_blank"> <img src="./hds.png" width="15px" height="15px"></a>' +
+            '<a class="dhs-real-dhs-link" href="https://hls-dhs-dss.ch/fr/articles/'+a[1]+'" target="_blank"> <img src="'+baseurl+'/hds.png" width="15px" height="15px"></a>' +
             '</div>'
         })
         articlesList.innerHTML = newHTML

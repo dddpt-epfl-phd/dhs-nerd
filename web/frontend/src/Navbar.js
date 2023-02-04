@@ -36,6 +36,9 @@ const NavBarHeader = () => {
                     <LinkContainer to={"/"+language+"/articles"}>
                         <Nav.Link>Home</Nav.Link>
                   </LinkContainer>
+                    <LinkContainer to={"/"+language+"/themes"}>
+                        <Nav.Link>Themes</Nav.Link>
+                  </LinkContainer>
                     <LinkContainer to={"/"+language+"/about"}>
                         <Nav.Link>About</Nav.Link>
                   </LinkContainer>
