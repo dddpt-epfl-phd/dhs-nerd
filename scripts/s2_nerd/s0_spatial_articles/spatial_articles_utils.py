@@ -1,5 +1,8 @@
+import re
 import unicodedata
+
 from tqdm import tqdm 
+import pandas as pd
 
 def normalize_unicode_text(text):
     """unicode normalization NFKD removes accents in characters -> NFKC is the way to go :-)
@@ -123,27 +126,27 @@ def add_toponym_tokens_sequence(dtf, nb_predecessors = 10, nb_successors = 3):
     ])
 
 
-def identify_statusword_toponym_sequences(dtf, statusword_token_text):
+def identify_statusword_toponym_sequences(dtf, statuswords_text):
     """
     takes a dtf coming from add_toponym_tokens_sequence()
     + adds a column "toponym_tokens_sequence" to dtf containing all the toponym_tokens_sequence also containing a statusword
     + returns a new dtf statusword_tokens_sequences_dtf with one row per sequence containing at least 1 statusword and 1 toponym
     """
     dtf["is_statusword_toponym_sequence"] = [
-            any(token.text.lower() in statusword_token_text for token in seq)
+            any(token.text.lower() in statuswords_text for token in seq)
             for seq in dtf.toponym_tokens_sequence
     ]
 
 
 
-def analyse_statusword_tokens_sequence_single(dtf_row, token_sequence, statusword_index, toponym_index):
+def analyse_statusword_tokens_sequence_single(dtf_row, token_sequence, statusword_index, toponym_index, statuswords_text, normalized_toponym_tokens):
     """Analyses a single statusword-toponym combination
 
     returns a sequence whose first term is the sequence's statusword, and the last word is the sequence's toponym
     """
     sequence = token_sequence[statusword_index:(toponym_index+1)]
     sequence_structure = [
-        "STATUS" if token.text.lower() in statusword_token_text else(
+        "STATUS" if token.text.lower() in statuswords_text else(
         "TOPONYM" if is_token_toponym(token, dtf_row, normalized_toponym_tokens)
         else token.text
         )
@@ -153,15 +156,15 @@ def analyse_statusword_tokens_sequence_single(dtf_row, token_sequence, statuswor
     toponym = token_sequence[toponym_index]
     return (statusword, toponym, sequence, sequence_structure)
 
-def analyse_statusword_tokens_sequence(dtf_row, token_sequence):
+def analyse_statusword_tokens_sequence(dtf_row, token_sequence, statuswords_text, normalized_toponym_tokens):
     """Returns all the possible statusword-toponym combination analyses for a given token sequence
     """
-    statusword_indices = [i for i,tok in enumerate(token_sequence) if tok.text.lower() in statusword_token_text]
+    statusword_indices = [i for i,tok in enumerate(token_sequence) if tok.text.lower() in statuswords_text]
     #toponym_indices = [i for i,tok in enumerate(token_sequence) if tok.text in normalized_toponym_tokens or tok.text in dtf_row.loose_normalized_tokenized_toponym]
     toponym_indices = [i for i, t in enumerate(token_sequence) if t.i == dtf_row.toponym_tokens_spans[0].i]
     #toponym_indices = [len(token_sequence)-nb_successors] # the toponym is always at the same spot in the sequence
     sequences_analyses = [
-        analyse_statusword_tokens_sequence_single(dtf_row, token_sequence, i, j)
+        analyse_statusword_tokens_sequence_single(dtf_row, token_sequence, i, j, statuswords_text, normalized_toponym_tokens)
         for i in statusword_indices for j in toponym_indices if i<j
     ]
     return sequences_analyses
@@ -259,7 +262,7 @@ def link_single_toponyms(dtf, polities_dtf, toponyms_exact_match_dict):
 def count_nb_matching_tokens(sequence_dtf_row, tokenized_toponym_texts):
     sequence_dtf_row_tokens_texts = [t.text for t in sequence_dtf_row.toponym_tokens_sequence]
     nb_matching_tokens = sum([
-        word in sequence_dtf_row_tokens_texts[-(nb_successors+1):]
+        word in sequence_dtf_row_tokens_texts#[-(nb_successors+1):]
         for word in tokenized_toponym_texts
     ])
     return nb_matching_tokens
@@ -335,4 +338,3 @@ def link_statuswords_toponyms_sequences(dtf, polities_dtf, statusword_to_hdstag_
 
 
 
-MOMO=54
