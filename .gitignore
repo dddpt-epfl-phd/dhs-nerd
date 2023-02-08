@@ -25,3 +25,5 @@ web/frontend/build
 **/*.pdf
 
 **/.ipynb_checkpoints
+
+web/frontend/public/data
