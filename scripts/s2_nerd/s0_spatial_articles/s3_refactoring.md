@@ -26,6 +26,9 @@ Proposition:
         - trimmed_normalized_tokenized_toponym: removing leading tokens that are not_toponym_tokens (mainly to avoid confusion with regard to toponyms such as "Les Verrières")
     + returns:
         - normalized_toponym_tokens: set of all strict_normalized_tokenized_toponym
+
+
+### polity recognition
 - DONE add_text_toponyms_spans():  takes a dtf coming from normalize_toponyms() and add_tokenized_text()
     + adds the following columns: 
         - toponym_tokens_spans: list of spacy Spans, each Span containing a toponym, ensures no overlaps
@@ -39,10 +42,10 @@ Proposition:
     + adds the following columns:
         - toponyms_tokens_sequences: for each toponym_token_span, a sequence according from nb_pred to nb_succ (indexed on first token from each span)
 
-### polity recognition
+### polity linking preprocessing
 - DONE identify_statusword_toponym_sequences(): takes a dtf coming from add_toponym_tokens_sequence()
     + adds a column "is_statusword_toponym_sequence" to dtf indicating which row (=toponym sequence) also contains a statusword
-- DONE analyse_statuswords_toponyms_sequences(): takes a dtf coming from identify_statusword_toponym_sequences()
+- DONE analyse_statuswords_toponyms_sequences(): takes a dtf coming from identify_statusword_toponym_sequences(), only the rows with positive "is_statusword_toponym_sequence" value
     + returns a new dtf sequences_analyses_dtf with one row per statusword+toponym combination (multiple rows possible for one toponym sequence)
 - DONE validate_statuswords_toponyms_sequences(): takes valid_sequence_structures set of strings and a dtf coming from explode_statuswords_toponyms_sequences()
     + returns a new dtf valid_sequences_dtf containing the valid statuswords_toponyms_sequences
