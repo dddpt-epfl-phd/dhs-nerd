@@ -1,8 +1,10 @@
 import re
 import unicodedata
+from os import path
 
 from tqdm import tqdm 
 import pandas as pd
+import spacy
 
 def normalize_unicode_text(text):
     """unicode normalization NFKD removes accents in characters -> NFKC is the way to go :-)
@@ -16,9 +18,9 @@ def add_tokenized_text(dtf, tokenizer):
     """
     takes a dtf with "document" column
     + adds the following columns:
-        - tokens: spacy tokenization of text column
+        - spacy_doc: spacy tokenization of text column
     """
-    dtf["tokens"] = dtf.document.apply(lambda d: tokenizer(normalize_unicode_text(d.text)))
+    dtf["spacy_doc"] = dtf.document.apply(lambda d: tokenizer(normalize_unicode_text(d.text)))
     return dtf
 
 def add_toponyms(dtf, tokenizer):
@@ -89,7 +91,7 @@ def add_text_toponyms_spans(dtf, trimmed_normalized_tokenized_toponyms_texts):
     # multi-tokens toponyms
     dtf["toponym_tokens_spans"]=[
         [
-            row.tokens.char_span(m.start(), m.end()-2, alignment_mode="contract")
+            row.spacy_doc.char_span(m.start(), m.end()-2, alignment_mode="contract")
             for m in toponyms_pattern.finditer(" "+row.document.text+" ") #, re.IGNORECASE):
         ]
         for i, row in tqdm(dtf.iterrows(), total = dtf.shape[0], desc ="Adding token spans")
@@ -101,7 +103,7 @@ def add_text_toponyms_spans(dtf, trimmed_normalized_tokenized_toponyms_texts):
     dtf["toponym_tokens_spans"] = [
         row.toponym_tokens_spans+
         [
-            row.tokens[token.i:(token.i+1)] for token in row.tokens
+            row.spacy_doc[token.i:(token.i+1)] for token in row.spacy_doc
             if 
                 token.i not in row.toponym_tokens_indices and # ensure we don't have twice the same toponyms
                 token.text in row.loose_normalized_tokenized_toponym
@@ -110,7 +112,77 @@ def add_text_toponyms_spans(dtf, trimmed_normalized_tokenized_toponyms_texts):
     ]
     del dtf["toponym_tokens_indices"]
         
+# 
 
+def serialize_spacy_span(spacy_span):
+    """
+    as add_text_toponyms_spans() takes 10min to run on 100 articles,
+    here is a simple cache system.
+    """
+    return (spacy_span.start, spacy_span.end)
+def unserialize_spacy_span(spacy_doc, serialized_span):
+    """
+    as add_text_toponyms_spans() takes 10min to run on 100 articles,
+    here is a simple cache system.
+    """
+    return spacy.spacy_doc.span.Span(spacy_doc, serialized_span[0], serialized_span[1])
+def serialize_spacy_spans_series(spans_series):
+    """serialize a series of spans list: i.e. a dtf column containing, for each row, a list of spans
+    
+    as add_text_toponyms_spans() takes 10min to run on 100 articles,
+    here is a simple cache system.
+    """
+    return spans_series.apply(lambda spans: [serialize_spacy_span(s) for s in spans])
+def unserialize_spacy_spans_column(dtf, doc_column, serialized_spans_column):
+    """
+    as add_text_toponyms_spans() takes 10min to run on 100 articles,
+    here is a simple cache system.
+    """
+    return [
+        [unserialize_spacy_span(row[doc_column], s) for s in row[serialized_spans_column]]
+        for i, row in dtf.iterrows()
+    ]
+    #return spacy_doc.char_span(serialized_span[0], serialized_span[1])
+
+
+
+def save_toponym_tokens_spans(dtf, picklepath):
+    """
+    as add_text_toponyms_spans() takes 10min to run on 100 articles,
+    here is a simple cache system.
+    """
+    pickle_dtf = dtf.loc[:,["hds_article_id", "toponym_tokens_spans"]].copy()
+    pickle_dtf["toponym_tokens_spans"] = serialize_spacy_spans_series(pickle_dtf["toponym_tokens_spans"])
+    pickle_dtf.to_pickle(picklepath)
+
+def restore_toponym_tokens_spans(dtf, picklepath):
+    """/!\ doesn't change dtf inplace, must assign result
+    as add_text_toponyms_spans() takes 10min to run on 100 articles,
+    here is a simple cache system.    
+    """
+    pickle_dtf = pd.read_pickle(picklepath)
+    dtf = dtf.merge(pickle_dtf, on="hds_article_id")
+    dtf["toponym_tokens_spans"] = unserialize_spacy_spans_column(dtf, "spacy_doc", "toponym_tokens_spans")
+    return dtf
+
+def restore_or_compute_and_save_toponym_spans(dtf, picklepath, trimmed_normalized_tokenized_toponyms_texts):
+    """/!\ doesn't change dtf inplace, must assign result"""
+    if "toponym_tokens_spans" in dtf.columns:
+        print('"toponym_tokens_spans" column already present in dataframe, no need to restore or compute.')
+        return dtf
+    if path.exists(picklepath):
+        print("picklepath",picklepath,"exists, restoring...")
+        return restore_toponym_tokens_spans(dtf, picklepath)
+    else:
+        print("picklepath",picklepath," not existing, computing toponym_tokens_spans...")
+        add_text_toponyms_spans(dtf, trimmed_normalized_tokenized_toponyms_texts)
+        save_toponym_tokens_spans(dtf, picklepath)
+        return dtf
+
+
+
+def to_toponyms_dtf(dtf):
+    return dtf.explode("toponym_tokens_spans")
 
 def add_toponym_tokens_sequence(dtf, nb_predecessors = 10, nb_successors = 3):
     """add_toponym_tokens_sequence(): takes nb_predecessors, nb_successors and a dtf coming from add_text_toponyms_spans() and add_tokenized_text()
@@ -169,6 +241,26 @@ def analyse_statusword_tokens_sequence(dtf_row, token_sequence, statuswords_text
     ]
     return sequences_analyses
 
+
+def analyse_statuswords_toponyms_sequences(dtf, statuswords_text, normalized_toponym_tokens):
+    """
+    takes a dtf coming from identify_statuswords_toponyms_sequences()
+    + adds "sequence_analysis" column to dtf (from analyse_statusword_tokens_sequence())
+    + returns a new dtf sequences_analyses_dtf with one row per statusword+toponym combination (multiple rows possible for one toponym sequence)"""
+    dtf["sequence_analysis"] = [
+        analyse_statusword_tokens_sequence(row, row.toponym_tokens_sequence, statuswords_text, normalized_toponym_tokens)
+        for k, row in dtf.iterrows()
+    ]
+    sequences_analyses_dtf = dtf.explode("sequence_analysis")
+    non_analysable_sequences_indices = sequences_analyses_dtf.sequence_analysis.isna()
+    non_analysable_sequences_dtf = sequences_analyses_dtf[non_analysable_sequences_indices].copy()
+    sequences_analyses_dtf = sequences_analyses_dtf[~non_analysable_sequences_indices]
+    sequences_analyses_dtf["statusword"] = sequences_analyses_dtf.sequence_analysis.apply(lambda sa: sa[0])
+    sequences_analyses_dtf["sequence_toponym"] = sequences_analyses_dtf.sequence_analysis.apply(lambda sa: sa[1])
+    sequences_analyses_dtf["sequence"] = sequences_analyses_dtf.sequence_analysis.apply(lambda sa: sa[2])
+    sequences_analyses_dtf["sequence_structure"] = sequences_analyses_dtf.sequence_analysis.apply(lambda sa: sa[3])
+    sequences_analyses_dtf["sequence_structure_str"] = sequences_analyses_dtf["sequence_structure"].apply(lambda ss: "-".join(ss))
+    return sequences_analyses_dtf, non_analysable_sequences_dtf
 
 def validate_statuswords_toponyms_sequences(dtf, valid_sequence_structures):
     """

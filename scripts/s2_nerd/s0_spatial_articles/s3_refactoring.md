@@ -15,7 +15,7 @@ Proposition:
 ### tokenization & preprocessing
 - DONE add_tokenized_text(): takes a dtf with "text" column
     + adds the following columns:
-        - tokens: spacy tokenization of text column
+        - spacy_doc: spacy tokenization of text column
 - DONE add_toponyms(): takes a dtf with a "toponym" column
     + adds the following columns:
         - tokenized_toponym: spacy tokenization texts of toponym
