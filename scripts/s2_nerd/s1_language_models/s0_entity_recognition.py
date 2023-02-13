@@ -346,11 +346,9 @@ def displacy_dhs_article_NER(dhs_article, dhsa_ner_results):
 
 # %%
 
-tokens, ents =  displacy_article_ner_results(dhs_article.text_blocks, dhsa_ner_results)
-displacy_dhs_article_NER(dhs_article, dhsa_ner_results)
-# %%
-# %%
-json_dump_huggingface_ner_results(dhs_article, dhsa_ner_results, jsonfile="huggingface_ner_results.json")
+#tokens, ents =  displacy_article_ner_results(dhs_article.text_blocks, dhsa_ner_results)
+#displacy_dhs_article_NER(dhs_article, dhsa_ner_results)
+#json_dump_huggingface_ner_results(dhs_article, dhsa_ner_results, jsonfile="huggingface_ner_results.json")
 
 
 
