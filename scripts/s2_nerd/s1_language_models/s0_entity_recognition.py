@@ -361,6 +361,6 @@ i = 39
 dhs_article = sampled_articles_dtf.article.iloc[i]
 dhsa_ner_results = sampled_articles_dtf.ner_results.iloc[i]
 print(dhs_article.id)
-displacy_dhs_article_NER(dhs_article, dhsa_ner_results)
+#displacy_dhs_article_NER(dhs_article, dhsa_ner_results)
 
 # %%

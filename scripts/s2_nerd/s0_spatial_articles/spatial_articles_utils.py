@@ -125,7 +125,7 @@ def unserialize_spacy_span(spacy_doc, serialized_span):
     as add_text_toponyms_spans() takes 10min to run on 100 articles,
     here is a simple cache system.
     """
-    return spacy.spacy_doc.span.Span(spacy_doc, serialized_span[0], serialized_span[1])
+    return spacy.tokens.span.Span(spacy_doc, serialized_span[0], serialized_span[1])
 def serialize_spacy_spans_series(spans_series):
     """serialize a series of spans list: i.e. a dtf column containing, for each row, a list of spans
     
