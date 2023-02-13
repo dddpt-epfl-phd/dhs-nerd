@@ -62,7 +62,7 @@ ner_pipeline = pipeline('ner', model=model, tokenizer=tokenizer, aggregation_str
 
 
 def text_block_entity_recognition(text, pipeline, text_block_annotation=None):
-    """Does the Named entity recognition for the given article, per text_blocks
+    """Does the Named entity recognition on a given text, if given a text_block annotation, shifts the start-end accordingly
     /!\ Some text_blocks are too long. As of now, they are truncated /!\
         
     """
@@ -81,7 +81,10 @@ def get_text_blocks_annotations(document):
     tb_annotation_identifier = lambda a: a.extra_fields.get("dhs_type")=="text_block"
     return [a for a in document.annotations if tb_annotation_identifier(a)]
 def document_text_blocks_entity_recognition(document, pipeline):
-    """Does the Named entity recognition for the given Document, per annotated text_blocks
+    """does the NER on a given Document
+    + adds annotations corresponding to the ner_results
+    + returns a single ner_results list corresponding to the whole document text
+
     /!\ Some text_blocks are too long. As of now, they are truncated /!\
     """
 
@@ -177,7 +180,7 @@ sampled_articles_dtf.head()
 # %%
 
 def articles_dtf_entity_recognition(articles_dtf, ner_pipeline, force_recompute=False):
-    """does the entity-recognition on the articles
+    """does the entity-recognition on the articles, using document_text_blocks_entity_recognition()
     + adds the following columns:
         - ner_results: list of ner results from the hf pipeline (per hf-text-block of the max length accepted by the hf pipeline)
         + toponym_tokens_spans: list of spacy.Span of the recognized entities

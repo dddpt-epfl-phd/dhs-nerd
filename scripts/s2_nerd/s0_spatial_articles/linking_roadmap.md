@@ -43,7 +43,7 @@ steps to link entities from HF output
 - adapt HF output to dtf format
     -> must mimick output of add_text_toponyms_spans(), ready to be ingested in to_toponyms_dtf()
     - columns needed:
-        + toponym_tokens_spans: a spacy.Span of the recognized entity
+        + toponym_tokens_spans: list of spacy.Span of the recognized entities
         + tokenized_toponym: the spacy.Tokens of the identified mention needed by
             ~ normalize_toponyms() on the dtf
 - link them using spatial_articles_utils.py
@@ -60,6 +60,20 @@ steps:
     - transform HF back to a spacy.Doc+spacy.Token representation
     - do linking
         + handle case where entity not included in linking
+
+
+
+
+# Functions
+
+- DONE text_block_entity_recognition(): Does the Named entity recognition on a given text, if given a text_block annotation, shifts the start-end accordingly
+- DONE document_text_blocks_entity_recognition(): does the NER on a given Document
+    + adds annotations corresponding to the ner_results
+    + returns a single ner_results list corresponding to the whole document text
+- DONE articles_dtf_entity_recognition(): does the entity-recognition on the articles, using document_text_blocks_entity_recognition()
+    + adds the following columns:
+        - ner_results: list of ner results from the hf pipeline (per hf-text-block of the max length accepted by the hf pipeline)
+        + toponym_tokens_spans: list of spacy.Span of the recognized entities
 
 # Misc
 
